@@ -12,7 +12,7 @@ html:
 
 repository:
   url: (REPLACE WITH Repository URL)
-  branch: source
+  branch: master
 
 launch_buttons:
   binderhub_url: "https://mybinder.org"
