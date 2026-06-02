@@ -1,4 +1,4 @@
-# binder-build: 7 — bump when changing this file to bust MyBinder layer cache
+# binder-build: 9 — bump when changing this file to bust MyBinder layer cache
 FROM ghcr.io/rocker-org/binder:4.4.2
 
 # repo2docker passes NB_USER=jovyan / NB_UID=1000 by default. The rocker-org/binder image
@@ -15,16 +15,25 @@ WORKDIR /home/jovyan/
 # keeps any host .venv out of the build context.
 ENV VIRTUAL_ENV=
 ENV UV_PROJECT_ENVIRONMENT=/home/jovyan/.venv
-
-# .dockerignore strips local .venv/venv from the context; --chown ensures any leftover
-# files are owned by the kernel user so `rm` and `uv sync` work without root.
-COPY --chown=${NB_UID}:${NB_GID} . /home/jovyan
+ENV UV_CACHE_DIR=/home/jovyan/.cache/uv
+# Required when using cache mounts so packages are copied into the image layer.
+ENV UV_LINK_MODE=copy
 
 USER ${NB_UID}
 
-# uv-managed Python ends up under $HOME/.local/share/uv/python/...; running as the
-# kernel user (not root) keeps that directory readable when `uv run` resolves the venv.
-RUN rm -rf /home/jovyan/.venv /home/jovyan/venv \
+# Dependency layer: lockfiles are bind-mounted (not COPY'd) so this layer invalidates only
+# when pyproject.toml / uv.lock / .python-version change. See https://docs.astral.sh/uv/guides/integration/docker/
+RUN --mount=type=cache,target=/home/jovyan/.cache/uv,uid=${NB_UID},gid=${NB_GID} \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=.python-version,target=.python-version \
+    env -u VIRTUAL_ENV uv sync --all-groups --locked --no-install-project
+
+# Application layer: book content and Binder config (reuses cached .venv when deps are unchanged).
+COPY --chown=${NB_UID}:${NB_GID} . /home/jovyan
+
+RUN --mount=type=cache,target=/home/jovyan/.cache/uv,uid=${NB_UID},gid=${NB_GID} \
+    rm -rf /home/jovyan/venv \
  && env -u VIRTUAL_ENV uv sync --all-groups --locked
 
 # Register the project venv as a Jupyter kernel. --sys-prefix installs into the venv
