@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for AI agents working on this repository. This is a **Jupyter Book 2** template powered by [MyST](https://mystmd.org/). All book configuration lives in a single file: `book/myst.yml`.
+Guidance for AI agents working on **jupyter-book-template** — Jupyter Book 2 template for MyST notebooks and GitHub Pages deployment, powered by [MyST](https://mystmd.org/). All book configuration lives in a single file: `book/myst.yml`.
 
 ## Repository layout
 
@@ -11,9 +11,9 @@ book/
   assets/               # Site branding (favicon, logos)
   plugins/              # Custom MyST plugins
   bibliography.bib      # Citations
-pyproject.toml          # Python deps and Poe tasks (build, serve, CI)
-.github/workflows/      # GitHub Pages deploy (master branch)
-.binder/Dockerfile      # Binder environment (source branch)
+pyproject.toml          # Project metadata (jupyter-book-template), deps, Poe tasks
+.github/workflows/      # GitHub Pages deploy (main branch)
+.binder/Dockerfile      # Binder environment (main branch)
 ```
 
 Build output goes to `book/_build/` (gitignored). Run book commands from the repo root via Poe; tasks set `cwd = "book"`.
@@ -25,13 +25,13 @@ Use this checklist when turning the template into a new book project.
 ### GitHub setup
 
 1. Fork the repository (GitHub only allows using templates you own).
-2. Keep two branches: **`source`** (content + CI source) and **`master`** (deployed site).
+2. Use **`main`** as the default branch (content, CI, and site deployment).
 3. Enable **Template repository** under Settings → General.
 4. Enable **GitHub Actions** if disabled.
-5. Enable **GitHub Pages** for the `master` branch under Settings → Pages.
+5. Enable **GitHub Pages** with source **GitHub Actions** under Settings → Pages.
 6. Clone the fork locally.
 
-When creating a new repo from the template, choose **Include all branches**.
+When creating a new repo from the template, select it from the template dropdown.
 
 ### Local environment
 
@@ -67,7 +67,29 @@ uv run poe serve-book    # build, then preview at http://localhost:8000
 uv run poe ci            # pre-commit checks + build (same as CI)
 ```
 
-CI (`.github/workflows/build.yml`) runs on pushes to **`master`**, sets `BASE_URL=/<repo-name>` for project Pages, and deploys `book/_build/html`.
+CI (`.github/workflows/ci.yml`) runs on pushes to **`main`**, sets `BASE_URL=/<repo-name>` for project Pages, and deploys `book/_build/html`.
+
+### Test a branch before merging a PR
+
+When a change affects Binder, `pyproject.toml` / `uv.lock`, or `project.jupyter`, validate on the **feature branch** before merge:
+
+1. Ensure the branch is **pushed** to GitHub (MyBinder only builds remote refs).
+2. Temporarily set in `book/myst.yml`:
+
+   ```yaml
+   project:
+     jupyter:
+       binder:
+         ref: <branch-name>
+   ```
+
+3. **MyBinder** (not CI) builds from `.binder/Dockerfile` on the pushed ref. Use a commit-SHA launch URL
+   (`https://mybinder.org/v2/gh/ELC/jupyter-book-template/<sha>`) after each push; branch URLs can show logs from an older cached build. Stale logs show `RUN uv sync` on Dockerfile line 9—the fixed file uses `UV_PROJECT_ENVIRONMENT` and `rm -rf .venv` instead.
+4. For manual checks, align README Binder/Colab URLs and `book/myst.yml` `binder.ref` with the branch.
+5. Run **`uv run poe build-docker`** locally (same as the `check-docker` CI job). The image installs deps into **`.venv/`** (see `UV_PROJECT_ENVIRONMENT` in `.binder/Dockerfile`); root **`.hidden`** hides `.venv` and `venv` in JupyterLab.
+6. **Before merge**, remove `project.jupyter.binder.ref` (or set `ref: main`), revert README badge URLs, and do not leave a feature branch pinned in `myst.yml`.
+
+Agents must not leave `project.jupyter.binder.ref` set to a non-`main` branch in changes intended for merge unless the user explicitly asks to keep it.
 
 ## Add new pages
 
@@ -192,6 +214,7 @@ Python packages for notebook execution are declared in `pyproject.toml` under `[
 | Preview locally | `uv run poe serve-book-preview` |
 | Build + preview | `uv run poe serve-book` |
 | Lint + build (CI) | `uv run poe ci` |
+| Build Binder image | `uv run poe build-docker` |
 | Pre-commit only | `uv run poe check` |
 | Clean build artifacts | `cd book && uv run jupyter book clean` |
 
