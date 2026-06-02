@@ -1,4 +1,4 @@
-# binder-build: 5 — bump when changing this file to bust MyBinder layer cache
+# binder-build: 6 — bump when changing this file to bust MyBinder layer cache
 FROM ghcr.io/rocker-org/binder:4.4.2
 
 # repo2docker passes NB_USER=jovyan / NB_UID=1000 by default. The rocker-org/binder image
@@ -27,9 +27,11 @@ USER ${NB_UID}
 RUN rm -rf /home/jovyan/.venv /home/jovyan/venv \
  && env -u VIRTUAL_ENV uv sync --all-groups --locked
 
-# Register the project venv as a Jupyter kernel
+# Register the project venv as a Jupyter kernel. --sys-prefix installs into the venv
+# (`/home/jovyan/venv/share/jupyter/kernels`), which Jupyter finds automatically and which
+# the kernel user can write to. /opt/conda from the base image is root-owned.
 RUN uv run -m ipykernel install \
-     --prefix=/opt/conda               \
+     --sys-prefix                      \
      --name=jupyter-book-template      \
      --display-name="Python 3.13 (uv)"
 
