@@ -1,4 +1,4 @@
-# binder-build: 12 — bump when changing this file to bust MyBinder layer cache
+# binder-build: 13 — bump when changing this file to bust MyBinder layer cache
 FROM ghcr.io/rocker-org/binder:4.4.2
 
 # repo2docker passes NB_USER=jovyan / NB_UID=1000 by default. The
@@ -21,27 +21,19 @@ RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     uv sync --all-groups --locked --no-install-project
 
+# Jupyter kernel spec for the project venv (see .binder/kernels/).
+COPY --chown=${NB_UID}:${NB_GID} .binder/kernels/ .venv/share/jupyter/kernels/
+
 # Application layer: book content and Binder config (reuses cached .venv when
 # deps are unchanged).
-COPY --chown=${NB_UID}:${NB_GID} . /home/jovyan
-
-RUN uv sync --all-groups --locked
+COPY --chown=${NB_UID}:${NB_GID} . .
 
 ENV VIRTUAL_ENV=/home/jovyan/.venv
 ENV PATH="/home/jovyan/.venv/bin:${PATH}"
 
-# Register the project venv as a Jupyter kernel. --sys-prefix installs into the
-# venv (`/home/jovyan/.venv/share/jupyter/kernels`), which Jupyter finds
-# automatically and which the kernel user can write to. /opt/conda from the base
-# image is root-owned.
-RUN uv run -m ipykernel install        \
-     --sys-prefix                      \
-     --name=jupyter-book-template      \
-     --display-name="Python 3.13 (uv)"
-
 COPY --chown=${NB_UID}:${NB_GID} .binder/vscode/settings.json .vscode/settings.json
 
-COPY --chown=${NB_UID}:${NB_GID} .binder/bashrc-venv.sh /tmp/bashrc-venv.sh
-RUN cat /tmp/bashrc-venv.sh >> .bashrc && rm /tmp/bashrc-venv.sh
+COPY --chown=${NB_UID}:${NB_GID} .binder/bashrc-venv.sh .bashrc-venv.tmp
+RUN cat .bashrc-venv.tmp >> .bashrc && rm .bashrc-venv.tmp
 
 EXPOSE 8888
