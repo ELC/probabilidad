@@ -4,19 +4,20 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /uvx /bin/
 
 WORKDIR /home/jovyan/
 
-# Base image sets VIRTUAL_ENV=/opt/conda; use the project .venv from uv sync instead.
+# Rocker sets VIRTUAL_ENV=/opt/conda; project deps live in .venv (unset per RUN below).
 ENV VIRTUAL_ENV=
 
-# Copy project (see .dockerignore). Strip any .venv from the build context — CI runs
-# `uv sync` before `docker build`, and a copied host venv breaks uv with permission errors.
+# See .dockerignore — must not copy a host/CI .venv into the image.
 COPY --chown=jovyan . /home/jovyan
+
+USER root
 RUN rm -rf /home/jovyan/.venv
 
 USER jovyan
-RUN uv sync --all-groups --locked
+RUN env -u VIRTUAL_ENV uv sync --all-groups --locked
 
 # Register the .venv as a kernel for /opt/conda/bin/jupyter so that it is
-#discoverable in JupyterLab interface when the container is started
+# discoverable in JupyterLab interface when the container is started
 RUN uv run -m ipykernel install \
      --prefix=/opt/conda               \
      --name=jupyter-book-template      \

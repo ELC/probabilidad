@@ -46,5 +46,8 @@ jobs:
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
 
       - name: Build Binder Docker image
+        env:
+          # Keep CI tooling out of the repo root so `docker build` never copies a host .venv
+          UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/uv-env
         # --with poethepoet: Poe is available without a separate `uv sync` step
         run: uv run --no-sync --with poethepoet poe build-docker
