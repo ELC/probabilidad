@@ -28,10 +28,10 @@ Use this when a pull request changes Binder (`.binder/`), Python dependencies, o
 
 3. **Test on MyBinder** (builds from `.binder/Dockerfile` on GitHub, not GitHub Actions):
    - Branch URL: `https://mybinder.org/v2/gh/ELC/jupyter-book-template/<branch>`
-   - Prefer a **commit SHA** URL after each push so MyBinder does not reuse an older cached image:  
+   - Prefer a **commit SHA** URL after each push so MyBinder does not reuse an older cached image:
      `https://mybinder.org/v2/gh/ELC/jupyter-book-template/<commit-sha>`
    - MyBinder [caches builds per commit](https://mybinder.readthedocs.io/en/latest/tutorials/dockerfile.html); if the log still shows `RUN uv sync` on line 9, you are viewing a stale Dockerfile—open a fresh launch with the latest SHA.
-   - Confirm the remote file matches:  
+   - Confirm the remote file matches:
      `https://github.com/ELC/jupyter-book-template/blob/<branch>/.binder/Dockerfile` (should include `UV_PROJECT_ENVIRONMENT` and `rm -rf .venv`).
 4. **Update launch links** for the same branch (README badge, Colab, `book/myst.yml` `binder.ref`).
 5. **Build the image locally** (optional; matches CI `check-docker`):
