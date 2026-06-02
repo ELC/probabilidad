@@ -13,17 +13,14 @@ WORKDIR /home/jovyan/
 
 USER ${NB_UID}
 
-# Dependency layer: lockfiles are bind-mounted (not COPY'd) so this layer
-# invalidates only when pyproject.toml / uv.lock change. See
-# https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
 RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     uv sync --all-groups --locked --no-install-project
 
-COPY --chown=${NB_UID}:${NB_GID} . /home/jovyan/
-
 RUN --mount=type=bind,source=.binder/bashrc-venv.sh,target=/mnt/bashrc-venv.sh,readonly \
     cat /mnt/bashrc-venv.sh >> .bashrc
+
+COPY --chown=${NB_UID}:${NB_GID} . .
 
 ENV VIRTUAL_ENV=/home/jovyan/.venv
 ENV PATH="/home/jovyan/.venv/bin:${PATH}"
