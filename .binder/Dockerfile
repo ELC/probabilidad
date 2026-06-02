@@ -1,3 +1,4 @@
+# binder-build: 3 — bump when changing this file to bust MyBinder layer cache
 FROM ghcr.io/rocker-org/binder:4.4.2
 
 COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /uvx /bin/
@@ -28,7 +29,7 @@ RUN uv run -m ipykernel install \
 
 COPY --chown=jovyan .binder/vscode/settings.json .vscode/settings.json
 
-RUN --mount=type=bind,source=.binder/bashrc-venv.sh,target=/mnt/bashrc-venv.sh,readonly \
-    cat /mnt/bashrc-venv.sh >> .bashrc
+COPY --chown=jovyan .binder/bashrc-venv.sh /tmp/bashrc-venv.sh
+RUN cat /tmp/bashrc-venv.sh >> .bashrc && rm /tmp/bashrc-venv.sh
 
 EXPOSE 8888
