@@ -87,7 +87,6 @@ exclude_lines = [
   "^\\s*\\.\\.\\.$",
 ]
 
-
 #########################
 # MyPy
 #########################
@@ -108,7 +107,6 @@ disallow_untyped_decorators = true
 module = ["matplotlib.*", "seaborn.*"]
 ignore_missing_imports = true
 
-
 #########################
 # RUFF
 #########################
@@ -123,17 +121,17 @@ extend-exclude = ["_build"]
 [tool.ruff.lint]
 extend-select = ["ALL"]
 ignore = [
-  "D",      # pydocstyle
-  "CPY",    # copyright notices
-  "S101",   # assert usage
-  "ISC001", # implicit string concat
-  "ANN401", # any type
-  "COM812", # trailing comma
-  "E501",   # line too long (handled by formatter)
-  "ARG002", # unused method argument
-  "DOC501", # raised exception missing from docstring
-  "DOC502", # documented exception from inner function (API docs clarity)
-  "N999",   # chapter notebooks use numeric ordering prefixes (e.g. 00_how_to_use.ipynb)
+  "D",                   # pydocstyle
+  "CPY",                 # copyright notices
+  "S101",                # assert usage
+  "ISC001",              # implicit string concat
+  "ANN401",              # any type
+  "COM812",              # trailing comma
+  "E501",                # line too long (handled by formatter)
+  "ARG002",              # unused method argument
+  "DOC501",              # raised exception missing from docstring
+  "DOC502",              # documented exception from inner function (API docs clarity)
+  "N999",                # chapter notebooks use numeric ordering prefixes (e.g. 00_how_to_use.ipynb)
 ]
 
 [tool.ruff.format]
@@ -141,7 +139,6 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
-
 
 #########################
 # Pylint
@@ -171,16 +168,15 @@ disable = [
   "missing-module-docstring",
   "missing-class-docstring",
   "missing-function-docstring",
-  "invalid-name",                  # chapter notebooks use numeric ordering prefixes (e.g. 00_how_to_use.ipynb)
-  "line-too-long",                 # handled by ruff format
-  "import-error",                  # already validated by mypy
+  "invalid-name",                   # chapter notebooks use numeric ordering prefixes (e.g. 00_how_to_use.ipynb)
+  "line-too-long",                  # handled by ruff format
+  "import-error",                   # already validated by mypy
   "duplicate-code",
   "too-few-public-methods",
   "too-many-arguments",
   "too-many-positional-arguments",
-  "redefined-outer-name",          # pytest fixture parameter names shadow outer fixtures
+  "redefined-outer-name",           # pytest fixture parameter names shadow outer fixtures
 ]
-
 
 #########################
 # Pymetrica
@@ -188,3 +184,20 @@ disable = [
 
 [tool.pymetrica]
 exclude = []
+
+#########################
+# Tombi
+#########################
+
+[tool.tombi.files]
+exclude = ["uv.lock"]
+
+[tool.tombi.format.rules]
+trailing-comment-alignment = true
+
+[[tool.tombi.schemas]]
+path = "https://json.schemastore.org/pyproject.json"
+include = ["pyproject.toml"]
+
+[tool.tombi.schemas.format.rules.table-keys-order]
+enabled = false
