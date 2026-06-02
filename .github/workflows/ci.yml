@@ -43,12 +43,17 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+      - name: Verify Binder Dockerfile revision
+        run: |
+          echo "Building commit: $(git rev-parse HEAD)"
+          head -n 25 .binder/Dockerfile
+          if grep -q '^RUN uv sync --all-groups --locked$' .binder/Dockerfile; then
+            echo "::error::Stale .binder/Dockerfile (missing root rm + UV_PROJECT_ENVIRONMENT). Push the latest branch commit or re-run the newest workflow run, not an old one."
+            exit 1
+          fi
+
       - name: Prepare clean Docker context
         run: rm -rf .venv venv
 
-      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
-
       - name: Build Binder Docker image
-        env:
-          UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/uv-env
-        run: uv run --no-sync --with poethepoet poe build-docker
+        run: docker build --no-cache -f .binder/Dockerfile -t jupyter-book-template:binder .
