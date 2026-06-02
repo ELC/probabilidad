@@ -1,46 +1,25 @@
-# use the rocker/binder image as the base image, it alread has R, Python (via mamba), JupyterLab, VS Code (code-server), RStudio
-FROM ghcr.io/rocker-org/binder:latest
+FROM ghcr.io/rocker-org/binder:4.4.2
 
-# Copy repository contents to /home/jovyan in the container, which is the default user in this container image
 COPY --chown=jovyan . /home/jovyan
 
-# install uv
-RUN curl -LsSf https://astral.sh/uv/0.11.1/install.sh | sh
+COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /uvx /bin/
 
-# make sure uv’s install dir is on PATH
-ENV PATH="/home/jovyan/.local/bin:${PATH}"
-
-# make home folder is the current working directory
 WORKDIR /home/jovyan/
 
-# restore python environment from uv.lock and pyproject.toml
-RUN uv sync --all-groups
+RUN uv sync --all-groups --locked
 
-# Register the .venv as a kernel for /opt/conda/bin/jupyter so that it is discoverable in JupyterLab interface when the container is started
-RUN .venv/bin/python -m ipykernel install \
+# Register the .venv as a kernel for /opt/conda/bin/jupyter so that it is
+#discoverable in JupyterLab interface when the container is started
+RUN uv run -m ipykernel install \
      --prefix=/opt/conda               \
-     --name=geodata-env                \
+     --name=jupyter-book-template      \
      --display-name="Python 3.13 (uv)"
 
-# same as above, pre-register the environment for VS Code (code-server)  that is available in the container
-RUN mkdir -p .vscode                                            \
- && cat > .vscode/settings.json <<EOF
-{
-  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
-  "python.venvFolders": ["."],
-  "python.venvPath": "${workspaceFolder}"
-}
-EOF
+# Pre-register the environment for VS Code (code-server) in the container
+COPY --chown=jovyan .binder/vscode/settings.json .vscode/settings.json
 
-# deactivate the default conda environment so that the .venv is used by default
-RUN echo -e '# Deactivate any conda environment (e.g. base)\n\
-conda deactivate &>/dev/null\n\
-\n\
-# Then activate our uv-created venv\n\
-if [ -f "$HOME/.venv/bin/activate" ]; then\n\
-    . "$HOME/.venv/bin/activate"\n\
-fi' \
->> /home/jovyan/.bashrc
+# Use the uv-created venv by default in interactive shells
+RUN --mount=type=bind,source=.binder/bashrc-venv.sh,target=/mnt/bashrc-venv.sh,readonly \
+    cat /mnt/bashrc-venv.sh >> .bashrc
 
-# as in the original binder image, expose the port
 EXPOSE 8888
