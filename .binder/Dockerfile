@@ -1,4 +1,4 @@
-# binder-build: 11 — bump when changing this file to bust MyBinder layer cache
+# binder-build: 12 — bump when changing this file to bust MyBinder layer cache
 FROM ghcr.io/rocker-org/binder:4.4.2
 
 # repo2docker passes NB_USER=jovyan / NB_UID=1000 by default. The
