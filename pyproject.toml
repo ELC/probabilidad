@@ -5,21 +5,21 @@ description = "Jupyter Book 2 template for MyST notebooks and GitHub Pages deplo
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "jupyter-book>=2,<3",
-    "jupyterlab>=4.5",
-    "matplotlib>=3.10.8",
-    "pandas>=3.0.1",
-    "pandera>=0.30.1",
-    "seaborn>=0.13.2",
+  "jupyter-book>=2,<3",
+  "jupyterlab>=4.5",
+  "matplotlib>=3.10.8",
+  "pandas>=3.0.1",
+  "pandera>=0.30.1",
+  "seaborn>=0.13.2",
 ]
 
 [dependency-groups]
 dev = [
-    "poethepoet>=0.37",
-    "prek>=0.4",
-    "pytest>=8.3",
-    "pytest-cov>=6.0",
-    "wheel>=0.46.3",
+  "poethepoet>=0.37",
+  "prek>=0.4",
+  "pytest>=8.3",
+  "pytest-cov>=6.0",
+  "wheel>=0.46.3",
 ]
 
 [tool.uv]
@@ -54,49 +54,37 @@ cwd = "book"
 cmd = "jupyter book start --port 8000"
 
 [tool.poe.tasks.serve-book]
-sequence = [
-    "build-book",
-    "serve-book-preview",
-]
+sequence = ["build-book", "serve-book-preview"]
 
 [tool.poe.tasks.build-docker]
 help = "Build the Binder Docker image (repo root context, .binder/Dockerfile)."
 cmd = "docker build --no-cache --file .binder/Dockerfile --tag jupyter-book-template:binder ."
 
 [tool.poe.tasks.ci]
-sequence = [
-    "check",
-    "build-book",
-]
+sequence = ["check", "build-book"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = [
-    "-vv",
-    "--cov",
-    "--cov-report=term-missing",
-]
+addopts = ["-vv", "--cov", "--cov-report=term-missing"]
 
 [tool.coverage.run]
-source = [
-    "tests",
-]
+source = ["tests"]
 
 [tool.coverage.report]
 fail_under = 100
 skip_covered = true
 show_missing = true
 exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "if self.debug:",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if 0:",
-    "if __name__ == .__main__.:",
-    "if TYPE_CHECKING:",
-    "@(abc\\.)?abstractmethod",
-    "^\\s*\\.\\.\\.$",
+  "pragma: no cover",
+  "def __repr__",
+  "if self.debug:",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if 0:",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+  "@(abc\\.)?abstractmethod",
+  "^\\s*\\.\\.\\.$",
 ]
 
 
@@ -117,10 +105,7 @@ disallow_untyped_defs = true
 disallow_untyped_decorators = true
 
 [[tool.mypy.overrides]]
-module = [
-    "matplotlib.*",
-    "seaborn.*",
-]
+module = ["matplotlib.*", "seaborn.*"]
 ignore_missing_imports = true
 
 
@@ -133,25 +118,23 @@ fix = true
 preview = true
 unsafe-fixes = true
 line-length = 120
-extend-exclude = [
-    "_build",
-]
+extend-exclude = ["_build"]
 
 [tool.ruff.lint]
 extend-select = ["ALL"]
 ignore = [
-    "D",      # pydocstyle
-    "CPY",    # copyright notices
-    "S101",   # assert usage
-    "ISC001", # implicit string concat
-    "ANN401", # any type
-    "COM812", # trailing comma
-    "E501",   # line too long (handled by formatter)
-    "ARG002", # unused method argument
-    "DOC501", # raised exception missing from docstring
-    "DOC502", # documented exception from inner function (API docs clarity)
+  "D",      # pydocstyle
+  "CPY",    # copyright notices
+  "S101",   # assert usage
+  "ISC001", # implicit string concat
+  "ANN401", # any type
+  "COM812", # trailing comma
+  "E501",   # line too long (handled by formatter)
+  "ARG002", # unused method argument
+  "DOC501", # raised exception missing from docstring
+  "DOC502", # documented exception from inner function (API docs clarity)
+  "N999",   # chapter notebooks use numeric ordering prefixes (e.g. 00_how_to_use.ipynb)
 ]
-
 
 [tool.ruff.format]
 quote-style = "double"
@@ -165,19 +148,17 @@ line-ending = "auto"
 #########################
 
 [tool.pylint.main]
-extension-pkg-allow-list = [
-    "mypy",
-]
+extension-pkg-allow-list = ["mypy"]
 
 [tool.pylint.typecheck]
 contextmanager-decorators = ["contextlib.contextmanager"]
 ignore-none = true
 ignore-on-opaque-inference = true
 ignored-checks-for-mixins = [
-    "no-member",
-    "not-async-context-manager",
-    "not-context-manager",
-    "attribute-defined-outside-init",
+  "no-member",
+  "not-async-context-manager",
+  "not-context-manager",
+  "attribute-defined-outside-init",
 ]
 ignored-classes = ["optparse.Values", "thread._local", "_thread._local"]
 missing-member-hint = true
@@ -187,16 +168,17 @@ mixin-class-rgx = ".*[Mm]ixin"
 
 [tool.pylint.messages_control]
 disable = [
-    "C0114",  # missing-module-docstring
-    "C0115",  # missing-class-docstring
-    "C0116",  # missing-function-docstring
-    "C0301",  # line-too-long (handled by ruff format)
-    "E0401",  # import-error (already validated by mypy)
-    "R0801",  # duplicate-code (acceptable for response builders)
-    "R0903",  # too-few-public-methods (dataclasses/DTOs)
-    "R0913",  # too-many-arguments (DI constructors)
-    "R0917",  # too-many-positional-arguments (DI constructors)
-    "W0621",  # pytest fixture parameter names shadow outer fixtures
+  "missing-module-docstring",
+  "missing-class-docstring",
+  "missing-function-docstring",
+  "invalid-name",                  # chapter notebooks use numeric ordering prefixes (e.g. 00_how_to_use.ipynb)
+  "line-too-long",                 # handled by ruff format
+  "import-error",                  # already validated by mypy
+  "duplicate-code",
+  "too-few-public-methods",
+  "too-many-arguments",
+  "too-many-positional-arguments",
+  "redefined-outer-name",          # pytest fixture parameter names shadow outer fixtures
 ]
 
 
