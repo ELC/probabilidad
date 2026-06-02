@@ -27,11 +27,14 @@ COPY --chown=${NB_UID}:${NB_GID} . /home/jovyan
 
 RUN uv sync --all-groups --locked
 
+ENV VIRTUAL_ENV=/home/jovyan/.venv
+ENV PATH="/home/jovyan/.venv/bin:${PATH}"
+
 # Register the project venv as a Jupyter kernel. --sys-prefix installs into the
 # venv (`/home/jovyan/.venv/share/jupyter/kernels`), which Jupyter finds
 # automatically and which the kernel user can write to. /opt/conda from the base
 # image is root-owned.
-RUN uv run -m ipykernel install \
+RUN uv run -m ipykernel install        \
      --sys-prefix                      \
      --name=jupyter-book-template      \
      --display-name="Python 3.13 (uv)"
