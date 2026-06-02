@@ -22,8 +22,7 @@ USER ${NB_UID}
 
 # Dependency layer: lockfiles are bind-mounted (not COPY'd) so this layer invalidates only
 # when pyproject.toml / uv.lock / .python-version change. See https://docs.astral.sh/uv/guides/integration/docker/
-RUN --mount=type=cache,target=/home/jovyan/.cache/uv \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     uv sync --all-groups --locked --no-install-project
 
