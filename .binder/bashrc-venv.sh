@@ -1,3 +1,6 @@
+# Rocker sets VIRTUAL_ENV=/opt/conda; drop it so we use the uv .venv below.
+unset VIRTUAL_ENV
+
 # Deactivate any conda environment (e.g. base)
 conda deactivate &>/dev/null
 
