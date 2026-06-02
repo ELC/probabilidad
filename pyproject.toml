@@ -31,13 +31,26 @@ package = false
 [tool.poe.tasks]
 test = "pytest"
 check = "prek run --all-files --verbose"
-serve-book-preview = "python -m http.server 8000 --directory book/_build/html"
-rename-site = "mv book/_build/html ./_site"
-add-nojekyll = "touch _site/.nojekyll"
 
 [tool.poe.tasks.build-book]
+help = """
+Build static HTML with executed notebooks
+Related docs:
+--execute: https://jupyterbook.org/stable/execution/execution/#execute-demo-content-at-build-time
+--html: https://jupyterbook.org/stable/build-and-publish/publish/#custom-web-servers-and-other-static-hosts
+--ci: Just a flag to indicate that this is a CI build
+"""
 cwd = "book"
-cmd = "jupyter-book build --html --execute --ci"
+cmd = "jupyter book build --html --execute --ci"
+
+[tool.poe.tasks.serve-book-preview]
+help = """
+Preview the book locally
+Related docs:
+start: https://jupyterbook.org/stable/execution/execution/#start-jupyter-book
+"""
+cwd = "book"
+cmd = "jupyter book start --port 8000"
 
 [tool.poe.tasks.serve-book]
 sequence = [
@@ -49,8 +62,6 @@ sequence = [
 sequence = [
     "check",
     "build-book",
-    "rename-site",
-    "add-nojekyll",
 ]
 
 [tool.pytest.ini_options]
@@ -119,7 +130,6 @@ unsafe-fixes = true
 line-length = 120
 extend-exclude = [
     "_build",
-    "_site",
 ]
 
 [tool.ruff.lint]
