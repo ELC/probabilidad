@@ -3,7 +3,10 @@ exclude: ^(_build/|\.venv/)
 default_language_version:
   python: python3.13
 
-.project-dependencies: &project-deps
+.hook-dependencies: &hook-deps
+  - mypy==2.1.0
+  - pylint==4.0.5
+  - ruff==0.15.15
   - jupyter-book==2.1.5
   - matplotlib==3.10.8
   - pandas==3.0.1
@@ -22,6 +25,12 @@ repos:
       - id: check-merge-conflict
       - id: detect-private-key
 
+  - repo: https://github.com/tombi-toml/tombi-pre-commit
+    rev: v1.1.1
+    hooks:
+      - id: tombi-format
+      - id: tombi-lint
+
   - repo: https://github.com/kynan/nbstripout
     rev: 0.9.1
     hooks:
@@ -30,25 +39,46 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.14
     hooks:
-      # - id: ruff-check
-      #   args:
-      #     - "--exit-non-zero-on-fix"
+      - id: ruff-check
+        exclude: \.ipynb$
+        args:
+          - "--exit-non-zero-on-fix"
 
       - id: ruff-format
-
-  # - repo: https://github.com/JuanJFarina/pymetrica
-  #   rev: v1.5.6
-  #   hooks:
-  #     - id: pymetrica
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.1.0
-    hooks:
-      - id: mypy
-        additional_dependencies: *project-deps
+        exclude: \.ipynb$
 
   - repo: https://github.com/pylint-dev/pylint
     rev: v4.0.5
     hooks:
       - id: pylint
-        additional_dependencies: *project-deps
+        exclude: \.ipynb$
+        additional_dependencies: *hook-deps
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.1.0
+    hooks:
+      - id: mypy
+        exclude: \.ipynb$
+        additional_dependencies: *hook-deps
+
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.9.1
+    hooks:
+      - id: nbqa-ruff-format
+        additional_dependencies: *hook-deps
+
+      - id: nbqa-ruff-check
+        additional_dependencies: *hook-deps
+        args:
+          - "--exit-non-zero-on-fix"
+
+      - id: nbqa-pylint
+        additional_dependencies: *hook-deps
+
+      - id: nbqa-mypy
+        additional_dependencies: *hook-deps
+
+  # - repo: https://github.com/JuanJFarina/pymetrica
+  #   rev: v1.5.6
+  #   hooks:
+  #     - id: pymetrica
