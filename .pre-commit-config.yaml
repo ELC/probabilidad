@@ -4,7 +4,7 @@ default_language_version:
   python: python3.13
 
 .project-dependencies: &project-deps
-  - jupyter-book==1.0.4.post1
+  - jupyter-book==2.1.5
   - matplotlib==3.10.8
   - pandas==3.0.1
   - pandas-stubs==3.0.0.260204

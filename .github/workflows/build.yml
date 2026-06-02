@@ -12,8 +12,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.02
+
+    - uses: actions/setup-node@49933ea5288caeca8642d134e59bf458759112a8  # v4.4.0
+      with:
+        node-version: 22
 
     - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78  # v7.6.0
       with:
@@ -23,6 +28,9 @@ jobs:
       run: uv sync --all-groups
 
     - name: Lint and build the book
+      env:
+        # Subpath for project Pages (not *.github.io); see https://mystmd.org/guide/deployment-github-pages
+        BASE_URL: /${{ github.event.repository.name }}
       run: uv run poe ci
 
     - name: Upload Pages artifact
