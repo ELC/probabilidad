@@ -1,4 +1,3 @@
-# binder-build: 15 — bump when changing this file to bust MyBinder layer cache
 FROM ghcr.io/rocker-org/binder:4.4.2
 
 # repo2docker passes NB_USER=jovyan / NB_UID=1000 by default. The
@@ -21,9 +20,7 @@ RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     uv sync --all-groups --locked --no-install-project
 
-# Application layer: book content and Binder config (reuses cached .venv when
-# deps are unchanged).
-COPY --chown=${NB_UID}:${NB_GID} . .
+COPY --chown=${NB_UID}:${NB_GID} . /home/jovyan/
 
 RUN --mount=type=bind,source=.binder/bashrc-venv.sh,target=/mnt/bashrc-venv.sh,readonly \
     cat /mnt/bashrc-venv.sh >> .bashrc
