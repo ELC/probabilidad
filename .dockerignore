@@ -1,0 +1,20 @@
+# Local / CI virtualenv (platform-specific; recreated in the image)
+.venv
+venv
+env
+
+# Build and cache artifacts
+book/_build
+_build
+__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+htmlcov
+.coverage
+.coverage.*
+
+# Git and editor noise
+.git
+.github

@@ -6,6 +6,10 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /uvx /bin/
 
 WORKDIR /home/jovyan/
 
+# Base image sets VIRTUAL_ENV=/opt/conda; use the project .venv from uv sync instead.
+ENV VIRTUAL_ENV=
+
+USER jovyan
 RUN uv sync --all-groups --locked
 
 # Register the .venv as a kernel for /opt/conda/bin/jupyter so that it is
