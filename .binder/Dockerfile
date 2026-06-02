@@ -1,4 +1,4 @@
-# binder-build: 14 — bump when changing this file to bust MyBinder layer cache
+# binder-build: 15 — bump when changing this file to bust MyBinder layer cache
 FROM ghcr.io/rocker-org/binder:4.4.2
 
 # repo2docker passes NB_USER=jovyan / NB_UID=1000 by default. The
@@ -15,8 +15,8 @@ WORKDIR /home/jovyan/
 USER ${NB_UID}
 
 # Dependency layer: lockfiles are bind-mounted (not COPY'd) so this layer
-# invalidates only when pyproject.toml / uv.lock / .python-version change. See
-# https://docs.astral.sh/uv/guides/integration/docker/
+# invalidates only when pyproject.toml / uv.lock change. See
+# https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
 RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     uv sync --all-groups --locked --no-install-project
@@ -25,12 +25,10 @@ RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
 # deps are unchanged).
 COPY --chown=${NB_UID}:${NB_GID} . .
 
+RUN --mount=type=bind,source=.binder/bashrc-venv.sh,target=/mnt/bashrc-venv.sh,readonly \
+    cat /mnt/bashrc-venv.sh >> .bashrc
+
 ENV VIRTUAL_ENV=/home/jovyan/.venv
 ENV PATH="/home/jovyan/.venv/bin:${PATH}"
-
-COPY --chown=${NB_UID}:${NB_GID} .binder/vscode/settings.json .vscode/settings.json
-
-COPY --chown=${NB_UID}:${NB_GID} .binder/bashrc-venv.sh .bashrc-venv.tmp
-RUN cat .bashrc-venv.tmp >> .bashrc && rm .bashrc-venv.tmp
 
 EXPOSE 8888
