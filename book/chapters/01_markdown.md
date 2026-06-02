@@ -99,7 +99,7 @@ From other non-related topic
 
 ### Links
 
-You know that there many search engines online? 
+You know that there many search engines online?
 
 There are [some](https://duckduckgo.com/) which focus on privacy,
 [others](https://www.startpage.com/) just work arround Google and [there is also
@@ -220,7 +220,7 @@ target platform is Jupyter Book, you can use any of the following.
 Here is a Note
 ```
 
-```{important} 
+```{important}
 Here is an important
 ```
 
