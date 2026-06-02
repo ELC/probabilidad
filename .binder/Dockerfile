@@ -1,4 +1,4 @@
-# binder-build: 4 — bump when changing this file to bust MyBinder layer cache
+# binder-build: 5 — bump when changing this file to bust MyBinder layer cache
 FROM ghcr.io/rocker-org/binder:4.4.2
 
 # repo2docker passes NB_USER=jovyan / NB_UID=1000 by default. The rocker-org/binder image
@@ -16,15 +16,16 @@ WORKDIR /home/jovyan/
 ENV VIRTUAL_ENV=
 ENV UV_PROJECT_ENVIRONMENT=/home/jovyan/venv
 
+# .dockerignore strips local .venv/venv from the context; --chown ensures any leftover
+# files are owned by the kernel user so `rm` and `uv sync` work without root.
 COPY --chown=${NB_UID}:${NB_GID} . /home/jovyan
 
-USER root
-RUN rm -rf /home/jovyan/.venv /home/jovyan/venv \
- && cd /home/jovyan \
- && env -u VIRTUAL_ENV uv sync --all-groups --locked \
- && chown -R ${NB_UID}:${NB_GID} /home/jovyan/venv
-
 USER ${NB_UID}
+
+# uv-managed Python ends up under $HOME/.local/share/uv/python/...; running as the
+# kernel user (not root) keeps that directory readable when `uv run` resolves the venv.
+RUN rm -rf /home/jovyan/.venv /home/jovyan/venv \
+ && env -u VIRTUAL_ENV uv sync --all-groups --locked
 
 # Register the project venv as a Jupyter kernel
 RUN uv run -m ipykernel install \
