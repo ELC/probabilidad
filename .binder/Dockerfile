@@ -14,9 +14,6 @@ WORKDIR /home/jovyan/
 # Rocker sets VIRTUAL_ENV=/opt/conda; shells clear it in .binder/bashrc-venv.sh. uv uses UV_PROJECT_ENVIRONMENT.
 # Use .venv (dot-dir) so JupyterLab hides it; .dockerignore keeps any host .venv out of the build context.
 ENV UV_PROJECT_ENVIRONMENT=/home/jovyan/.venv
-ENV UV_CACHE_DIR=/home/jovyan/.cache/uv
-# Required when using cache mounts so packages are copied into the image layer.
-ENV UV_LINK_MODE=copy
 
 USER ${NB_UID}
 
@@ -29,9 +26,7 @@ RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
 # Application layer: book content and Binder config (reuses cached .venv when deps are unchanged).
 COPY --chown=${NB_UID}:${NB_GID} . /home/jovyan
 
-RUN --mount=type=cache,target=/home/jovyan/.cache/uv,uid=${NB_UID},gid=${NB_GID} \
-    rm -rf /home/jovyan/venv \
- && uv sync --all-groups --locked
+RUN uv sync --all-groups --locked
 
 # Register the project venv as a Jupyter kernel. --sys-prefix installs into the venv
 # (`/home/jovyan/.venv/share/jupyter/kernels`), which Jupyter finds automatically and which
