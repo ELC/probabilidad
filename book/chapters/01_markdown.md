@@ -13,7 +13,9 @@ kernelspec:
 
 # Markdown based Notebook
 
-Jupyter Book allows Markdown Based Notebooks, these are plain text instead of the json based format of the traditional notebooks (.ipynb). There are some things to keep in mind when using this format as explained below.
+Jupyter Book allows Markdown Based Notebooks, these are plain text instead of
+the json based format of the traditional notebooks (.ipynb). There are some
+things to keep in mind when using this format as explained below.
 
 There is also a [traditional Jupyter version](02_jupyter.ipynb) of this chapter.
 
@@ -21,21 +23,28 @@ There is also a [traditional Jupyter version](02_jupyter.ipynb) of this chapter.
 
 ### Advantages
 
-- The notebook is plain text, i.e. easier to manipulate, friendlier with git and does not require any special software.
+- The notebook is plain text, i.e. easier to manipulate, friendlier with git and
+  does not require any special software.
 - Load time is faster and can be modified in any text editor.
-- Does not require any software to be installed, not even Python, the book can be built in a CI/CD pipeline.
-- More resilient to format errors, i.e. if the ipynb is an invalid JSON the whole notebook cannot be rendered.
+- Does not require any software to be installed, not even Python, the book can
+  be built in a CI/CD pipeline.
+- More resilient to format errors, i.e. if the ipynb is an invalid JSON the
+  whole notebook cannot be rendered.
 - It is easier to add tags to code cells, no need for plugins or addons.
-- Readers will have the additional option to download the chapter as a markdown file
-- Readers can execute code directly on the site with Thebe (this is also possible with ipynb)
+- Readers will have the additional option to download the chapter as a markdown
+  file
+- Readers can execute code directly on the site with Thebe (this is also
+  possible with ipynb)
 
 ### Disadvantages
 
-- In Markdown notebooks the output for any code cell is not shown before building the notebook.
+- In Markdown notebooks the output for any code cell is not shown before
+  building the notebook.
 - The notebook needs to be executed at build time.
 - Kernel details should be provide at the top as metadata.
 - No actual separation "in cells", everything is a long text file.
-- For local builds using Windows, Python 3.7 should be used - 3.8+ is not yet supported.
+- For local builds using Windows, Python 3.7 should be used - 3.8+ is not yet
+  supported.
 - No support for Colab (GPU) or Binder
 
 ```{warning}
@@ -48,15 +57,18 @@ If you want support for Binder and / or Colab Execution (e.g. for GPU processing
 
 ## Standard Markdown
 
-These features are supported by all renderers as they are part of the basic set of features of Markdown. Some examples were extracted from the [official docs](https://www.markdownguide.org/basic-syntax).
+These features are supported by all renderers as they are part of the basic set
+of features of Markdown. Some examples were extracted from the [official
+docs](https://www.markdownguide.org/basic-syntax).
 
-```{code-cell}
+```{code-cell} python
 print("Here is a Python cell2")
 ```
 
 ### Text Formating
 
-In a Markdown text one can use **bold**, *italics* or ***both***. It is also posible to combine it with `monospace`.
+In a Markdown text one can use **bold**, *italics* or ***both***. It is also
+posible to combine it with `monospace`.
 
 ### Quotes
 
@@ -89,26 +101,37 @@ From other non-related topic
 
 You know that there many search engines online? 
 
-There are [some](https://duckduckgo.com/) which focus on privacy, [others](https://www.startpage.com/) just work arround Google and [there is also one](https://www.searchencrypt.com/) that uses ecryption!
+There are [some](https://duckduckgo.com/) which focus on privacy,
+[others](https://www.startpage.com/) just work arround Google and [there is also
+one](https://www.searchencrypt.com/) that uses ecryption!
 
 ### Images
 
 One image is worth a thousand words some say
 
-![Alternative text](https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Jupyter_logo.svg/663px-Jupyter_logo.svg.png)
+```{image} https://upload.wikimedia.org/wikipedia/commons/3/38/Jupyter_logo.svg
+:alt: Alternative text
+:width: 200px
+```
 
 But it is even better if you can click them
 
-[![Alternative text](https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Jupyter_logo.svg/663px-Jupyter_logo.svg.png)](https://jupyter.org/)
+<a href="https://jupyter.org/"> <img
+  src="https://upload.wikimedia.org/wikipedia/commons/3/38/Jupyter_logo.svg"
+alt="Alternative text" width="200"> </a>
 
 
 ## Limited Support
 
-These features are part of some flavours of Markdown but not all renderers can process them. It is recommended to visualize this document in the target platform to check exactly which features are supported
+These features are part of some flavours of Markdown but not all renderers can
+process them. It is recommended to visualize this document in the target
+platform to check exactly which features are supported
 
 ### Tables
 
-Tables are really complicated in Markdown and should only be generated by [a specialized tool](http://www.tablesgenerator.com/markdown_tables). Don't modify markdown tables manually
+Tables are really complicated in Markdown and should only be generated by [a
+specialized tool](http://www.tablesgenerator.com/markdown_tables). Don't modify
+markdown tables manually
 
 | Syntax | Description |
 | ----------- | ----------- |
@@ -117,12 +140,13 @@ Tables are really complicated in Markdown and should only be generated by [a spe
 
 ### Block of Code
 
-For code blocks, Jupyter Book will add a ```Copy``` button in the top left corner to easily copy all the text in the block.
+For code blocks, Jupyter Book will add a `Copy` button in the top left corner to
+easily copy all the text in the block.
 
 Some times one wants to share data
 
-(data)=
-```
+```{code} json
+:label: markdown-data
 {
   "firstName": "John",
   "lastName": "Smith",
@@ -145,25 +169,21 @@ Here's a sentence with a footnote. [^1]
 
 ### Math
 
-Some renderers can process inline math, $x=2$ and other can also process whole line math
+Some renderers can process inline math, $x=2$ and other can also process whole
+line math
 
-$$
-  \int_0^\infty \frac{x^3}{e^x-1}\,dx = \frac{\pi^4}{15}
-$$
+$$ \int_0^\infty \frac{x^3}{e^x-1}\,dx = \frac{\pi^4}{15} $$
 
 
 If supported, alignment can be done with array
 
-$$
-\begin{array}{llll}
-a_{11}& =b_{11}& a_{12}& =b_{12}\\
-a_{21}& =b_{21}& a_{22}& =b_{22}+c_{22}
-\end{array}
-$$
+$$ \begin{array}{llll} a_{11}& =b_{11}& a_{12}& =b_{12}\\
+a_{21}& =b_{21}& a_{22}& =b_{22}+c_{22} \end{array} $$
 
 ### Not supported in Jupyter Book
 
-These are features that some renderers support but are not supported by Jupyter Book
+These are features that some renderers support but are not supported by Jupyter
+Book
 
 #### Strikethrough
 
@@ -188,7 +208,10 @@ However, a HTML approach can produce the desired result
 
 ## MyST Specific
 
-These are some features that are the moment are only compatible with Jupyter Book. That means that rendering the notebook in other services (Github, NBviewer, Nteract, Data Lore, etc.) might not work as shown below. If your only target platform is Jupyter Book, you can use any of the following.
+These are some features that are the moment are only compatible with Jupyter
+Book. That means that rendering the notebook in other services (Github,
+NBviewer, Nteract, Data Lore, etc.) might not work as shown below. If your only
+target platform is Jupyter Book, you can use any of the following.
 
 
 ### Colored Admonitions
@@ -224,7 +247,7 @@ Here is a custom admonition
 
 ### Hidden Toggles
 
-```{toggle} Click the button to reveal!
+```{dropdown} Click the button to reveal!
 Some hidden toggle content!
 ```
 
@@ -235,7 +258,7 @@ Some hidden toggle content!
 Inside Content
 ```
 
-(homework)=
+(markdown-homework)=
 ### Dropdowns with Admonitions
 
 ```{note}
@@ -246,17 +269,13 @@ The note body will be hidden!
 
 ### Panels
 
-
-```{panels}
-Panel header 1
-^^^
+```{card} Panel header 1
 Panel body 1
 +++
 Panel footer 1
----
+```
 
-Panel header 2
-^^^
+```{card} Panel header 2
 Panel body 2
 +++
 Panel footer 2
@@ -264,13 +283,14 @@ Panel footer 2
 
 ### Tabs
 
-```{tabbed} Tab 1 title
+`````{tab-set}
+````{tab-item} Tab 1 title
 My first tab
-```
-
-```{tabbed} Tab 2 title
-My second tab with `some code`!
-```
+````
+````{tab-item} Tab 2 title
+My second tab with **some code**!
+````
+`````
 
 
 ### Sidebars
@@ -279,7 +299,8 @@ My second tab with `some code`!
 My sidebar content
 ```
 
-Sidebars are shown in parallel to the main text, but they span inwards from the margins.
+Sidebars are shown in parallel to the main text, but they span inwards from the
+margins.
 
 
 ### Margin Note
@@ -288,16 +309,19 @@ Sidebars are shown in parallel to the main text, but they span inwards from the 
 My margin content
 ```
 
-Margin notes are more discrete, useful for pointing minor details or add extra information.
+Margin notes are more discrete, useful for pointing minor details or add extra
+information.
 
 They span from the margin outwards
 
 
 ### Labels
 
-Would you like to write homework for your students? Check the [dropdowns](homework)!
+Would you like to write homework for your students? Check the
+[dropdowns](#markdown-homework)!
 
-It is always important to provide enough [data](data) to support claims!
+It is always important to provide enough [data](#markdown-data) to support
+claims!
 
 
 ### Equations
@@ -311,69 +335,41 @@ x^2 + y^2 = 1
 #### With Label
 
 ```{math}
-:label: algebra
+:label: markdown-algebra
 x^2 + y^2 = 1
 ```
 
 
-If the equation has a label, it can be then referenced [](algebra)
+If the equation has a label, it can be then referenced [](#markdown-algebra)
 
 
 ### Citation
 
-There are two types of citations, by name (similar to APA style) and by number (similar to IEEE style).
+This project uses numbered citations (IEEE style), enabled by setting
+`numbered_references: true` under `site.options` in `myst.yml`. Citations can be
+customized — see the [MyST citations guide](https://mystmd.org/guide/citations)
+for details.
 
-Citations can be customized, for more detailed explanations please refer to one of the Jupyter Book docs ([here](https://jupyterbook.org/tutorials/references.html), [here](https://jupyterbook.org/content/references.html) or [here](https://jupyterbook.org/content/citations.html)) and the [associated extension docs](https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html).
+MyST supports [Pandoc-style citation
+syntax](https://mystmd.org/guide/citations#markdown-citations). With
+`numbered_references` enabled, parenthetical citations render as numbers while
+narrative citations keep the author name in the text.
 
-#### By Name
+#### Parenthetical (numbered)
 
-This project uses the Python Language {cite}`perez2011python`.to build Jupyter Book {cite}`executable_book`
+Use square brackets around the citation key: `[@perez2011python]`.
 
-This will not work unless there is a section called `bibliography``
+This project uses the Python Language [@perez2011python] to build Jupyter Book
+[@executable_book].
 
-#### Bibliography for Names
+#### Narrative
 
-There are different styles for the bibliography in this case
+Use the citation key with an at-sign, without brackets: `@perez2011python`.
 
-##### Alphanumeric - Sorted by Author, year
+@perez2011python introduced Python as an ecosystem for scientific computing.
+Jupyter Book is documented in @executable_book.
 
-```{bibliography}
-:style: alpha
-```
-
-##### Alphanumeric - Sorted by order of appearance
-
-```{bibliography}
-:style: unsrtalpha
-```
-
-##### Numeric - Sorted by Author, year
-
-```{bibliography}
-:style: plain
-```
-
-##### Numeric - Sorted by order of appearance
-
-```{bibliography}
-:style: unsrt
-```
-
-
-#### By Number
-
-This project uses the Python Language {footcite}`perez2011python`.to build Jupyter Book {footcite}`executable_book`
-
-This will not work unless there is a section called `footbibliography`
-
-For different citation styles, check the [official docs](https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html#roles-and-directives)
-
-When using `footcite` and `footbibliography`, the numbers will be arranged in combination with the footnotes. This could lead to confusion for the reader if this type of references are used in combination with footnotes. To mitigate this issue, a similar result can be achieve using `cite` and `bibliography` with the `unsrt` style.
-
-
-#### Bibliography for Numbers
-
-In this case, there is a single style
-
-```{footbibliography}
-```
+MyST automatically adds a references section at the bottom of pages that contain
+citations. When using numbered references together with footnotes, keep in mind
+that both appear at the bottom of the page and may be numbered in the same
+sequence.

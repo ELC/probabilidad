@@ -1,12 +1,13 @@
 # See docs at: https://mystmd.org/guide/frontmatter
 version: 1
 project:
-  id: 576af51e-4beb-47f2-bdb6-94b82f8e74af
   title: "(REPLACE WITH Book Title)"
-  copyright: "(REPLACE WITH Current Year), (REPLACE WITH Author Name)"
+  copyright: "2026, Ezequiel Leonardo Castaño"
 
   authors:
-    - name: "(REPLACE WITH Author Name)"
+    - name: Ezequiel Leonardo Castaño
+      github: "@ELC"
+      linkedin: https://www.linkedin.com/in/ezequielcastano/
 
   github: https://github.com/ELC/jupyter-book-template
 
@@ -16,10 +17,10 @@ project:
   numbering:
     headings: true
   
-  jupyter:
-    binder:
-      repo: ELC/jupyter-book-template
-      ref: migration-to-v2
+  jupyter: true
+
+  plugins:
+    - plugins/ethicalads.mjs
 
   toc:
     - file: chapters/00_how_to_use.ipynb
@@ -30,5 +31,21 @@ project:
 
 site:
   template: book-theme
+  parts:
+    banner: |
+      :::{ethicalads}
+      :::
+
+  nav:
+    - title: Cheat Sheet
+      url: /chapters/markdown
+
   options:
     folders: true
+    numbered_references: true
+    favicon: assets/favicon.ico
+    logo: assets/logo.svg
+    logo-dark: assets/logo-dark.svg
+    
+    # https://mystmd.org/guide/analytics#google-analytics
+    analytics_google: G-Y3GBPLEV2K
