@@ -85,8 +85,8 @@ When a change affects Binder, `pyproject.toml` / `uv.lock`, or `project.jupyter`
 
 3. For manual checks, align README Binder/Colab URLs with the same branch, or use  
    `https://mybinder.org/v2/gh/<owner>/<repo>/<branch>`.
-4. Run **`uv run poe build-docker`** locally (same as the `check-docker` CI job). The build context excludes `.venv` via `.dockerignore`; do not commit a temporary branch `ref` in `myst.yml`.
-5. **Before merge**, restore `jupyter: true` (no `binder.ref`) or `ref: main`, and revert any README badge URLs pinned to a feature branch.
+4. Run **`uv run poe build-docker`** locally (same as the `check-docker` CI job). CI deletes `.venv`/`venv` before `docker build`; `.dockerignore` excludes them from the context. The Binder image installs deps into **`venv/`** (see `UV_PROJECT_ENVIRONMENT` in `.binder/Dockerfile`), not `.venv`.
+5. **Before merge**, remove `project.jupyter.binder.ref` (or set `ref: main`), revert README badge URLs, and do not leave a feature branch pinned in `myst.yml`.
 
 Agents must not leave `project.jupyter.binder.ref` set to a non-`main` branch in changes intended for merge unless the user explicitly asks to keep it.
 

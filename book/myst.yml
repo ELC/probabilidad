@@ -17,10 +17,7 @@ project:
   numbering:
     headings: true
 
-  # TEMPORARY: Binder ref for local/testing on this branch — revert before merge.
-  jupyter:
-    binder:
-      ref: add-docker-validation-to-cicd
+  jupyter: true
 
   plugins:
     - plugins/ethicalads.mjs

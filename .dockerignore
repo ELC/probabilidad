@@ -4,6 +4,9 @@
 **/.venv
 **/.venv/**
 venv
+venv/**
+**/venv
+**/venv/**
 env
 
 # Build and cache artifacts
