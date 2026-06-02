@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for AI agents working on **jupyter-book-template** — Jupyter Book 2 template for MyST notebooks and GitHub Pages deployment, powered by [MyST](https://mystmd.org/). All book configuration lives in a single file: `book/myst.yml`.
+Guidance for AI agents working on **Probabilidad y Estadística** (`probabilidad`) — a Jupyter Book 2 project for MyST notebooks and GitHub Pages deployment, powered by [MyST](https://mystmd.org/). All book configuration lives in a single file: `book/myst.yml`.
 
 ## Repository layout
 
@@ -11,7 +11,7 @@ book/
   assets/               # Site branding (favicon, logos)
   plugins/              # Custom MyST plugins
   bibliography.bib      # Citations
-pyproject.toml          # Project metadata (jupyter-book-template), deps, Poe tasks
+pyproject.toml          # Project metadata (probabilidad), deps, Poe tasks
 .github/workflows/      # GitHub Pages deploy (main branch)
 .binder/Dockerfile      # Binder environment (main branch)
 ```
@@ -84,7 +84,7 @@ When a change affects Binder, `pyproject.toml` / `uv.lock`, or `project.jupyter`
    ```
 
 3. **MyBinder** (not CI) builds from `.binder/Dockerfile` on the pushed ref. Use a commit-SHA launch URL
-   (`https://mybinder.org/v2/gh/ELC/jupyter-book-template/<sha>`) after each push; branch URLs can show logs from an older cached build. Stale logs show `RUN uv sync` on Dockerfile line 9—the fixed file uses `UV_PROJECT_ENVIRONMENT` and `rm -rf .venv` instead.
+   (`https://mybinder.org/v2/gh/ELC/probabilidad/<sha>`) after each push; branch URLs can show logs from an older cached build. Stale logs show `RUN uv sync` on Dockerfile line 9—the fixed file uses `UV_PROJECT_ENVIRONMENT` and `rm -rf .venv` instead.
 4. For manual checks, align README Binder/Colab URLs and `book/myst.yml` `binder.ref` with the branch.
 5. Run **`uv run poe build-docker`** locally (same as the `check-docker` CI job). The image installs deps into **`.venv/`** (see `UV_PROJECT_ENVIRONMENT` in `.binder/Dockerfile`); root **`.hidden`** hides `.venv` and `venv` in JupyterLab.
 6. **Before merge**, remove `project.jupyter.binder.ref` (or set `ref: main`), revert README badge URLs, and do not leave a feature branch pinned in `myst.yml`.

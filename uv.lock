@@ -742,47 +742,6 @@ wheels = [
 ]
 
 [[package]]
-name = "jupyter-book-template"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "jupyter-book" },
-    { name = "jupyterlab" },
-    { name = "matplotlib" },
-    { name = "pandas" },
-    { name = "pandera" },
-    { name = "seaborn" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "poethepoet" },
-    { name = "prek" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "wheel" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "jupyter-book", specifier = ">=2,<3" },
-    { name = "jupyterlab", specifier = ">=4.5" },
-    { name = "matplotlib", specifier = ">=3.10.8" },
-    { name = "pandas", specifier = ">=3.0.1" },
-    { name = "pandera", specifier = ">=0.30.1" },
-    { name = "seaborn", specifier = ">=0.13.2" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "poethepoet", specifier = ">=0.37" },
-    { name = "prek", specifier = ">=0.4" },
-    { name = "pytest", specifier = ">=8.3" },
-    { name = "pytest-cov", specifier = ">=6.0" },
-    { name = "wheel", specifier = ">=0.46.3" },
-]
-
-[[package]]
 name = "jupyter-client"
 version = "8.8.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1494,6 +1453,47 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/15/d2/70adf26d5da0b7a66d8e284a661feddd5e8c69784b82084f40485fa321e4/prek-0.4.3-py3-none-win32.whl", hash = "sha256:f78e343584cfff106fc3c361109b87949ad8028dc5aa667e0fccd26db8170d7d", size = 5226844, upload-time = "2026-05-27T03:19:13.871Z" },
     { url = "https://files.pythonhosted.org/packages/32/5d/9f21aca8ccee6978db831dbf36c2e17461692c75dd291c9b3d170e39a82a/prek-0.4.3-py3-none-win_amd64.whl", hash = "sha256:798d04437d30d6b4e6c1d520fe6ca800c340c9246f0dc8900d8b365df54b71b6", size = 5616068, upload-time = "2026-05-27T03:19:19.653Z" },
     { url = "https://files.pythonhosted.org/packages/f5/ef/cad8f9c66bcc199e22d1ad82a50032067a4c8b4182306d3472ff99f64aa3/prek-0.4.3-py3-none-win_arm64.whl", hash = "sha256:70d9da5fc14ef41565ff7ba9f476fb53166bf719a954339b2e9f42ed494a2f71", size = 5448057, upload-time = "2026-05-27T03:19:11.118Z" },
+]
+
+[[package]]
+name = "probabilidad"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "jupyter-book" },
+    { name = "jupyterlab" },
+    { name = "matplotlib" },
+    { name = "pandas" },
+    { name = "pandera" },
+    { name = "seaborn" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "poethepoet" },
+    { name = "prek" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "wheel" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "jupyter-book", specifier = ">=2,<3" },
+    { name = "jupyterlab", specifier = ">=4.5" },
+    { name = "matplotlib", specifier = ">=3.10.8" },
+    { name = "pandas", specifier = ">=3.0.1" },
+    { name = "pandera", specifier = ">=0.30.1" },
+    { name = "seaborn", specifier = ">=0.13.2" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "poethepoet", specifier = ">=0.37" },
+    { name = "prek", specifier = ">=0.4" },
+    { name = "pytest", specifier = ">=8.3" },
+    { name = "pytest-cov", specifier = ">=6.0" },
+    { name = "wheel", specifier = ">=0.46.3" },
 ]
 
 [[package]]

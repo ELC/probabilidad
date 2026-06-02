@@ -1,7 +1,7 @@
 [project]
-name = "jupyter-book-template"
+name = "probabilidad"
 version = "0.1.0"
-description = "Jupyter Book 2 template for MyST notebooks and GitHub Pages deployment"
+description = "Probabilidad y Estadística"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -58,7 +58,7 @@ sequence = ["build-book", "serve-book-preview"]
 
 [tool.poe.tasks.build-docker]
 help = "Build the Binder Docker image (repo root context, .binder/Dockerfile)."
-cmd = "docker build --no-cache --file .binder/Dockerfile --tag jupyter-book-template:binder ."
+cmd = "docker build --no-cache --file .binder/Dockerfile --tag probabilidad:binder ."
 
 [tool.poe.tasks.ci]
 sequence = ["check", "build-book"]

@@ -1,7 +1,7 @@
 # See docs at: https://mystmd.org/guide/frontmatter
 version: 1
 project:
-  title: "(REPLACE WITH Book Title)"
+  title: Probabilidad y Estadística
   copyright: "2026, Ezequiel Leonardo Castaño"
 
   authors:
@@ -9,7 +9,7 @@ project:
       github: "@ELC"
       linkedin: https://www.linkedin.com/in/ezequielcastano/
 
-  github: https://github.com/ELC/jupyter-book-template
+  github: https://github.com/ELC/probabilidad
 
   bibliography:
     - bibliography.bib

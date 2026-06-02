@@ -17,7 +17,7 @@ const DEFAULT_OPTIONS = {
   publisher: 'elcgithubio',
   ad_type: 'text',
   ea_style: 'fixedheader',
-  book_title: '(REPLACE WITH Book Title)',
+  book_title: 'Probabilidad y Estadística',
 };
 
 /** Resolved from the book project root (`book/`). */
