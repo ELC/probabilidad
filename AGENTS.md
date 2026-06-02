@@ -69,6 +69,27 @@ uv run poe ci            # pre-commit checks + build (same as CI)
 
 CI (`.github/workflows/ci.yml`) runs on pushes to **`main`**, sets `BASE_URL=/<repo-name>` for project Pages, and deploys `book/_build/html`.
 
+### Test a branch before merging a PR
+
+When a change affects Binder, `pyproject.toml` / `uv.lock`, or `project.jupyter`, validate on the **feature branch** before merge:
+
+1. Ensure the branch is **pushed** to GitHub (MyBinder only builds remote refs).
+2. Temporarily set in `book/myst.yml`:
+
+   ```yaml
+   project:
+     jupyter:
+       binder:
+         ref: <branch-name>
+   ```
+
+3. For manual checks, align README Binder/Colab URLs with the same branch, or use  
+   `https://mybinder.org/v2/gh/<owner>/<repo>/<branch>`.
+4. Run **`uv run poe build-docker`** locally (same as the `check-docker` CI job). The build context excludes `.venv` via `.dockerignore`; do not commit a temporary branch `ref` in `myst.yml`.
+5. **Before merge**, restore `jupyter: true` (no `binder.ref`) or `ref: main`, and revert any README badge URLs pinned to a feature branch.
+
+Agents must not leave `project.jupyter.binder.ref` set to a non-`main` branch in changes intended for merge unless the user explicitly asks to keep it.
+
 ## Add new pages
 
 ### 1. Create the content file
@@ -192,6 +213,7 @@ Python packages for notebook execution are declared in `pyproject.toml` under `[
 | Preview locally | `uv run poe serve-book-preview` |
 | Build + preview | `uv run poe serve-book` |
 | Lint + build (CI) | `uv run poe ci` |
+| Build Binder image | `uv run poe build-docker` |
 | Pre-commit only | `uv run poe check` |
 | Clean build artifacts | `cd book && uv run jupyter book clean` |
 

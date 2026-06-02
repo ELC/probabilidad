@@ -1,5 +1,7 @@
 # Local / CI virtualenv (platform-specific; recreated in the image)
 .venv
+.venv/
+**/.venv
 venv
 env
 

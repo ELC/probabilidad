@@ -10,6 +10,35 @@ This repository is a **manual** template: you edit some settings by hand after f
 
 Check the final result [online](https://elc.github.io/jupyter-book-template/)
 
+## Testing a branch before merging
+
+Use this when a pull request changes Binder (`.binder/`), Python dependencies, or in-page execution—and you want to verify the environment before merging to **`main`**.
+
+1. **Push the branch** to GitHub (MyBinder builds from the remote ref).
+2. **Point Binder at the branch** in `book/myst.yml`:
+
+   ```yaml
+   project:
+     jupyter:
+       binder:
+         ref: your-branch-name
+   ```
+
+   (With no `ref`, MyST uses the repository default branch.)
+
+3. **Update launch links** for the same branch:
+   - README Binder badge: `https://mybinder.org/v2/gh/<owner>/<repo>/<branch>`
+   - Colab (if used): `https://colab.research.google.com/github/<owner>/<repo>/blob/<branch>/book/chapters/...`
+4. **Build the image locally** (optional; matches CI `check-docker`):
+
+   ```bash
+   uv run poe build-docker
+   docker run --rm -p 8888:8888 jupyter-book-template:binder
+   ```
+
+5. **Open MyBinder** from the badge or URL and confirm notebooks run with the expected kernel.
+6. **Before merging the PR**, revert temporary branch pins: remove `project.jupyter.binder.ref` (or set it back to `main`), and restore README badge URLs to **`main`** or **`HEAD`**. Do not merge with a feature branch still configured in `myst.yml`.
+
 ## Getting Started
 
 ### Step 1: Fork this Repository

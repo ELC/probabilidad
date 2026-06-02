@@ -1,13 +1,16 @@
 FROM ghcr.io/rocker-org/binder:4.4.2
 
-COPY --chown=jovyan . /home/jovyan
-
 COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /uvx /bin/
 
 WORKDIR /home/jovyan/
 
 # Base image sets VIRTUAL_ENV=/opt/conda; use the project .venv from uv sync instead.
 ENV VIRTUAL_ENV=
+
+# Copy project (see .dockerignore). Strip any .venv from the build context — CI runs
+# `uv sync` before `docker build`, and a copied host venv breaks uv with permission errors.
+COPY --chown=jovyan . /home/jovyan
+RUN rm -rf /home/jovyan/.venv
 
 USER jovyan
 RUN uv sync --all-groups --locked
