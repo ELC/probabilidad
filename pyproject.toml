@@ -60,15 +60,7 @@ sequence = [
 
 [tool.poe.tasks.build-docker]
 help = "Build the Binder Docker image (repo root context, .binder/Dockerfile)."
-cmd = [
-    "docker",
-    "build",
-    "--file",
-    ".binder/Dockerfile",
-    "--tag",
-    "jupyter-book-template:binder",
-    ".",
-]
+cmd = "docker build --file .binder/Dockerfile --tag jupyter-book-template:binder ."
 
 [tool.poe.tasks.ci]
 sequence = [
