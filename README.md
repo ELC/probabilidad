@@ -34,7 +34,7 @@ Clone the repo and open the folder with your favourite IDE / Editor and look for
 - **Project URL** -> https://elc.github.com/jupyter-book-template
 - **Repository URL** -> https://github.com/elc/jupyter-book-template
 - **Binder URL** -> https://gke.mybinder.org/build/gh/elc/jupyter-book-template/source
-- **Google Analytics Tag** -> UA-XXXXXXXX-X
+- **Google Analytics Measurement ID** -> set `site.options.analytics_google` in `book/myst.yml` (see [MyST analytics](https://mystmd.org/guide/analytics#google-analytics))
 
 Then, some final TODOs:
 

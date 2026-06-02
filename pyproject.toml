@@ -1,11 +1,11 @@
 [project]
-name = "(REPLACE WITH PACKAGE NAME)"
+name = "jupyter-book-template"
 version = "0.1.0"
 description = "Housing Market Simulation"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
-    "jupyter-book<2",
+    "jupyter-book>=2,<3",
     "matplotlib>=3.10.8",
     "pandas>=3.0.1",
     "pandera>=0.30.1",
@@ -14,5 +14,190 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "poethepoet>=0.37",
+    "prek>=0.4",
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
     "wheel>=0.46.3",
 ]
+
+[tool.uv]
+package = false
+
+#########################
+# Tasks
+#########################
+
+[tool.poe.tasks]
+test = "pytest"
+check = "prek run --all-files --verbose"
+
+[tool.poe.tasks.build-book]
+help = """
+Build static HTML with executed notebooks
+Related docs:
+--execute: https://jupyterbook.org/stable/execution/execution/#execute-demo-content-at-build-time
+--html: https://jupyterbook.org/stable/build-and-publish/publish/#custom-web-servers-and-other-static-hosts
+--ci: Just a flag to indicate that this is a CI build
+"""
+cwd = "book"
+cmd = "jupyter book build --html --execute --ci"
+
+[tool.poe.tasks.serve-book-preview]
+help = """
+Preview the book locally
+Related docs:
+start: https://jupyterbook.org/stable/execution/execution/#start-jupyter-book
+"""
+cwd = "book"
+cmd = "jupyter book start --port 8000"
+
+[tool.poe.tasks.serve-book]
+sequence = [
+    "build-book",
+    "serve-book-preview",
+]
+
+[tool.poe.tasks.ci]
+sequence = [
+    "check",
+    "build-book",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "-vv",
+    "--cov",
+    "--cov-report=term-missing",
+]
+
+[tool.coverage.run]
+source = [
+    "tests",
+]
+
+[tool.coverage.report]
+fail_under = 100
+skip_covered = true
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@(abc\\.)?abstractmethod",
+    "^\\s*\\.\\.\\.$",
+]
+
+
+#########################
+# MyPy
+#########################
+
+[tool.mypy]
+strict = true
+follow_imports = "normal"
+python_version = "3.13"
+disallow_any_unimported = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+ignore_missing_imports = false
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_untyped_decorators = true
+
+[[tool.mypy.overrides]]
+module = [
+    "matplotlib.*",
+    "seaborn.*",
+]
+ignore_missing_imports = true
+
+
+#########################
+# RUFF
+#########################
+
+[tool.ruff]
+fix = true
+preview = true
+unsafe-fixes = true
+line-length = 120
+extend-exclude = [
+    "_build",
+]
+
+[tool.ruff.lint]
+extend-select = ["ALL"]
+ignore = [
+    "D",      # pydocstyle
+    "CPY",    # copyright notices
+    "S101",   # assert usage
+    "ISC001", # implicit string concat
+    "ANN401", # any type
+    "COM812", # trailing comma
+    "E501",   # line too long (handled by formatter)
+    "ARG002", # unused method argument
+    "DOC501", # raised exception missing from docstring
+    "DOC502", # documented exception from inner function (API docs clarity)
+]
+
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+
+#########################
+# Pylint
+#########################
+
+[tool.pylint.main]
+extension-pkg-allow-list = [
+    "mypy",
+]
+
+[tool.pylint.typecheck]
+contextmanager-decorators = ["contextlib.contextmanager"]
+ignore-none = true
+ignore-on-opaque-inference = true
+ignored-checks-for-mixins = [
+    "no-member",
+    "not-async-context-manager",
+    "not-context-manager",
+    "attribute-defined-outside-init",
+]
+ignored-classes = ["optparse.Values", "thread._local", "_thread._local"]
+missing-member-hint = true
+missing-member-hint-distance = 1
+missing-member-max-choices = 1
+mixin-class-rgx = ".*[Mm]ixin"
+
+[tool.pylint.messages_control]
+disable = [
+    "C0114",  # missing-module-docstring
+    "C0115",  # missing-class-docstring
+    "C0116",  # missing-function-docstring
+    "C0301",  # line-too-long (handled by ruff format)
+    "E0401",  # import-error (already validated by mypy)
+    "R0801",  # duplicate-code (acceptable for response builders)
+    "R0903",  # too-few-public-methods (dataclasses/DTOs)
+    "R0913",  # too-many-arguments (DI constructors)
+    "R0917",  # too-many-positional-arguments (DI constructors)
+    "W0621",  # pytest fixture parameter names shadow outer fixtures
+]
+
+
+#########################
+# Pymetrica
+#########################
+
+[tool.pymetrica]
+exclude = []
