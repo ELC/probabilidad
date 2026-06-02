@@ -1,4 +1,4 @@
-# binder-build: 13 — bump when changing this file to bust MyBinder layer cache
+# binder-build: 14 — bump when changing this file to bust MyBinder layer cache
 FROM ghcr.io/rocker-org/binder:4.4.2
 
 # repo2docker passes NB_USER=jovyan / NB_UID=1000 by default. The
@@ -20,9 +20,6 @@ USER ${NB_UID}
 RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     uv sync --all-groups --locked --no-install-project
-
-# Jupyter kernel spec for the project venv (see .binder/kernels/).
-COPY --chown=${NB_UID}:${NB_GID} .binder/kernels/ .venv/share/jupyter/kernels/
 
 # Application layer: book content and Binder config (reuses cached .venv when
 # deps are unchanged).
