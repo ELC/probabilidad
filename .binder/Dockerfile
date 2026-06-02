@@ -12,11 +12,6 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /uvx /bin/
 
 WORKDIR /home/jovyan/
 
-# Rocker sets VIRTUAL_ENV=/opt/conda; shells clear it in .binder/bashrc-venv.sh.
-# uv uses UV_PROJECT_ENVIRONMENT. Use .venv (dot-dir) so JupyterLab hides it;
-# .dockerignore keeps any host .venv out of the build context.
-ENV UV_PROJECT_ENVIRONMENT=/home/jovyan/.venv
-
 USER ${NB_UID}
 
 # Dependency layer: lockfiles are bind-mounted (not COPY'd) so this layer
