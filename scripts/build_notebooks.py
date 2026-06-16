@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import uuid
 from pathlib import Path
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CHAPTERS = REPO_ROOT / "book" / "chapters"
@@ -32,7 +33,7 @@ def _new_cell_id() -> str:
     return uuid.uuid4().hex[:8]
 
 
-def markdown_cell(text: str) -> dict:
+def markdown_cell(text: str) -> dict[str, Any]:
     return {
         "id": _new_cell_id(),
         "cell_type": "markdown",
@@ -41,7 +42,7 @@ def markdown_cell(text: str) -> dict:
     }
 
 
-def code_cell(text: str) -> dict:
+def code_cell(text: str) -> dict[str, Any]:
     return {
         "id": _new_cell_id(),
         "cell_type": "code",
@@ -52,7 +53,7 @@ def code_cell(text: str) -> dict:
     }
 
 
-def save_notebook(filename: str, cells: list[dict]) -> None:
+def save_notebook(filename: str, cells: list[dict[str, Any]]) -> None:
     notebook = {
         "cells": cells,
         "metadata": {"kernelspec": KERNEL_SPEC, "language_info": LANGUAGE_INFO},
@@ -407,8 +408,6 @@ UNIT_3_CELLS = [
     code_cell(
         "from core import (\n"
         "    BinomialParams,\n"
-        "    ContinuousUniformParams,\n"
-        "    ExponentialParams,\n"
         "    NormalParams,\n"
         "    PoissonParams,\n"
         "    Settings,\n"
@@ -423,7 +422,6 @@ UNIT_3_CELLS = [
         "    evaluate_density_grid,\n"
         "    evaluate_probability_mass,\n"
         "    make_binomial,\n"
-        "    make_exponential,\n"
         "    make_normal,\n"
         "    make_poisson,\n"
         "    quantile_of_continuous,\n"
@@ -615,8 +613,22 @@ UNIT_4_CELLS = [
     ),
     markdown_cell("## Importaciones"),
     code_cell(
-        "from core import BinomialParams, ContinuousUniformParams, ExponentialParams, Settings\n"
-        "from distributions import make_binomial, make_continuous_uniform, make_exponential\n"
+        "import math\n\n"
+        "import altair as alt\n"
+        "import pandas as pd\n\n"
+        "from core import (\n"
+        "    BinomialParams,\n"
+        "    ExponentialParams,\n"
+        "    NormalParams,\n"
+        "    Settings,\n"
+        ")\n"
+        "from distributions import (\n"
+        "    make_binomial,\n"
+        "    make_exponential,\n"
+        "    make_normal,\n"
+        "    tail_probability_of_continuous,\n"
+        ")\n"
+        "from distributions.evaluations import TailProbabilityInput\n"
         "from exercises import NumericAnswerInput, verify_numeric_answer\n"
         "from sampling import (\n"
         "    CLTSimulationInput,\n"
@@ -667,8 +679,6 @@ UNIT_4_CELLS = [
         "distribuye aproximadamente como una Normal — aunque cada paso individual es uniforme.\n"
     ),
     code_cell(
-        "import altair as alt\n"
-        "import pandas as pd\n\n"
         "galton_result = simulate_galton_board(\n"
         "    GaltonBoardInput(rows=24, balls=8_000, settings=settings)\n"
         ")\n"
@@ -731,7 +741,6 @@ UNIT_4_CELLS = [
         "**Idea.** $\\sigma_{\\bar{X}} = \\sigma / \\sqrt{n} = 10 / \\sqrt{25} = 2$.\n"
     ),
     code_cell(
-        "import math\n\n"
         "expected_standard_error = 10.0 / math.sqrt(25)\n"
         "student_answer = 2.0\n"
         "verify_numeric_answer(\n"
@@ -746,10 +755,6 @@ UNIT_4_CELLS = [
         "$P(Y \\le 45) \\approx P\\bigl(Z \\le (45 - 40)/\\sqrt{24}\\bigr) \\approx P(Z \\le 1{,}02) \\approx 0{,}846$.\n"
     ),
     code_cell(
-        "from distributions import make_normal\n"
-        "from core import NormalParams\n"
-        "from distributions.evaluations import TailProbabilityInput\n"
-        "from distributions import tail_probability_of_continuous\n\n"
         "normal_approximation = make_normal(\n"
         "    NormalParams(mean=40.0, standard_deviation=math.sqrt(24.0))\n"
         ")\n"

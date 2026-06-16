@@ -215,8 +215,23 @@ extend-exclude = ["_build"]
 "src/**/*.py" = ["D"]
 "src/**/__init__.py" = []
 "tests/**" = ["D", "PLR2004", "B017", "RUF069"]
-"book/**/*.ipynb" = ["D", "B018"]
+"book/**/*.ipynb" = [
+  "D",
+  "B018",
+  "INP001",
+  "E402",
+  "F401",
+  "F811",
+  "F841",
+  "ERA001",
+  "T201",
+  "PLR2004",
+  "PD901",
+  "RUF002",
+  "RUF003",
+]
 "book/**/*_nbqa_*" = ["D", "B018"]
+"scripts/**" = ["D", "INP001", "ERA001", "PLR0915", "PLR2004"]
 
 [tool.ruff.lint]
 extend-select = ["ALL"]
@@ -236,6 +251,7 @@ ignore = [
   "RUF069",              # explicit float comparison to 0 used as guard clauses
   "PLR0913",             # widget private helpers take many scalar slider values
   "PLR0917",             # widget private helpers take many positional values
+  "INP001",              # we intentionally have non-package directories (book/, scripts/)
 ]
 
 [tool.ruff.format]
@@ -279,9 +295,17 @@ disable = [
   "too-few-public-methods",
   "too-many-arguments",
   "too-many-positional-arguments",
+  "too-many-locals",                # notebook concat exceeds default pylint limits
   "redefined-outer-name",           # pytest fixture parameter names shadow outer fixtures
   "pointless-statement",            # notebook last-cell display (nbqa-pylint)
   "expression-not-assigned",        # notebook last-cell display (nbqa-pylint)
+  "wrong-import-position",          # notebook concat treats every cell as top-level
+  "wrong-import-order",             # same
+  "ungrouped-imports",              # same
+  "unused-import",                  # nbqa concat marks symbols re-exported between cells
+  "unused-variable",                # last-cell display variables
+  "unused-argument",                # widget callbacks bind unused change events
+  "too-many-lines",                 # scripts/build_notebooks.py is a notebook generator
 ]
 
 #########################
