@@ -152,6 +152,7 @@ disallow_untyped_decorators = true
 
 [[tool.mypy.overrides]]
 module = [
+  "IPython.*",
   "altair.*",
   "anywidget.*",
   "ipywidgets.*",
@@ -160,6 +161,7 @@ module = [
   "seaborn.*",
   "statsmodels.*",
   "sympy.*",
+  "sympy.stats.*",
 ]
 ignore_missing_imports = true
 
@@ -176,13 +178,26 @@ module = [
   "inference.*",
   "symbolic.*",
   "visualization.*",
-  "widgets.*",
+  "exercises.*",
 ]
 disable_error_code = [
   "no-any-unimported",
   "no-any-return",
   "valid-type",
   "misc",
+  "import-untyped",
+  "assignment",
+]
+
+[[tool.mypy.overrides]]
+module = ["widgets.*"]
+disable_error_code = [
+  "no-any-unimported",
+  "no-any-return",
+  "valid-type",
+  "misc",
+  "import-untyped",
+  "no-untyped-call",
 ]
 
 #########################

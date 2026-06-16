@@ -78,8 +78,7 @@ UNIT_1_CELLS = [
         "El código vive en `src/descriptive/` y `src/visualization/`; este notebook sólo lo orquesta.\n"
     ),
     markdown_cell(
-        "## Importaciones\n\n"
-        "El paquete `probabilidad` se instala editable al correr `uv sync`. No hay `sys.path`.\n"
+        "## Importaciones\n\nEl paquete `probabilidad` se instala editable al correr `uv sync`. No hay `sys.path`.\n"
     ),
     code_cell(
         "import numpy as np\n"
@@ -118,7 +117,7 @@ UNIT_1_CELLS = [
     markdown_cell(
         "## Pictórico (P de CPA): histograma con marca de clase y ojiva\n\n"
         "Antes de cualquier número, **dibujamos**. El histograma muestra la *forma* y la ojiva\n"
-        "(la frecuencia relativa acumulada) responde \"¿qué porción de datos está por debajo de _x_?\".\n"
+        '(la frecuencia relativa acumulada) responde "¿qué porción de datos está por debajo de _x_?".\n'
     ),
     code_cell(
         "frequency_table = build_frequency_table(\n"
@@ -133,15 +132,12 @@ UNIT_1_CELLS = [
         "El resumen condensa la muestra en un objeto Pydantic — sin tablas sueltas — para que\n"
         "el resto del notebook lo pueda consumir de forma segura.\n"
     ),
-    code_cell(
-        "summary = summarize_observations(waiting_times)\n"
-        "summary"
-    ),
+    code_cell("summary = summarize_observations(waiting_times)\nsummary"),
     markdown_cell(
         "### Intuición: media vs. mediana\n\n"
         "Cuando la distribución es **simétrica** (como acá), media y mediana están casi pegadas.\n"
         "Cuando hay **cola larga**, la media se mueve hacia la cola y la mediana se queda en el centro.\n"
-        "Por eso la **mediana** es el resumen \"robusto\".\n"
+        'Por eso la **mediana** es el resumen "robusto".\n'
     ),
     code_cell(
         "chart_descriptive_summary(\n"
@@ -155,10 +151,7 @@ UNIT_1_CELLS = [
         "Un punto es outlier si cae fuera de $[Q_1 - 1{,}5\\,IQR,\\ Q_3 + 1{,}5\\,IQR]$.\n"
         "Es la misma regla que dibuja el *boxplot*: por eso lo usamos para pensar en outliers.\n"
     ),
-    code_cell(
-        "outlier_report = detect_outliers_tukey(waiting_times)\n"
-        "outlier_report"
-    ),
+    code_cell("outlier_report = detect_outliers_tukey(waiting_times)\noutlier_report"),
     markdown_cell(
         "## Posición: $z$-score\n\n"
         "El $z$-score traduce una observación a la pregunta: **¿a cuántos desvíos del promedio está?**.\n"
@@ -175,9 +168,7 @@ UNIT_1_CELLS = [
         "Movés μ, σ, n y la cantidad de bins. El histograma, la ojiva y el boxplot se recalculan en\n"
         "vivo. Probá empujar σ a valores grandes: ¿qué pasa con el IQR vs. el rango?\n"
     ),
-    code_cell(
-        "build_descriptive_explorer(DescriptiveExplorerInput(settings=settings))"
-    ),
+    code_cell("build_descriptive_explorer(DescriptiveExplorerInput(settings=settings))"),
     markdown_cell(
         "## Ejercicio 1 — Media de una muestra\n\n"
         "**Enunciado.** Sea la muestra $\\{2, 4, 4, 4, 5, 5, 7, 9\\}$. Calcular la media muestral.\n\n"
@@ -260,8 +251,8 @@ UNIT_2_CELLS = [
     markdown_cell(
         "## Concreto: un experimento con dado\n\n"
         "Tiramos un dado equilibrado. Definimos:\n\n"
-        "- $A$ = \"sale par\" = $\\{2, 4, 6\\}$.\n"
-        "- $B$ = \"sale mayor o igual que 4\" = $\\{4, 5, 6\\}$.\n\n"
+        '- $A$ = "sale par" = $\\{2, 4, 6\\}$.\n'
+        '- $B$ = "sale mayor o igual que 4" = $\\{4, 5, 6\\}$.\n\n'
         "Las operaciones de conjuntos son la **maquinaria mecánica** detrás de toda la unidad.\n"
     ),
     code_cell(
@@ -319,17 +310,15 @@ UNIT_2_CELLS = [
         "Antes de calcular, miramos la fórmula simbólica viviendo en `src/symbolic/theorems.py`.\n"
         "Esta es la única vez que escribimos la fórmula a mano: el resto de la unidad la _reutiliza_.\n"
     ),
-    code_cell(
-        "bayes_theorem().formula"
-    ),
+    code_cell("bayes_theorem().formula"),
     markdown_cell(
         "## Bayes con datos: prueba diagnóstica\n\n"
         "**Concreto.** Una enfermedad tiene prevalencia $P(D) = 1\\%$. El test tiene sensibilidad\n"
         "$99\\%$ y especificidad $95\\%$. Si el test da positivo, ¿cuál es $P(D \\mid +)$?\n\n"
         "**Intuición Singapur (pictórica).** Pensá en 10.000 personas. 100 tienen la enfermedad\n"
         "y 99 de ellas dan positivo. De las 9.900 sanas, 495 dan positivo de todas formas\n"
-        "(falsos positivos). En total hay $99 + 495 = 594$ positivos; el porcentaje de \"verdaderos\n"
-        "enfermos dentro de los positivos\" es $99 / 594 \\approx 16{,}7\\%$.\n\n"
+        '(falsos positivos). En total hay $99 + 495 = 594$ positivos; el porcentaje de "verdaderos\n'
+        'enfermos dentro de los positivos" es $99 / 594 \\approx 16{,}7\\%$.\n\n'
         "**Abstracto:**\n\n"
         "$$ P(D \\mid +) = \\frac{P(+ \\mid D)\\,P(D)}{P(+ \\mid D)\\,P(D) + P(+ \\mid \\bar{D})\\,P(\\bar{D})} $$\n"
     ),
@@ -348,17 +337,13 @@ UNIT_2_CELLS = [
         "$1\\%$ al $16{,}7\\%$. La culpa es de la **tasa base**: como casi nadie está enfermo, los\n"
         "falsos positivos pesan mucho. Movés los sliders y ves cómo la posterior reacciona.\n"
     ),
-    code_cell(
-        "build_bayes_explorer(BayesExplorerInput(settings=settings))"
-    ),
+    code_cell("build_bayes_explorer(BayesExplorerInput(settings=settings))"),
     markdown_cell(
         "## Probabilidad total (forma simbólica)\n\n"
         "Si $\\{A_1, \\dots, A_k\\}$ es una partición del universo:\n\n"
         "$$ P(B) = \\sum_{i=1}^{k} P(B \\mid A_i)\\,P(A_i) $$\n"
     ),
-    code_cell(
-        "total_probability_theorem(partition_size=3).formula"
-    ),
+    code_cell("total_probability_theorem(partition_size=3).formula"),
     markdown_cell(
         "## Ejercicio 1 — Regla aditiva\n\n"
         "Sea $P(A) = 0{,}6$, $P(B) = 0{,}5$, $P(A \\cap B) = 0{,}2$. Calcular $P(A \\cup B)$.\n\n"
@@ -374,7 +359,7 @@ UNIT_2_CELLS = [
         ")"
     ),
     markdown_cell(
-        "## Ejercicio 2 — Bayes \"a mano\"\n\n"
+        '## Ejercicio 2 — Bayes "a mano"\n\n'
         "Una caja $C_1$ tiene 3 bolas rojas y 7 blancas; la caja $C_2$ tiene 6 rojas y 4 blancas.\n"
         "Se elige una caja al azar (probabilidad $1/2$ cada una) y se saca una bola. Resulta roja.\n"
         "¿Cuál es $P(C_1 \\mid \\text{roja})$?\n\n"
@@ -412,7 +397,7 @@ UNIT_3_CELLS = [
         "# Unidad 3 — Variables aleatorias\n\n"
         "Una **variable aleatoria** es una función $X: \\Omega \\to \\mathbb{R}$ que le pone un\n"
         "número a cada resultado del experimento. Eso nos deja:\n\n"
-        "- Hablar de **distribuciones** (la \"forma\" de probabilidades sobre los valores).\n"
+        '- Hablar de **distribuciones** (la "forma" de probabilidades sobre los valores).\n'
         "- Definir **esperanza** y **varianza** como números.\n"
         "- Pasar de modelos discretos a continuos sin cambiar de lenguaje.\n\n"
         "Las distribuciones simbólicas viven en `src/symbolic/moments.py`; las numéricas en\n"
@@ -469,7 +454,7 @@ UNIT_3_CELLS = [
         "## Concreto (discreto): Binomial(10, 0.3)\n\n"
         "Tiramos una moneda sesgada 10 veces. $X$ cuenta cuántas caras salen.\n"
         "$X \\sim \\text{Bin}(n=10, p=0{,}3)$.\n\n"
-        "**Intuición Singapur.** $E[X] = np = 3$ es el \"centro de gravedad\" si dibujamos las\n"
+        '**Intuición Singapur.** $E[X] = np = 3$ es el "centro de gravedad" si dibujamos las\n'
         "barras del PMF. Movés $p$ y el centro se mueve linealmente.\n"
     ),
     code_cell(
@@ -484,7 +469,7 @@ UNIT_3_CELLS = [
     markdown_cell(
         "### Momentos simbólicos\n\n"
         "Los mismos momentos pero como expresiones simbólicas — útiles para *demostrar* las\n"
-        "fórmulas \"$np$\" y \"$np(1-p)$\" en clase sin escribirlas dos veces.\n"
+        'fórmulas "$np$" y "$np(1-p)$" en clase sin escribirlas dos veces.\n'
     ),
     code_cell(
         "binomial_moments_symbolic = compute_binomial_moments(\n"
@@ -515,9 +500,7 @@ UNIT_3_CELLS = [
         "Cualquier Normal $X \\sim \\mathcal{N}(\\mu, \\sigma^2)$ se convierte en\n"
         "$Z \\sim \\mathcal{N}(0, 1)$ con un cambio de variable lineal:\n"
     ),
-    code_cell(
-        "standardize_normal(NormalParams(mean=170.0, standard_deviation=8.0)).formula"
-    ),
+    code_cell("standardize_normal(NormalParams(mean=170.0, standard_deviation=8.0)).formula"),
     markdown_cell(
         "Es la **misma transformación** que usamos en Unidad 1 con el $z$-score. La diferencia\n"
         "es que ahora sabemos qué distribución tiene el resultado: $\\mathcal{N}(0, 1)$.\n"
@@ -539,7 +522,7 @@ UNIT_3_CELLS = [
     markdown_cell(
         "## Cuantiles: invertir la pregunta\n\n"
         "En lugar de fijar $x$ y leer probabilidad, fijamos probabilidad y leemos $x$. El\n"
-        "**percentil 90** es \"el valor por debajo del cual queda el 90% de la población\".\n"
+        '**percentil 90** es "el valor por debajo del cual queda el 90% de la población".\n'
     ),
     code_cell(
         "percentile_ninety = quantile_of_continuous(\n"
@@ -552,21 +535,13 @@ UNIT_3_CELLS = [
         "Cambiamos familia, parámetros y un intervalo $[x_{\\min}, x_{\\max}]$. La probabilidad\n"
         "se actualiza en vivo.\n"
     ),
-    code_cell(
-        "build_continuous_distribution_explorer(\n"
-        "    ContinuousDistributionExplorerInput(settings=settings)\n"
-        ")"
-    ),
+    code_cell("build_continuous_distribution_explorer(\n    ContinuousDistributionExplorerInput(settings=settings)\n)"),
     markdown_cell(
         "## Exploración interactiva — distribuciones discretas\n\n"
         "Pasamos de Binomial a Poisson moviendo el dropdown. **Intuición:** cuando $n$ es grande y\n"
         "$p$ es chico (con $np = \\lambda$ moderado), Binomial $\\approx$ Poisson.\n"
     ),
-    code_cell(
-        "build_discrete_distribution_explorer(\n"
-        "    DiscreteDistributionExplorerInput(settings=settings)\n"
-        ")"
-    ),
+    code_cell("build_discrete_distribution_explorer(\n    DiscreteDistributionExplorerInput(settings=settings)\n)"),
     markdown_cell(
         "## Poisson para eventos raros\n\n"
         "Un call center recibe en promedio $\\lambda = 4$ llamadas por minuto. ¿Probabilidad de\n"
@@ -616,10 +591,10 @@ UNIT_3_CELLS = [
     ),
     markdown_cell(
         "## Para llevarse\n\n"
-        "- **PMF (discreto) ↔ PDF (continuo)**: la probabilidad pasa de \"barras\" a \"áreas\".\n"
+        '- **PMF (discreto) ↔ PDF (continuo)**: la probabilidad pasa de "barras" a "áreas".\n'
         "- Estandarizar = trasladar y reescalar para hablar todos el mismo idioma.\n"
         "- La Normal estándar **no** describe a la población; es la unidad de medida con la que la describimos.\n"
-        "- Bin($n$ grande, $p$ chico) $\\to$ Poisson($\\lambda = np$): el discreto colapsa al \"raro\".\n"
+        '- Bin($n$ grande, $p$ chico) $\\to$ Poisson($\\lambda = np$): el discreto colapsa al "raro".\n'
     ),
 ]
 
@@ -669,7 +644,7 @@ UNIT_4_CELLS = [
         "## Concreto: tirar una moneda y promediar\n\n"
         "Sea $X_i$ una Bernoulli($p = 0{,}3$): cara=1, ceca=0. La media muestral $\\bar{X}_n$ es\n"
         "**la proporción observada de caras** después de $n$ tiradas.\n\n"
-        "Si $p$ es la \"verdad\", la LLN promete que $\\bar{X}_n \\to 0{,}3$ cuando $n \\to \\infty$.\n"
+        'Si $p$ es la "verdad", la LLN promete que $\\bar{X}_n \\to 0{,}3$ cuando $n \\to \\infty$.\n'
     ),
     code_cell(
         "bernoulli = make_binomial(BinomialParams(trials=1, success_probability=0.3))\n"
@@ -679,14 +654,12 @@ UNIT_4_CELLS = [
         "chart_lln_running_mean(LLNChartInput(lln_result=lln_result, settings=settings))"
     ),
     markdown_cell(
-        "### Intuición Singapur — \"se estabiliza\"\n\n"
+        '### Intuición Singapur — "se estabiliza"\n\n'
         "Los datos al principio rebotan mucho. **No** porque las primeras tiradas sean diferentes,\n"
         "sino porque al promediar pocos datos cada nueva observación pesa mucho. Después de unos\n"
         "miles, una tirada extra cambia la media en un orden de magnitud despreciable.\n"
     ),
-    code_cell(
-        "build_lln_explorer(LLNExplorerInput(settings=settings))"
-    ),
+    code_cell("build_lln_explorer(LLNExplorerInput(settings=settings))"),
     markdown_cell(
         "## Concreto: tablero de Galton\n\n"
         "El **tablero de Galton** es la metáfora pictórica del TCL. Cada bola toma 20 decisiones\n"
@@ -715,7 +688,7 @@ UNIT_4_CELLS = [
         "Tomamos $n$ muestras de una **Exponencial** (que está muy lejos de ser Normal: tiene\n"
         "cola larga y es asimétrica). Calculamos la media. **Repetimos miles de veces** y dibujamos\n"
         "la distribución de las **medias estandarizadas**. La cosa converge a $\\mathcal{N}(0, 1)$\n"
-        "incluso aunque la fuente sea \"fea\".\n"
+        'incluso aunque la fuente sea "fea".\n'
     ),
     code_cell(
         "exponential_distribution = make_exponential(ExponentialParams(rate=1.0))\n"
@@ -732,14 +705,12 @@ UNIT_4_CELLS = [
         ")"
     ),
     markdown_cell(
-        "### Intuición Singapur — \"promediar limpia la asimetría\"\n\n"
+        '### Intuición Singapur — "promediar limpia la asimetría"\n\n'
         "Cada exponencial tiene una cola larga a la derecha. Pero al **promediar 30 exponenciales**,\n"
         "las colas se cancelan parcialmente: las muestras altas y bajas se compensan. Cuanto más\n"
         "grande es $n$, menos se nota el origen de las muestras.\n"
     ),
-    code_cell(
-        "build_clt_explorer(CLTExplorerInput(settings=settings))"
-    ),
+    code_cell("build_clt_explorer(CLTExplorerInput(settings=settings))"),
     markdown_cell(
         "## Abstracto: qué dice exactamente el TCL\n\n"
         "Sean $X_1, X_2, \\dots$ i.i.d. con $E[X_i] = \\mu$ y $\\mathrm{Var}(X_i) = \\sigma^2 < \\infty$.\n"
@@ -871,17 +842,15 @@ UNIT_5_CELLS = [
         "confidence_interval"
     ),
     markdown_cell(
-        "### Intuición Singapur — \"qué es 95% de confianza\"\n\n"
-        "**No** es \"el verdadero $\\mu$ está con probabilidad 0{,}95 en este intervalo\". El verdadero\n"
+        '### Intuición Singapur — "qué es 95% de confianza"\n\n'
+        '**No** es "el verdadero $\\mu$ está con probabilidad 0{,}95 en este intervalo". El verdadero\n'
         "$\\mu$ es una constante (no es aleatorio). Lo aleatorio es la muestra y, por lo tanto, el\n"
         "intervalo. La afirmación correcta es:\n\n"
-        "> **\"Si repitiéramos este procedimiento muchas veces, el 95% de los intervalos producidos\n"
-        "> contendrían a $\\mu$.\"**\n\n"
+        '> **"Si repitiéramos este procedimiento muchas veces, el 95% de los intervalos producidos\n'
+        '> contendrían a $\\mu$."**\n\n'
         "El widget de abajo lo materializa: cada línea es un intervalo de una muestra distinta.\n"
     ),
-    code_cell(
-        "build_mean_ci_explorer(MeanCIExplorerInput(settings=settings))"
-    ),
+    code_cell("build_mean_ci_explorer(MeanCIExplorerInput(settings=settings))"),
     markdown_cell(
         "## IC con $\\sigma$ desconocido — la $t$ de Student\n\n"
         "Cuando no conocemos $\\sigma$ lo estimamos con $s$. Pero entonces el pivote\n"
@@ -900,7 +869,7 @@ UNIT_5_CELLS = [
     ),
     markdown_cell(
         "## IC para proporción\n\n"
-        "En una encuesta de $n = 400$ personas, $200$ dicen \"sí\". $\\hat{p} = 0{,}50$.\n"
+        'En una encuesta de $n = 400$ personas, $200$ dicen "sí". $\\hat{p} = 0{,}50$.\n'
         "El IC de Wald al 95% queda:\n\n"
         "$$ \\hat{p} \\pm z\\,\\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{n}}. $$\n"
     ),
@@ -1055,7 +1024,6 @@ def main() -> None:
     CHAPTERS.mkdir(parents=True, exist_ok=True)
     for filename, cells in NOTEBOOKS.items():
         save_notebook(filename, cells)
-        print(f"wrote {filename}")
 
 
 if __name__ == "__main__":

@@ -38,8 +38,7 @@ def verify_numeric_answer(input_data: NumericAnswerInput) -> VerificationResult:
     return VerificationResult(
         passed=False,
         message=(
-            f"Diferencia: tu respuesta {input_data.student_answer:.6f}, "
-            f"esperado {input_data.expected_answer:.6f}"
+            f"Diferencia: tu respuesta {input_data.student_answer:.6f}, esperado {input_data.expected_answer:.6f}"
         ),
     )
 
@@ -84,21 +83,25 @@ def verify_distribution_match(input_data: DistributionMatchInput) -> Verificatio
             input_data.student_samples,
             input_data.expected_distribution.frozen_distribution.cdf,
         )
-        passed = p_value > input_data.significance_level
+        passed = bool(p_value > input_data.significance_level)
         return VerificationResult(
             passed=passed,
             message=(
-                f"KS = {statistic:.4f}, p = {p_value:.4f} — "
+                f"KS = {float(statistic):.4f}, p = {float(p_value):.4f} — "
                 f"{'no se rechaza H₀' if passed else 'se rechaza H₀'} "
                 f"contra {input_data.expected_distribution.spanish_name}"
             ),
         )
-    expected_counts = (
-        input_data.expected_distribution.frozen_distribution.pmf(np.unique(input_data.student_samples))
+    unique_values = np.unique(input_data.student_samples)
+    expected_counts: np.ndarray = (
+        np.asarray(
+            input_data.expected_distribution.frozen_distribution.pmf(unique_values),
+            dtype=float,
+        )
         * input_data.student_samples.size
     )
     observed_counts = np.array(
-        [np.sum(input_data.student_samples == value) for value in np.unique(input_data.student_samples)],
+        [np.sum(input_data.student_samples == value) for value in unique_values],
         dtype=float,
     )
     expected_counts = expected_counts * observed_counts.sum() / expected_counts.sum()
@@ -107,7 +110,7 @@ def verify_distribution_match(input_data: DistributionMatchInput) -> Verificatio
     return VerificationResult(
         passed=passed,
         message=(
-            f"χ² = {statistic:.4f}, p = {p_value:.4f} — "
+            f"χ² = {float(statistic):.4f}, p = {float(p_value):.4f} — "
             f"{'no se rechaza H₀' if passed else 'se rechaza H₀'} "
             f"contra {input_data.expected_distribution.spanish_name}"
         ),

@@ -19,16 +19,14 @@ def test_bivariate_observations_validates_columns() -> None:
 
 
 def test_frequency_table_rejects_out_of_range_probability() -> None:
-    invalid = pd.DataFrame(
-        {
-            "interval_start": [0.0],
-            "interval_end": [1.0],
-            "midpoint": [0.5],
-            "absolute_frequency": [3],
-            "relative_frequency": [2.0],
-            "cumulative_relative_frequency": [2.0],
-        }
-    )
+    invalid = pd.DataFrame({
+        "interval_start": [0.0],
+        "interval_end": [1.0],
+        "midpoint": [0.5],
+        "absolute_frequency": [3],
+        "relative_frequency": [2.0],
+        "cumulative_relative_frequency": [2.0],
+    })
     with pytest.raises(SchemaError):
         FrequencyTable.validate(invalid)
 

@@ -1,12 +1,13 @@
-import altair as alt
+from typing import Any
 
 from core import Settings
 
 
-def apply_theme(chart: alt.Chart, settings: Settings) -> alt.Chart:
+def apply_theme(chart: Any, settings: Settings) -> Any:
     theme = settings.chart_theme
     return (
-        chart.properties(width=theme.width, height=theme.height)
+        chart
+        .properties(width=theme.width, height=theme.height)
         .configure_axis(
             grid=True,
             gridColor=theme.palette.grid,

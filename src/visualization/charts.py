@@ -29,7 +29,8 @@ class HistogramChartInput(BaseModel):
 def chart_histogram(input_data: HistogramChartInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
     chart = (
-        alt.Chart(input_data.observations)
+        alt
+        .Chart(input_data.observations)
         .mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary)
         .encode(
             x=alt.X("value:Q", bin=alt.Bin(maxbins=input_data.bin_count), title="Valor"),
@@ -58,7 +59,10 @@ def chart_frequency_table(input_data: FrequencyChartInput) -> alt.Chart:
     )
     ogive = base.mark_line(color=theme.palette.secondary, strokeWidth=theme.line_stroke_width).encode(
         x=alt.X("midpoint:Q"),
-        y=alt.Y("cumulative_relative_frequency:Q", axis=alt.Axis(title="Frecuencia rel. acumulada", titleColor=theme.palette.secondary)),
+        y=alt.Y(
+            "cumulative_relative_frequency:Q",
+            axis=alt.Axis(title="Frecuencia rel. acumulada", titleColor=theme.palette.secondary),
+        ),
     )
     layered = alt.layer(bars, ogive).resolve_scale(y="independent").properties(title=input_data.title)
     return apply_theme(layered, input_data.settings)
@@ -77,7 +81,8 @@ def chart_density(input_data: DensityChartInput) -> alt.Chart:
     data = pd.DataFrame({"x": input_data.density_grid.grid, "density": input_data.density_grid.density})
     title = input_data.title or f"Densidad — {input_data.density_grid.distribution_name}"
     chart = (
-        alt.Chart(data)
+        alt
+        .Chart(data)
         .mark_line(color=theme.palette.primary, strokeWidth=theme.line_stroke_width)
         .encode(
             x=alt.X("x:Q", title="x"),
@@ -100,7 +105,8 @@ def chart_probability_mass(input_data: ProbabilityMassChartInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
     title = input_data.title or f"Masa de probabilidad — {input_data.probability_mass.distribution_name}"
     chart = (
-        alt.Chart(input_data.probability_mass.table)
+        alt
+        .Chart(input_data.probability_mass.table)
         .mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary)
         .encode(
             x=alt.X("outcome:O", title="Resultado"),
@@ -125,7 +131,8 @@ def chart_clt_comparison(input_data: CLTComparisonChartInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
     data = pd.DataFrame({"standardized_mean": input_data.clt_result.standardized_means})
     histogram = (
-        alt.Chart(data)
+        alt
+        .Chart(data)
         .mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary)
         .encode(
             x=alt.X("standardized_mean:Q", bin=alt.Bin(maxbins=input_data.bin_count), title="Media estandarizada"),
@@ -137,7 +144,8 @@ def chart_clt_comparison(input_data: CLTComparisonChartInput) -> alt.Chart:
     expected_count = stats.norm.pdf(grid) * input_data.clt_result.standardized_means.size * bin_width
     overlay_data = pd.DataFrame({"x": grid, "y": expected_count})
     overlay = (
-        alt.Chart(overlay_data)
+        alt
+        .Chart(overlay_data)
         .mark_line(color=theme.palette.secondary, strokeWidth=theme.line_stroke_width)
         .encode(x="x:Q", y="y:Q")
     )
@@ -157,12 +165,14 @@ def chart_lln_running_mean(input_data: LLNChartInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
     data = pd.DataFrame({"step": input_data.lln_result.step, "running_mean": input_data.lln_result.running_mean})
     running = (
-        alt.Chart(data)
+        alt
+        .Chart(data)
         .mark_line(color=theme.palette.primary, strokeWidth=theme.line_stroke_width)
         .encode(x=alt.X("step:Q", title="Tamaño de muestra"), y=alt.Y("running_mean:Q", title="Media acumulada"))
     )
     expected = (
-        alt.Chart(pd.DataFrame({"expected_mean": [input_data.lln_result.underlying_mean]}))
+        alt
+        .Chart(pd.DataFrame({"expected_mean": [input_data.lln_result.underlying_mean]}))
         .mark_rule(color=theme.palette.secondary, strokeDash=[6, 4])
         .encode(y="expected_mean:Q")
     )
@@ -183,7 +193,8 @@ def chart_bootstrap_distribution(input_data: BootstrapDistributionChartInput) ->
     theme = input_data.settings.chart_theme
     data = pd.DataFrame({"bootstrap_mean": input_data.bootstrap_result.bootstrap_means})
     histogram = (
-        alt.Chart(data)
+        alt
+        .Chart(data)
         .mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary)
         .encode(
             x=alt.X("bootstrap_mean:Q", bin=alt.Bin(maxbins=input_data.bin_count), title="Media bootstrap"),
@@ -199,9 +210,16 @@ def chart_bootstrap_distribution(input_data: BootstrapDistributionChartInput) ->
         ],
     })
     rules = (
-        alt.Chart(bounds)
+        alt
+        .Chart(bounds)
         .mark_rule(strokeWidth=2.0)
-        .encode(x="value:Q", color=alt.Color("boundary:N", scale=alt.Scale(range=[theme.palette.secondary, theme.palette.secondary, theme.palette.accent])))
+        .encode(
+            x="value:Q",
+            color=alt.Color(
+                "boundary:N",
+                scale=alt.Scale(range=[theme.palette.secondary, theme.palette.secondary, theme.palette.accent]),
+            ),
+        )
     )
     layered = alt.layer(histogram, rules).properties(title=input_data.title)
     return apply_theme(layered, input_data.settings)
@@ -221,21 +239,19 @@ def chart_confidence_interval(input_data: ConfidenceIntervalChartInput) -> alt.C
     records = []
     for index, interval in enumerate(input_data.intervals, start=1):
         contains_target = (
-            input_data.target_mean is None
-            or interval.lower_bound <= input_data.target_mean <= interval.upper_bound
+            input_data.target_mean is None or interval.lower_bound <= input_data.target_mean <= interval.upper_bound
         )
-        records.append(
-            {
-                "replicate": index,
-                "lower": interval.lower_bound,
-                "upper": interval.upper_bound,
-                "point": interval.point_estimate,
-                "covers": contains_target,
-            }
-        )
+        records.append({
+            "replicate": index,
+            "lower": interval.lower_bound,
+            "upper": interval.upper_bound,
+            "point": interval.point_estimate,
+            "covers": contains_target,
+        })
     data = pd.DataFrame.from_records(records)
     bars = (
-        alt.Chart(data)
+        alt
+        .Chart(data)
         .mark_rule(strokeWidth=2.0)
         .encode(
             x="lower:Q",
@@ -245,14 +261,16 @@ def chart_confidence_interval(input_data: ConfidenceIntervalChartInput) -> alt.C
         )
     )
     points = (
-        alt.Chart(data)
+        alt
+        .Chart(data)
         .mark_point(filled=True, color=theme.palette.accent, size=theme.point_size)
         .encode(x="point:Q", y="replicate:O")
     )
     layers = [bars, points]
     if input_data.target_mean is not None:
         target = (
-            alt.Chart(pd.DataFrame({"target": [input_data.target_mean]}))
+            alt
+            .Chart(pd.DataFrame({"target": [input_data.target_mean]}))
             .mark_rule(color=theme.palette.muted, strokeDash=[6, 4])
             .encode(x="target:Q")
         )
@@ -273,12 +291,14 @@ class DescriptiveSummaryChartInput(BaseModel):
 def chart_descriptive_summary(input_data: DescriptiveSummaryChartInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
     box = (
-        alt.Chart(input_data.observations)
+        alt
+        .Chart(input_data.observations)
         .mark_boxplot(extent=1.5, color=theme.palette.primary, size=40)
         .encode(x=alt.X("value:Q", title="Valor"))
     )
     mean_mark = (
-        alt.Chart(pd.DataFrame({"mean": [input_data.statistics.location.mean]}))
+        alt
+        .Chart(pd.DataFrame({"mean": [input_data.statistics.location.mean]}))
         .mark_rule(color=theme.palette.accent, strokeWidth=theme.line_stroke_width, strokeDash=[4, 4])
         .encode(x="mean:Q")
     )

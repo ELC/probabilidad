@@ -47,5 +47,7 @@ def total_probability_theorem(partition_size: int = 3) -> TotalProbabilityStatem
 def standardize_normal(parameters: NormalParams) -> StandardizationStatement:
     raw_variable = sp.Symbol("X", real=True)
     standard_variable = sp.Symbol("Z", real=True)
-    formula = sp.Eq(standard_variable, (raw_variable - sp.Float(parameters.mean)) / sp.Float(parameters.standard_deviation))
+    formula = sp.Eq(
+        standard_variable, (raw_variable - sp.Float(parameters.mean)) / sp.Float(parameters.standard_deviation)
+    )
     return StandardizationStatement(formula=formula, standard_variable=standard_variable)

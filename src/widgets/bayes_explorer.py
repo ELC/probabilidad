@@ -38,18 +38,15 @@ def build_bayes_explorer(input_data: BayesExplorerInput) -> widgets.Widget:
         )
         posteriors = evaluate_bayes(BayesInput(branches=(sick_branch, healthy_branch)))
         sick_posterior = posteriors[0].posterior
-        posterior_label.value = (
-            f"<b>P(Enfermo | Test positivo) = {sick_posterior:.4f}</b>"
-        )
-        data = pd.DataFrame(
-            {
-                "hipótesis": [posterior.label for posterior in posteriors],
-                "previo": [posterior.prior for posterior in posteriors],
-                "posterior": [posterior.posterior for posterior in posteriors],
-            }
-        ).melt(id_vars="hipótesis", var_name="distribución", value_name="probabilidad")
+        posterior_label.value = f"<b>P(Enfermo | Test positivo) = {sick_posterior:.4f}</b>"
+        data = pd.DataFrame({
+            "hipótesis": [posterior.label for posterior in posteriors],
+            "previo": [posterior.prior for posterior in posteriors],
+            "posterior": [posterior.posterior for posterior in posteriors],
+        }).melt(id_vars="hipótesis", var_name="distribución", value_name="probabilidad")
         chart = (
-            alt.Chart(data)
+            alt
+            .Chart(data)
             .mark_bar(opacity=input_data.settings.chart_theme.bar_opacity)
             .encode(
                 x=alt.X("hipótesis:N", title="Hipótesis"),

@@ -47,7 +47,9 @@ def compute_exponential_moments(parameters: ExponentialParams) -> SymbolicMoment
 
 
 def compute_binomial_moments(parameters: BinomialParams) -> SymbolicMoments:
-    random_variable = Binomial("Y", parameters.trials, sp.Rational(parameters.success_probability).limit_denominator(1_000_000))
+    random_variable = Binomial(
+        "Y", parameters.trials, sp.Rational(parameters.success_probability).limit_denominator(1_000_000)
+    )
     return SymbolicMoments.from_random_variable("Binomial", random_variable)
 
 

@@ -30,9 +30,7 @@ def test_evaluate_set_operations_returns_expected_sets() -> None:
     universe = frozenset({"1", "2", "3", "4"})
     event_a = frozenset({"1", "2"})
     event_b = frozenset({"2", "3"})
-    result = evaluate_set_operations(
-        SetOperationInput(universe=universe, event_a=event_a, event_b=event_b)
-    )
+    result = evaluate_set_operations(SetOperationInput(universe=universe, event_a=event_a, event_b=event_b))
     assert result.union == {"1", "2", "3"}
     assert result.intersection == {"2"}
     assert result.complement_a == {"3", "4"}

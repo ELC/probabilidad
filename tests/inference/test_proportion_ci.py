@@ -23,6 +23,4 @@ def test_proportion_ci_clips_to_unit_interval() -> None:
 
 def test_proportion_ci_rejects_more_successes_than_sample_size() -> None:
     with pytest.raises(ValueError, match="successes"):
-        build_confidence_interval_for_proportion(
-            ProportionInput(successes=5, sample_size=4, confidence_level=0.95)
-        )
+        build_confidence_interval_for_proportion(ProportionInput(successes=5, sample_size=4, confidence_level=0.95))

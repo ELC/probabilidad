@@ -59,17 +59,13 @@ def test_tail_probability_full_range_is_one() -> None:
 
 def test_tail_probability_only_lower_bound() -> None:
     distribution = make_normal(NormalParams())
-    result = tail_probability_of_continuous(
-        TailProbabilityInput(distribution=distribution, lower_bound=0.0)
-    )
+    result = tail_probability_of_continuous(TailProbabilityInput(distribution=distribution, lower_bound=0.0))
     assert math.isclose(result.probability, 0.5, abs_tol=1e-6)
 
 
 def test_tail_probability_only_upper_bound() -> None:
     distribution = make_normal(NormalParams())
-    result = tail_probability_of_continuous(
-        TailProbabilityInput(distribution=distribution, upper_bound=0.0)
-    )
+    result = tail_probability_of_continuous(TailProbabilityInput(distribution=distribution, upper_bound=0.0))
     assert math.isclose(result.probability, 0.5, abs_tol=1e-6)
 
 

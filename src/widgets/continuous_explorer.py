@@ -49,9 +49,7 @@ def build_continuous_distribution_explorer(input_data: ContinuousDistributionExp
             )
         else:
             distribution = make_exponential(ExponentialParams(rate=max(parameter_two_slider.value, 0.1)))
-        density = evaluate_density_grid(
-            DensityGridInput(distribution=distribution, settings=input_data.settings)
-        )
+        density = evaluate_density_grid(DensityGridInput(distribution=distribution, settings=input_data.settings))
         probability = tail_probability_of_continuous(
             TailProbabilityInput(
                 distribution=distribution,

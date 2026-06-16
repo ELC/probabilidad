@@ -23,23 +23,17 @@ def test_numeric_answer_fails_when_far() -> None:
 
 
 def test_interval_contains_target() -> None:
-    result = verify_interval_contains(
-        IntervalContainsInput(lower_bound=0.0, upper_bound=1.0, target_value=0.5)
-    )
+    result = verify_interval_contains(IntervalContainsInput(lower_bound=0.0, upper_bound=1.0, target_value=0.5))
     assert result.passed
 
 
 def test_interval_does_not_contain_target() -> None:
-    result = verify_interval_contains(
-        IntervalContainsInput(lower_bound=0.0, upper_bound=1.0, target_value=2.0)
-    )
+    result = verify_interval_contains(IntervalContainsInput(lower_bound=0.0, upper_bound=1.0, target_value=2.0))
     assert not result.passed
 
 
 def test_interval_rejects_inverted_bounds() -> None:
-    result = verify_interval_contains(
-        IntervalContainsInput(lower_bound=1.0, upper_bound=0.0, target_value=0.5)
-    )
+    result = verify_interval_contains(IntervalContainsInput(lower_bound=1.0, upper_bound=0.0, target_value=0.5))
     assert not result.passed
 
 

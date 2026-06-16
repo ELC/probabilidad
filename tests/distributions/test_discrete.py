@@ -32,9 +32,7 @@ def test_make_geometric_mean() -> None:
 
 
 def test_make_hypergeometric_pmf_sums_to_one() -> None:
-    distribution = make_hypergeometric(
-        HypergeometricParams(population_size=20, success_states=7, draws=5)
-    )
+    distribution = make_hypergeometric(HypergeometricParams(population_size=20, success_states=7, draws=5))
     total = sum(distribution.frozen_distribution.pmf(k) for k in range(6))
     assert math.isclose(total, 1.0, rel_tol=1e-9)
 

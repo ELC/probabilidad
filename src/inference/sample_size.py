@@ -47,7 +47,7 @@ def sample_size_for_proportion(input_data: SampleSizeForProportionInput) -> Samp
     tail = (1.0 - input_data.confidence_level) / 2.0
     critical_value = float(stats.norm.isf(tail))
     variance_factor = input_data.estimated_proportion * (1.0 - input_data.estimated_proportion)
-    minimum = (critical_value ** 2) * variance_factor / (input_data.margin_of_error ** 2)
+    minimum = (critical_value**2) * variance_factor / (input_data.margin_of_error**2)
     return SampleSizeResult(
         required_sample_size=math.ceil(minimum),
         critical_value=critical_value,

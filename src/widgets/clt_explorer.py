@@ -46,9 +46,7 @@ def build_clt_explorer(input_data: CLTExplorerInput) -> widgets.Widget:
                 settings=input_data.settings,
             )
         )
-        chart = chart_clt_comparison(
-            CLTComparisonChartInput(clt_result=clt_result, settings=input_data.settings)
-        )
+        chart = chart_clt_comparison(CLTComparisonChartInput(clt_result=clt_result, settings=input_data.settings))
         with output:
             output.clear_output(wait=True)
             display(chart)

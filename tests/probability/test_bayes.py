@@ -17,8 +17,6 @@ def test_bayes_two_boxes() -> None:
 
 
 def test_bayes_rejects_zero_evidence() -> None:
-    branches = (
-        TotalProbabilityBranch(label="A", prior=1.0, likelihood=0.0),
-    )
+    branches = (TotalProbabilityBranch(label="A", prior=1.0, likelihood=0.0),)
     with pytest.raises(ValueError, match="evidence"):
         evaluate_bayes(BayesInput(branches=branches))
