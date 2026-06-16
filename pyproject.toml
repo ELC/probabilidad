@@ -5,31 +5,63 @@ description = "Probabilidad y Estadística"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+  "altair>=5.4",
+  "anywidget>=0.9",
+  "ipywidgets>=8.1",
   "jupyter-book>=2,<3",
   "jupyterlab>=4.5",
   "matplotlib>=3.10.8",
+  "numpy>=2.0",
   "pandas>=3.0.1",
-  "pandera>=0.30.1",
+  "pandera[mypy]>=0.30.1",
+  "pydantic>=2.0",
+  "pydantic-settings>=2.0",
+  "scipy>=1.14",
   "seaborn>=0.13.2",
+  "statsmodels>=0.14",
+  "sympy>=1.13",
+  "vl-convert-python>=1.7",
 ]
+
+[build-system]
+requires = ["uv_build>=0.11.18,<0.12"]
+build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+  "mypy>=2.1",
   "poethepoet>=0.37",
   "prek>=0.4",
+  "pylint>=4.0",
   "pytest>=8.3",
   "pytest-cov>=6.0",
+  "ruff>=0.15.15",
   "wheel>=0.46.3",
 ]
 
-[tool.uv]
-package = false
+[tool.uv.build-backend]
+module-name = [
+  "core",
+  "symbolic",
+  "distributions",
+  "descriptive",
+  "probability",
+  "sampling",
+  "inference",
+  "visualization",
+  "widgets",
+  "exercises",
+]
 
 #########################
 # Tasks
 #########################
 
 [tool.poe.tasks]
+lint = "ruff check --exit-non-zero-on-fix src tests"
+format = "ruff format src tests"
+pylint = "pylint src tests"
+mypy = "mypy src tests"
 test = "pytest"
 check = "prek run --all-files --verbose"
 
@@ -61,14 +93,26 @@ help = "Build the Binder Docker image (repo root context, .binder/Dockerfile)."
 cmd = "docker build --no-cache --file .binder/Dockerfile --tag probabilidad:binder ."
 
 [tool.poe.tasks.ci]
-sequence = ["check", "build-book"]
+sequence = ["check", "test", "build-book"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = ["-vv", "--cov", "--cov-report=term-missing"]
+addopts = ["-vv", "--cov", "--cov-report=term-missing", "--cov-report=xml"]
 
 [tool.coverage.run]
-source = ["tests"]
+branch = true
+source_pkgs = [
+  "core",
+  "symbolic",
+  "distributions",
+  "descriptive",
+  "probability",
+  "sampling",
+  "inference",
+  "visualization",
+  "widgets",
+  "exercises",
+]
 
 [tool.coverage.report]
 fail_under = 100
@@ -95,6 +139,9 @@ exclude_lines = [
 strict = true
 follow_imports = "normal"
 python_version = "3.13"
+mypy_path = "src"
+explicit_package_bases = true
+plugins = ["pandera.mypy"]
 disallow_any_unimported = true
 disallow_any_generics = true
 disallow_subclassing_any = true
@@ -104,8 +151,39 @@ disallow_untyped_defs = true
 disallow_untyped_decorators = true
 
 [[tool.mypy.overrides]]
-module = ["matplotlib.*", "seaborn.*"]
+module = [
+  "altair.*",
+  "anywidget.*",
+  "ipywidgets.*",
+  "matplotlib.*",
+  "scipy.*",
+  "seaborn.*",
+  "statsmodels.*",
+  "sympy.*",
+]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_untyped_decorators = false
+disable_error_code = ["no-any-unimported"]
+
+[[tool.mypy.overrides]]
+module = [
+  "distributions.*",
+  "sampling.*",
+  "inference.*",
+  "symbolic.*",
+  "visualization.*",
+  "widgets.*",
+]
+disable_error_code = [
+  "no-any-unimported",
+  "no-any-return",
+  "valid-type",
+  "misc",
+]
 
 #########################
 # RUFF
@@ -118,10 +196,17 @@ unsafe-fixes = true
 line-length = 120
 extend-exclude = ["_build"]
 
+[tool.ruff.lint.per-file-ignores]
+"src/**/*.py" = ["D"]
+"src/**/__init__.py" = []
+"tests/**" = ["D", "PLR2004", "B017", "RUF069"]
+"book/**/*.ipynb" = ["D", "B018"]
+"book/**/*_nbqa_*" = ["D", "B018"]
+
 [tool.ruff.lint]
 extend-select = ["ALL"]
 ignore = [
-  "D",                   # pydocstyle
+  "D",                   # pydocstyle (no docstrings convention)
   "CPY",                 # copyright notices
   "S101",                # assert usage
   "ISC001",              # implicit string concat
@@ -130,8 +215,12 @@ ignore = [
   "E501",                # line too long (handled by formatter)
   "ARG002",              # unused method argument
   "DOC501",              # raised exception missing from docstring
-  "DOC502",              # documented exception from inner function (API docs clarity)
-  "N999",                # chapter notebooks use numeric ordering prefixes (e.g. 00_how_to_use.ipynb)
+  "DOC502",              # documented exception from inner function
+  "N999",                # chapter notebooks use numeric ordering prefixes
+  "RUF001",              # widget descriptions use Greek letters intentionally
+  "RUF069",              # explicit float comparison to 0 used as guard clauses
+  "PLR0913",             # widget private helpers take many scalar slider values
+  "PLR0917",             # widget private helpers take many positional values
 ]
 
 [tool.ruff.format]
@@ -168,7 +257,7 @@ disable = [
   "missing-module-docstring",
   "missing-class-docstring",
   "missing-function-docstring",
-  "invalid-name",                   # chapter notebooks use numeric ordering prefixes (e.g. 00_how_to_use.ipynb)
+  "invalid-name",                   # chapter notebooks use numeric ordering prefixes
   "line-too-long",                  # handled by ruff format
   "import-error",                   # already validated by mypy
   "duplicate-code",
@@ -176,6 +265,8 @@ disable = [
   "too-many-arguments",
   "too-many-positional-arguments",
   "redefined-outer-name",           # pytest fixture parameter names shadow outer fixtures
+  "pointless-statement",            # notebook last-cell display (nbqa-pylint)
+  "expression-not-assigned",        # notebook last-cell display (nbqa-pylint)
 ]
 
 #########################

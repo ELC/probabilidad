@@ -23,11 +23,11 @@ project:
     - plugins/ethicalads.mjs
 
   toc:
-    - file: chapters/00_how_to_use.ipynb
-    - title: Markdown Cheat Sheet
-      children:
-        - file: chapters/01_markdown.md
-        - file: chapters/02_jupyter.ipynb
+    - file: chapters/01_unidad1_tratamiento_datos.ipynb
+    - file: chapters/02_unidad2_probabilidad.ipynb
+    - file: chapters/03_unidad3_variables_aleatorias.ipynb
+    - file: chapters/04_unidad4_va_bidimensionales_suma.ipynb
+    - file: chapters/05_unidad5_inferencia.ipynb
 
 site:
   template: book-theme
@@ -37,8 +37,16 @@ site:
       :::
 
   nav:
-    - title: Cheat Sheet
-      url: /chapters/markdown
+    - title: Unidad 1
+      url: /chapters/unidad1-tratamiento-datos
+    - title: Unidad 2
+      url: /chapters/unidad2-probabilidad
+    - title: Unidad 3
+      url: /chapters/unidad3-variables-aleatorias
+    - title: Unidad 4
+      url: /chapters/unidad4-va-bidimensionales-suma
+    - title: Unidad 5
+      url: /chapters/unidad5-inferencia
 
   options:
     folders: true

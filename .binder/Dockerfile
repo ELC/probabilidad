@@ -22,6 +22,8 @@ RUN --mount=type=bind,source=.binder/bashrc-venv.sh,target=/mnt/bashrc-venv.sh,r
 
 COPY --chown=${NB_UID}:${NB_GID} . .
 
+RUN uv sync --all-groups --locked
+
 ENV VIRTUAL_ENV=/home/jovyan/.venv
 ENV PATH="/home/jovyan/.venv/bin:${PATH}"
 

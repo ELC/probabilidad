@@ -5,9 +5,21 @@ Guidance for AI agents working on **Probabilidad y Estadística** (`probabilidad
 ## Repository layout
 
 ```
+src/
+  core/             # Settings (BaseSettings), parameter BaseModels, pandera schemas, theme constants
+  symbolic/         # sympy.stats expressions; one place for formulas
+  distributions/    # scipy.stats numeric counterparts to symbolic
+  descriptive/      # location, dispersion, position, outliers
+  probability/      # set ops, conditional, Bayes, total probability
+  sampling/         # CLT, LLN, Galton, bootstrap, Monte Carlo
+  inference/        # confidence intervals, hypothesis tests, sample size
+  visualization/    # pure Altair chart factories
+  widgets/          # ipywidgets factories wrapping Altair charts
+  exercises/        # verify_* helpers for notebook exercises
+tests/                  # Pytest suite (mirrors src/ 1:1, 100% coverage)
 book/
   myst.yml              # Project + site configuration (TOC, theme, plugins)
-  chapters/             # Book content (.md, .ipynb)
+  chapters/             # Book content (.ipynb only)
   assets/               # Site branding (favicon, logos)
   plugins/              # Custom MyST plugins
   bibliography.bib      # Citations
@@ -17,6 +29,44 @@ pyproject.toml          # Project metadata (probabilidad), deps, Poe tasks
 ```
 
 Build output goes to `book/_build/` (gitignored). Run book commands from the repo root via Poe; tasks set `cwd = "book"`.
+
+## Project source code
+
+Library code lives under `src/` as installable top-level packages (`core`, `symbolic`, `distributions`,
+`descriptive`, `probability`, `sampling`, `inference`, `visualization`, `widgets`, `exercises`). Built
+with `uv_build` and installed editable on `uv sync` — chapters import them directly, never via
+`sys.path`.
+
+The architecture follows **vertical slices by capability**, not by academic unit. Each unit notebook
+imports from several slices.
+
+### Binding conventions for `src/`
+
+- **No primitive obsession**: every public function takes exactly one Pydantic `BaseModel` input
+  (or none for factories) and returns one typed result (`BaseModel`, `alt.Chart`,
+  `ipywidgets.Widget`, or `sympy.Expr`).
+- **Pure functions only**. Side effects (display, observe, mutation) live inside widget factory
+  callbacks; the surrounding code is referentially transparent.
+- **No global state**: no module-level mutables, no implicit theme registration. Theme is applied
+  per-chart by passing `Settings` to chart factories.
+- **Descriptive names over docstrings**: no docstrings on public APIs; identifiers carry intent
+  (`build_confidence_interval_for_mean_with_known_variance`).
+- **Symbolic-first**: anything derivable in `sympy.stats` is defined symbolically once in
+  `src/symbolic/`; numeric layers reuse those expressions via `sp.lambdify` where useful.
+- **Strict typing**: `mypy --strict`, pandera `DataFrame[Schema]` instead of bare `pd.DataFrame`.
+- **Random generators take `Settings` explicitly** (carrying `random_seed`) so seeds are visible
+  at the call site.
+- **Tests mirror `src/` 1:1** under `tests/`; enforce 100% line + branch coverage.
+
+### Notebook conventions
+
+- One notebook per academic unit under `book/chapters/`, numbered 01..05.
+- Markdown in Spanish, code identifiers in English.
+- Each code cell is ≤6 lines and only composes calls to `src/`.
+- Each concept follows the CPA progression (Concrete → Pictorial → Abstract → Intuición → Interactive
+  exploration with an ipywidgets + Altair combo).
+- Exercises end with a `verify_*` call that asserts the student's answer against a symbolically
+  derived expected value.
 
 ## Initialize the template
 
