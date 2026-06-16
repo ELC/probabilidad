@@ -226,7 +226,6 @@ extend-exclude = ["_build"]
   "ERA001",
   "T201",
   "PLR2004",
-  "PD901",
   "RUF002",
   "RUF003",
 ]
