@@ -250,6 +250,19 @@ def test_chart_venn_two_sets_renders_intersection_label(fixed_settings: Settings
     assert "Llegan tarde" in str(spec)
 
 
+def test_chart_venn_two_sets_accepts_custom_intersection_label(fixed_settings: Settings) -> None:
+    chart = chart_venn_two_sets(
+        VennTwoSetsInput(
+            set_a_label="A: sale par",
+            set_b_label="B: sale al menos 4",
+            intersection_label="A ∩ B = {4, 6}",
+            settings=fixed_settings,
+        )
+    )
+    spec_text = str(chart.to_dict(format="vega"))
+    assert "A ∩ B = {4, 6}" in spec_text
+
+
 def test_chart_partition_diagram_renders_strips(fixed_settings: Settings) -> None:
     chart = chart_partition_diagram(
         PartitionDiagramInput(

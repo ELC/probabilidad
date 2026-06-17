@@ -452,38 +452,36 @@ class VennTwoSetsInput(BaseModel):
 
     set_a_label: str = "A"
     set_b_label: str = "B"
+    intersection_label: str | None = None
     title: str = "Diagrama de Venn"
     settings: Settings = Settings()
 
 
 def chart_venn_two_sets(input_data: VennTwoSetsInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
+    chart_width = 520
+    chart_height = 300
     centers = pd.DataFrame({
-        "x": [-1.0, 1.0],
+        "x": [-0.7, 0.7],
         "y": [0.0, 0.0],
         "label": [input_data.set_a_label, input_data.set_b_label],
     })
+    color_scale = alt.Scale(
+        domain=[input_data.set_a_label, input_data.set_b_label],
+        range=[theme.palette.primary, theme.palette.secondary],
+    )
     circles = (
         alt
         .Chart(centers)
-        .mark_circle(size=22000, opacity=0.55, stroke=theme.palette.muted, strokeWidth=2)
+        .mark_circle(size=42000, opacity=0.5, stroke=theme.palette.muted, strokeWidth=2)
         .encode(
-            x=alt.X("x:Q", scale=alt.Scale(domain=[-3.0, 3.0]), axis=None),
-            y=alt.Y("y:Q", scale=alt.Scale(domain=[-1.8, 1.8]), axis=None),
-            color=alt.Color(
-                "label:N",
-                scale=alt.Scale(
-                    domain=[input_data.set_a_label, input_data.set_b_label],
-                    range=[theme.palette.primary, theme.palette.secondary],
-                ),
-                legend=None,
-            ),
+            x=alt.X("x:Q", scale=alt.Scale(domain=[-2.6, 2.6]), axis=None),
+            y=alt.Y("y:Q", scale=alt.Scale(domain=[-1.5, 1.5]), axis=None),
+            color=alt.Color("label:N", scale=color_scale, legend=None),
         )
-        .properties(width=420, height=260)
     )
-    intersection_label = f"{input_data.set_a_label} ∩ {input_data.set_b_label}"
     set_label_data = pd.DataFrame({
-        "x": [-2.1, 2.1],
+        "x": [-1.7, 1.7],
         "y": [1.2, 1.2],
         "label": [input_data.set_a_label, input_data.set_b_label],
     })
@@ -493,15 +491,24 @@ def chart_venn_two_sets(input_data: VennTwoSetsInput) -> alt.Chart:
         .mark_text(fontSize=15, fontWeight="bold")
         .encode(x="x:Q", y="y:Q", text="label:N")
     )
+    intersection_label = (
+        input_data.intersection_label
+        if input_data.intersection_label is not None
+        else f"{input_data.set_a_label} ∩ {input_data.set_b_label}"
+    )
     intersection_data = pd.DataFrame({"x": [0.0], "y": [0.0], "label": [intersection_label]})
     intersection_text = (
         alt
         .Chart(intersection_data)
-        .mark_text(fontSize=14)
+        .mark_text(fontSize=13, fontWeight="bold", color=theme.title_color)
         .encode(x="x:Q", y="y:Q", text="label:N")
     )
-    layered = alt.layer(circles, set_labels, intersection_text).properties(title=input_data.title)
-    return apply_theme(layered, input_data.settings)
+    layered = (
+        alt
+        .layer(circles, set_labels, intersection_text)
+        .properties(title=input_data.title, width=chart_width, height=chart_height)
+    )
+    return apply_theme(layered, input_data.settings, set_size=False)
 
 
 class PartitionDiagramInput(BaseModel):
