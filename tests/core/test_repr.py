@@ -1,4 +1,5 @@
 import math
+from typing import Any
 
 import numpy as np
 import pytest
@@ -133,7 +134,14 @@ def test_format_value_handles_none() -> None:
     assert format_value(None) == "None"
 
 
-def test_repr_html_renders_table_for_outer_model() -> None:
+class _OnlyChildrenModel(RichMarkdownModel):
+    model_config = ConfigDict(frozen=True)
+
+    location: _NestedModel
+    dispersion: _NestedModel
+
+
+def test_repr_html_renders_outer_table_with_scalar_fields() -> None:
     outer = _OuterModel(
         integer_field=3,
         float_field=1.234,
@@ -146,7 +154,7 @@ def test_repr_html_renders_table_for_outer_model() -> None:
         optional_field=None,
     )
     rendered = outer._repr_html_()  # pylint: disable=protected-access
-    assert rendered.startswith("<table")
+    assert "<table" in rendered
     assert 'colspan="2"' in rendered
     assert "<thead>" in rendered
     assert "<tbody>" in rendered
@@ -164,7 +172,7 @@ def test_repr_markdown_falls_back_to_html_table() -> None:
     assert "hijo" in markdown
 
 
-def test_repr_html_renders_nested_table_for_rich_model_field() -> None:
+def test_repr_html_emits_sibling_tables_for_rich_fields() -> None:
     outer = _OuterModel(
         integer_field=3,
         float_field=1.234,
@@ -177,10 +185,26 @@ def test_repr_html_renders_nested_table_for_rich_model_field() -> None:
         optional_field=None,
     )
     rendered = outer._repr_html_()  # pylint: disable=protected-access
-    assert rendered.count("<table") >= 2
+    assert rendered.count("<table") == 2
+    nested_index = rendered.find("hijo")
+    outer_table_close = rendered.find("</table>")
+    assert nested_index > outer_table_close
 
 
-def test_repr_html_renders_list_of_nested_models_as_ul() -> None:
+def test_repr_html_drops_outer_table_when_all_fields_are_rich() -> None:
+    container = _OnlyChildrenModel(
+        location=_NestedModel(name="centro", value=4.0),
+        dispersion=_NestedModel(name="ancho", value=1.5),
+    )
+    rendered = container._repr_html_()  # pylint: disable=protected-access
+    assert rendered.count("<table") == 2
+    assert ">location<" in rendered
+    assert ">dispersion<" in rendered
+    assert "centro" in rendered
+    assert "ancho" in rendered
+
+
+def test_repr_html_indexes_rich_sequence_fields() -> None:
     container = _NestedListModel(
         members=(
             _NestedModel(name="a", value=1.0),
@@ -188,16 +212,39 @@ def test_repr_html_renders_list_of_nested_models_as_ul() -> None:
         ),
     )
     rendered = container._repr_html_()  # pylint: disable=protected-access
-    assert "<ul" in rendered
-    assert "<li>" in rendered
-    assert "a" in rendered
-    assert "b" in rendered
+    assert ">members[0]<" in rendered
+    assert ">members[1]<" in rendered
+    assert rendered.count("<table") == 2
 
 
-def test_repr_html_renders_empty_list_field() -> None:
+def test_repr_html_renders_empty_rich_sequence_inline() -> None:
     container = _NestedListModel(members=())
     rendered = container._repr_html_()  # pylint: disable=protected-access
     assert "(vacío)" in rendered
+
+
+def test_repr_html_renders_plain_sequence_value_as_list() -> None:
+    class _PlainListModel(RichMarkdownModel):
+        items: tuple[_PlainModel, ...]
+
+    container = _PlainListModel(items=(_PlainModel(value=1), _PlainModel(value=2)))
+    rendered = container._repr_html_()  # pylint: disable=protected-access
+    assert "<ul" in rendered
+    assert "<li>" in rendered
+    assert "_PlainModel(...)" in rendered
+
+
+def test_repr_html_renders_mixed_sequence_with_inline_rich_table() -> None:
+    class _MixedModel(RichMarkdownModel):
+        model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
+
+        items: tuple[Any, ...]
+
+    container = _MixedModel(items=(_NestedModel(name="x", value=1.0), 42))
+    rendered = container._repr_html_()  # pylint: disable=protected-access
+    assert "<ul" in rendered
+    assert rendered.count("<table") == 2
+    assert "<li>" in rendered
 
 
 def test_repr_html_escapes_field_and_value_text() -> None:

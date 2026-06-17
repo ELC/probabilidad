@@ -43,8 +43,7 @@ DISPLAY_NAMES: dict[str, str] = {
 }
 
 _TABLE_STYLE = (
-    "border-collapse: collapse; margin: 0.25em 0;"
-    " font-family: var(--jp-content-font-family, sans-serif); font-size: 0.95em;"
+    "border-collapse: collapse; margin: 0; font-family: var(--jp-content-font-family, sans-serif); font-size: 0.95em;"
 )
 _HEADER_STYLE = (
     "padding: 0.25em 0.6em; text-align: left;"
@@ -52,6 +51,11 @@ _HEADER_STYLE = (
 )
 _CELL_STYLE = "padding: 0.2em 0.6em; border-bottom: 1px solid rgba(120, 120, 120, 0.2); vertical-align: top;"
 _FIELD_STYLE = _CELL_STYLE + " font-family: var(--jp-code-font-family, monospace); white-space: nowrap;"
+_GROUP_STYLE = "display: flex; flex-direction: column; gap: 0.6em; align-items: flex-start;"
+_LABEL_STYLE = (
+    "font-family: var(--jp-code-font-family, monospace); font-size: 0.85em; color: rgba(120, 120, 120, 0.95);"
+)
+_OUTER_TITLE_STYLE = "font-weight: 600; font-size: 1em; padding: 0.1em 0; color: var(--jp-ui-font-color1, inherit);"
 
 
 def display_name_for(model_class: type) -> str:
@@ -107,24 +111,69 @@ class RichMarkdownModel(BaseModel):
         return _model_to_html(self)
 
 
-def _model_to_html(model: RichMarkdownModel) -> str:
-    title = html.escape(display_name_for(type(model)))
-    rows: list[str] = []
-    # pylint: disable-next=not-an-iterable
-    field_names = list(type(model).model_fields)
-    for field_name in field_names:
-        cell_html = _value_to_html(getattr(model, field_name))
-        rows.append(
-            f'<tr><th style="{_FIELD_STYLE}">{html.escape(field_name)}</th>'
-            f'<td style="{_CELL_STYLE}">{cell_html}</td></tr>',
-        )
-    body = "".join(rows)
+def _is_rich(value: Any) -> bool:
+    return isinstance(value, RichMarkdownModel)
+
+
+def _is_rich_sequence(value: Any) -> bool:
+    return isinstance(value, tuple | list) and len(value) > 0 and all(_is_rich(item) for item in value)
+
+
+def _scalar_table_html(title: str, rows_html: str) -> str:
     return (
         f'<table style="{_TABLE_STYLE}">'
         f'<thead><tr><th colspan="2" style="{_HEADER_STYLE}">{title}</th></tr></thead>'
-        f"<tbody>{body}</tbody>"
+        f"<tbody>{rows_html}</tbody>"
         f"</table>"
     )
+
+
+def _labelled(label: str | None, body_html: str) -> str:
+    if label is None:
+        return body_html
+    label_html = f'<div style="{_LABEL_STYLE}">{html.escape(label)}</div>'
+    return f"<div>{label_html}{body_html}</div>"
+
+
+def _model_to_html(model: RichMarkdownModel, label: str | None = None) -> str:
+    title = html.escape(display_name_for(type(model)))
+    # pylint: disable-next=not-an-iterable
+    field_names = list(type(model).model_fields)
+    scalar_fields: list[tuple[str, Any]] = []
+    rich_fields: list[tuple[str, Any]] = []
+    for name in field_names:
+        value = getattr(model, name)
+        if _is_rich(value) or _is_rich_sequence(value):
+            rich_fields.append((name, value))
+        else:
+            scalar_fields.append((name, value))
+
+    blocks: list[str] = []
+    if scalar_fields or not rich_fields:
+        blocks.append(_scalar_table_html(title, _scalar_rows_html(scalar_fields)))
+    else:
+        blocks.append(f'<div style="{_OUTER_TITLE_STYLE}">{title}</div>')
+
+    for name, value in rich_fields:
+        blocks.extend(_rich_field_blocks(name, value))
+
+    body = "".join(blocks)
+    inner = body if len(blocks) <= 1 else f'<div style="{_GROUP_STYLE}">{body}</div>'
+    return _labelled(label, inner)
+
+
+def _scalar_rows_html(scalar_fields: list[tuple[str, Any]]) -> str:
+    return "".join(
+        f'<tr><th style="{_FIELD_STYLE}">{html.escape(name)}</th>'
+        f'<td style="{_CELL_STYLE}">{_value_to_html(value)}</td></tr>'
+        for name, value in scalar_fields
+    )
+
+
+def _rich_field_blocks(name: str, value: Any) -> list[str]:
+    if _is_rich(value):
+        return [_model_to_html(value, label=name)]
+    return [_model_to_html(item, label=f"{name}[{index}]") for index, item in enumerate(value)]
 
 
 def _sequence_to_html(value: tuple[Any, ...] | list[Any]) -> str:
