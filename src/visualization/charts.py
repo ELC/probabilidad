@@ -11,7 +11,7 @@ from distributions.evaluations import DensityGrid, ProbabilityMassTable
 from inference.mean_ci import MeanConfidenceInterval
 from sampling.bootstrap import BootstrapMeanResult
 from sampling.clt import CLTSimulationResult
-from sampling.lln import LLNSimulationResult
+from sampling.lln import LLNMultipleTrajectoriesResult, LLNSimulationResult
 from visualization.theme import apply_theme
 
 _ARBITRARY = ConfigDict(arbitrary_types_allowed=True, frozen=True)
@@ -185,6 +185,52 @@ def chart_lln_running_mean(input_data: LLNChartInput) -> alt.Chart:
         )
     )
     layered = alt.layer(running, expected).properties(title=input_data.title)
+    return apply_theme(layered, input_data.settings)
+
+
+class LLNMultipleTrajectoriesChartInput(BaseModel):
+    model_config = _ARBITRARY
+
+    lln_result: LLNMultipleTrajectoriesResult
+    title: str = "Trayectorias de la media acumulada"
+    settings: Settings = Settings()
+
+
+def chart_lln_multiple_trajectories(input_data: LLNMultipleTrajectoriesChartInput) -> alt.Chart:
+    theme = input_data.settings.chart_theme
+    running_means = input_data.lln_result.running_means
+    trajectory_count, horizon = running_means.shape
+    step = input_data.lln_result.step
+    trajectories = pd.DataFrame({
+        "step": np.tile(step, trajectory_count),
+        "running_mean": running_means.reshape(-1),
+        "trajectory": np.repeat(np.arange(trajectory_count), horizon),
+    })
+    lines = (
+        alt
+        .Chart(trajectories)
+        .mark_line(opacity=0.45, strokeWidth=1.0, color=theme.palette.primary)
+        .encode(
+            x=alt.X("step:Q", title="Tamaño de muestra"),
+            y=alt.Y("running_mean:Q", title="Media acumulada"),
+            detail="trajectory:N",
+        )
+    )
+    expected_label = "Media teórica"
+    expected = (
+        alt
+        .Chart(pd.DataFrame({"expected_mean": [input_data.lln_result.underlying_mean], "marca": [expected_label]}))
+        .mark_rule(strokeDash=[6, 4], strokeWidth=2.0)
+        .encode(
+            y="expected_mean:Q",
+            color=alt.Color(
+                "marca:N",
+                scale=alt.Scale(domain=[expected_label], range=[theme.palette.accent]),
+                legend=alt.Legend(title=None, orient="bottom"),
+            ),
+        )
+    )
+    layered = alt.layer(lines, expected).properties(title=input_data.title)
     return apply_theme(layered, input_data.settings)
 
 

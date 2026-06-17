@@ -28,10 +28,12 @@ from inference import (
 from sampling import (
     BootstrapInput,
     CLTSimulationInput,
+    LLNMultipleTrajectoriesInput,
     LLNSimulationInput,
     bootstrap_mean,
     simulate_clt,
     simulate_lln,
+    simulate_lln_multiple_trajectories,
 )
 from visualization import (
     BootstrapDistributionChartInput,
@@ -42,6 +44,7 @@ from visualization import (
     FrequencyChartInput,
     HistogramChartInput,
     LLNChartInput,
+    LLNMultipleTrajectoriesChartInput,
     PartitionDiagramInput,
     ProbabilityMassChartInput,
     ProbabilityTreeInput,
@@ -53,6 +56,7 @@ from visualization import (
     chart_descriptive_summary,
     chart_frequency_table,
     chart_histogram,
+    chart_lln_multiple_trajectories,
     chart_lln_running_mean,
     chart_partition_diagram,
     chart_probability_mass,
@@ -120,6 +124,22 @@ def test_chart_lln(fixed_settings: Settings) -> None:
     distribution = make_normal(NormalParams())
     lln_result = simulate_lln(LLNSimulationInput(distribution=distribution, horizon=1_000, settings=fixed_settings))
     chart = chart_lln_running_mean(LLNChartInput(lln_result=lln_result, settings=fixed_settings))
+    assert chart.to_dict()
+
+
+def test_chart_lln_multiple_trajectories(fixed_settings: Settings) -> None:
+    distribution = make_normal(NormalParams())
+    lln_result = simulate_lln_multiple_trajectories(
+        LLNMultipleTrajectoriesInput(
+            distribution=distribution,
+            horizon=400,
+            trajectory_count=8,
+            settings=fixed_settings,
+        )
+    )
+    chart = chart_lln_multiple_trajectories(
+        LLNMultipleTrajectoriesChartInput(lln_result=lln_result, settings=fixed_settings)
+    )
     assert chart.to_dict()
 
 
