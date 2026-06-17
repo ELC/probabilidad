@@ -7,7 +7,10 @@ from visualization.charts import (
     FrequencyChartInput,
     HistogramChartInput,
     LLNChartInput,
+    PartitionDiagramInput,
     ProbabilityMassChartInput,
+    ProbabilityTreeInput,
+    VennTwoSetsInput,
     chart_bootstrap_distribution,
     chart_clt_comparison,
     chart_confidence_interval,
@@ -16,7 +19,10 @@ from visualization.charts import (
     chart_frequency_table,
     chart_histogram,
     chart_lln_running_mean,
+    chart_partition_diagram,
     chart_probability_mass,
+    chart_probability_tree,
+    chart_venn_two_sets,
 )
 from visualization.theme import apply_theme
 
@@ -29,7 +35,10 @@ __all__ = [
     "FrequencyChartInput",
     "HistogramChartInput",
     "LLNChartInput",
+    "PartitionDiagramInput",
     "ProbabilityMassChartInput",
+    "ProbabilityTreeInput",
+    "VennTwoSetsInput",
     "apply_theme",
     "chart_bootstrap_distribution",
     "chart_clt_comparison",
@@ -39,5 +48,8 @@ __all__ = [
     "chart_frequency_table",
     "chart_histogram",
     "chart_lln_running_mean",
+    "chart_partition_diagram",
     "chart_probability_mass",
+    "chart_probability_tree",
+    "chart_venn_two_sets",
 ]

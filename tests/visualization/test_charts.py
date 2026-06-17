@@ -42,7 +42,10 @@ from visualization import (
     FrequencyChartInput,
     HistogramChartInput,
     LLNChartInput,
+    PartitionDiagramInput,
     ProbabilityMassChartInput,
+    ProbabilityTreeInput,
+    VennTwoSetsInput,
     chart_bootstrap_distribution,
     chart_clt_comparison,
     chart_confidence_interval,
@@ -51,7 +54,10 @@ from visualization import (
     chart_frequency_table,
     chart_histogram,
     chart_lln_running_mean,
+    chart_partition_diagram,
     chart_probability_mass,
+    chart_probability_tree,
+    chart_venn_two_sets,
 )
 
 
@@ -170,3 +176,104 @@ def test_chart_descriptive_summary(normal_observations: DataFrame[Observations],
         )
     )
     assert chart.to_dict()
+
+
+def test_chart_venn_two_sets_renders_intersection_label(fixed_settings: Settings) -> None:
+    chart = chart_venn_two_sets(
+        VennTwoSetsInput(set_a_label="Esperan mucho", set_b_label="Llegan tarde", settings=fixed_settings)
+    )
+    spec = chart.to_dict(format="vega")
+    assert "∩" in str(spec)
+    assert "Esperan mucho" in str(spec)
+    assert "Llegan tarde" in str(spec)
+
+
+def test_chart_partition_diagram_renders_strips(fixed_settings: Settings) -> None:
+    chart = chart_partition_diagram(
+        PartitionDiagramInput(
+            partition_labels=("Caja 1", "Caja 2", "Caja 3"),
+            partition_weights=(2.0, 3.0, 1.0),
+            settings=fixed_settings,
+        )
+    )
+    assert chart.to_dict()
+
+
+def test_chart_partition_diagram_renders_overlay(fixed_settings: Settings) -> None:
+    chart = chart_partition_diagram(
+        PartitionDiagramInput(
+            partition_labels=("A_1", "A_2"),
+            partition_weights=(1.0, 1.0),
+            overlay_label="Evento B",
+            overlay_fractions=(0.4, 0.6),
+            settings=fixed_settings,
+        )
+    )
+    assert chart.to_dict()
+
+
+def test_chart_partition_diagram_rejects_mismatched_lengths(fixed_settings: Settings) -> None:
+    try:
+        chart_partition_diagram(
+            PartitionDiagramInput(
+                partition_labels=("A_1", "A_2"),
+                partition_weights=(1.0,),
+                settings=fixed_settings,
+            )
+        )
+    except ValueError as error:
+        assert "same length" in str(error)
+    else:
+        msg = "expected ValueError for mismatched lengths"
+        raise AssertionError(msg)
+
+
+def test_chart_partition_diagram_rejects_zero_weights(fixed_settings: Settings) -> None:
+    try:
+        chart_partition_diagram(
+            PartitionDiagramInput(
+                partition_labels=("A_1", "A_2"),
+                partition_weights=(0.0, 0.0),
+                settings=fixed_settings,
+            )
+        )
+    except ValueError as error:
+        assert "positive" in str(error)
+    else:
+        msg = "expected ValueError for zero weights"
+        raise AssertionError(msg)
+
+
+def test_chart_partition_diagram_rejects_overlay_length_mismatch(fixed_settings: Settings) -> None:
+    try:
+        chart_partition_diagram(
+            PartitionDiagramInput(
+                partition_labels=("A_1", "A_2"),
+                partition_weights=(1.0, 1.0),
+                overlay_label="B",
+                overlay_fractions=(0.4,),
+                settings=fixed_settings,
+            )
+        )
+    except ValueError as error:
+        assert "overlay" in str(error)
+    else:
+        msg = "expected ValueError for overlay length mismatch"
+        raise AssertionError(msg)
+
+
+def test_chart_probability_tree_emits_joint_probabilities(fixed_settings: Settings) -> None:
+    chart = chart_probability_tree(
+        ProbabilityTreeInput(
+            root_label="Ω",
+            branch_labels=("Enfermo", "Sano"),
+            branch_probabilities=(0.01, 0.99),
+            leaf_labels=("Test +", "Test −"),
+            conditional_probabilities=((0.99, 0.01), (0.05, 0.95)),
+            settings=fixed_settings,
+        )
+    )
+    flattened = str(chart.to_dict(format="vega"))
+    assert "Enfermo" in flattened
+    assert "Sano" in flattened
+    assert "0.010" in flattened

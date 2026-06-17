@@ -342,3 +342,236 @@ def chart_descriptive_summary(input_data: DescriptiveSummaryChartInput) -> alt.C
     )
     layered = alt.layer(box, mean_mark).properties(title=input_data.title)
     return apply_theme(layered, input_data.settings)
+
+
+class VennTwoSetsInput(BaseModel):
+    model_config = _ARBITRARY
+
+    set_a_label: str = "A"
+    set_b_label: str = "B"
+    title: str = "Diagrama de Venn"
+    settings: Settings = Settings()
+
+
+def chart_venn_two_sets(input_data: VennTwoSetsInput) -> alt.Chart:
+    theme = input_data.settings.chart_theme
+    centers = pd.DataFrame({
+        "x": [-1.0, 1.0],
+        "y": [0.0, 0.0],
+        "label": [input_data.set_a_label, input_data.set_b_label],
+    })
+    circles = (
+        alt
+        .Chart(centers)
+        .mark_circle(size=22000, opacity=0.55, stroke=theme.palette.muted, strokeWidth=2)
+        .encode(
+            x=alt.X("x:Q", scale=alt.Scale(domain=[-3.0, 3.0]), axis=None),
+            y=alt.Y("y:Q", scale=alt.Scale(domain=[-1.8, 1.8]), axis=None),
+            color=alt.Color(
+                "label:N",
+                scale=alt.Scale(
+                    domain=[input_data.set_a_label, input_data.set_b_label],
+                    range=[theme.palette.primary, theme.palette.secondary],
+                ),
+                legend=None,
+            ),
+        )
+        .properties(width=420, height=260)
+    )
+    intersection_label = f"{input_data.set_a_label} ∩ {input_data.set_b_label}"
+    set_label_data = pd.DataFrame({
+        "x": [-2.1, 2.1],
+        "y": [1.2, 1.2],
+        "label": [input_data.set_a_label, input_data.set_b_label],
+    })
+    set_labels = (
+        alt
+        .Chart(set_label_data)
+        .mark_text(fontSize=15, fontWeight="bold")
+        .encode(x="x:Q", y="y:Q", text="label:N")
+    )
+    intersection_data = pd.DataFrame({"x": [0.0], "y": [0.0], "label": [intersection_label]})
+    intersection_text = (
+        alt
+        .Chart(intersection_data)
+        .mark_text(fontSize=14)
+        .encode(x="x:Q", y="y:Q", text="label:N")
+    )
+    layered = alt.layer(circles, set_labels, intersection_text).properties(title=input_data.title)
+    return apply_theme(layered, input_data.settings)
+
+
+class PartitionDiagramInput(BaseModel):
+    model_config = _ARBITRARY
+
+    partition_labels: tuple[str, ...] = ("A_1", "A_2", "A_3")
+    partition_weights: tuple[float, ...] = (1.0, 1.0, 1.0)
+    overlay_label: str | None = None
+    overlay_fractions: tuple[float, ...] | None = None
+    title: str = "Partición del espacio muestral"
+    settings: Settings = Settings()
+
+
+def chart_partition_diagram(input_data: PartitionDiagramInput) -> alt.Chart:  # noqa: PLR0914
+    theme = input_data.settings.chart_theme
+    if len(input_data.partition_labels) != len(input_data.partition_weights):
+        raise ValueError("partition_labels and partition_weights must have the same length")
+    weights = np.asarray(input_data.partition_weights, dtype=float)
+    if weights.sum() <= 0:
+        raise ValueError("partition_weights must sum to a positive number")
+    fractions = weights / weights.sum()
+    edges = np.concatenate(([0.0], np.cumsum(fractions)))
+    records = []
+    for index, (label, fraction) in enumerate(zip(input_data.partition_labels, fractions, strict=True)):
+        records.append({
+            "x_start": float(edges[index]),
+            "x_end": float(edges[index + 1]),
+            "y_start": 0.0,
+            "y_end": 1.0,
+            "label": label,
+            "fraction": fraction,
+        })
+    bands = pd.DataFrame.from_records(records)
+    rectangles = (
+        alt
+        .Chart(bands)
+        .mark_rect(opacity=0.45, stroke=theme.palette.muted, strokeWidth=1.5)
+        .encode(
+            x=alt.X("x_start:Q", scale=alt.Scale(domain=[0.0, 1.0]), axis=None),
+            x2="x_end:Q",
+            y=alt.Y("y_start:Q", scale=alt.Scale(domain=[-0.4, 1.2]), axis=None),
+            y2="y_end:Q",
+            color=alt.Color("label:N", legend=None, scale=alt.Scale(scheme="tableau10")),
+        )
+        .properties(width=520, height=180)
+    )
+    bands_with_center = bands.assign(x_center=(bands["x_start"] + bands["x_end"]) / 2)
+    text = (
+        alt
+        .Chart(bands_with_center)
+        .mark_text(fontSize=14, fontWeight="bold", baseline="middle")
+        .encode(x="x_center:Q", y=alt.Y(value=0.5), text="label:N")
+    )
+    layers: list[alt.Chart] = [rectangles, text]
+    if input_data.overlay_label is not None and input_data.overlay_fractions is not None:
+        if len(input_data.overlay_fractions) != len(input_data.partition_labels):
+            raise ValueError("overlay_fractions must match partition length")
+        overlay_records = []
+        for index, fraction in enumerate(input_data.overlay_fractions):
+            overlay_records.append({
+                "x_start": float(edges[index]),
+                "x_end": float(edges[index] + fraction * (edges[index + 1] - edges[index])),
+                "y_start": -0.35,
+                "y_end": -0.05,
+            })
+        overlay_df = pd.DataFrame.from_records(overlay_records)
+        overlay = (
+            alt
+            .Chart(overlay_df)
+            .mark_rect(color=theme.palette.accent, opacity=0.75)
+            .encode(x="x_start:Q", x2="x_end:Q", y="y_start:Q", y2="y_end:Q")
+        )
+        overlay_label_df = pd.DataFrame({"x": [0.0], "y": [-0.2], "label": [input_data.overlay_label]})
+        overlay_label = (
+            alt
+            .Chart(overlay_label_df)
+            .mark_text(fontSize=13, baseline="middle", align="left", dx=6)
+            .encode(x="x:Q", y="y:Q", text="label:N")
+        )
+        layers.extend([overlay, overlay_label])
+    layered = alt.layer(*layers).properties(title=input_data.title)
+    return apply_theme(layered, input_data.settings)
+
+
+class ProbabilityTreeInput(BaseModel):
+    model_config = _ARBITRARY
+
+    root_label: str = "Ω"
+    branch_labels: tuple[str, str] = ("D", "D̄")
+    branch_probabilities: tuple[float, float] = (0.5, 0.5)
+    leaf_labels: tuple[str, str] = ("+", "−")
+    conditional_probabilities: tuple[tuple[float, float], tuple[float, float]] = (
+        (0.5, 0.5),
+        (0.5, 0.5),
+    )
+    title: str = "Árbol de probabilidad"
+    settings: Settings = Settings()
+
+
+def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # noqa: PLR0914
+    theme = input_data.settings.chart_theme
+    root_x, branch_x, leaf_x = 0.0, 1.0, 2.2
+    branch_ys = (1.0, -1.0)
+    leaf_offsets = (0.45, -0.45)
+    edges = []
+    nodes = [{"x": root_x, "y": 0.0, "label": input_data.root_label, "kind": "root"}]
+    for branch_index, (branch_label, branch_prob) in enumerate(
+        zip(input_data.branch_labels, input_data.branch_probabilities, strict=True),
+    ):
+        branch_y = branch_ys[branch_index]
+        edges.append({
+            "x": [root_x, branch_x],
+            "y": [0.0, branch_y],
+            "label_x": (root_x + branch_x) / 2,
+            "label_y": (0.0 + branch_y) / 2,
+            "weight": f"{branch_label}: {branch_prob:.2f}",
+        })
+        nodes.append({"x": branch_x, "y": branch_y, "label": branch_label, "kind": "branch"})
+        for leaf_index, (leaf_label, conditional_prob) in enumerate(
+            zip(input_data.leaf_labels, input_data.conditional_probabilities[branch_index], strict=True),
+        ):
+            leaf_y = branch_y + leaf_offsets[leaf_index]
+            edges.append({
+                "x": [branch_x, leaf_x],
+                "y": [branch_y, leaf_y],
+                "label_x": (branch_x + leaf_x) / 2,
+                "label_y": (branch_y + leaf_y) / 2,
+                "weight": f"{leaf_label}|{branch_label}: {conditional_prob:.2f}",
+            })
+            joint = branch_prob * conditional_prob
+            nodes.append({
+                "x": leaf_x,
+                "y": leaf_y,
+                "label": f"{branch_label}∩{leaf_label}: {joint:.3f}",
+                "kind": "leaf",
+            })
+    edge_records = []
+    for edge_index, edge in enumerate(edges):
+        edge_records.append({"x": edge["x"][0], "y": edge["y"][0], "edge_id": edge_index})
+        edge_records.append({"x": edge["x"][1], "y": edge["y"][1], "edge_id": edge_index})
+    edge_df = pd.DataFrame.from_records(edge_records)
+    line_chart = (
+        alt
+        .Chart(edge_df)
+        .mark_line(color=theme.palette.muted, strokeWidth=1.5)
+        .encode(
+            x=alt.X("x:Q", scale=alt.Scale(domain=[-0.4, 3.4]), axis=None),
+            y=alt.Y("y:Q", scale=alt.Scale(domain=[-1.9, 1.9]), axis=None),
+            detail="edge_id:N",
+        )
+        .properties(width=520, height=320)
+    )
+    edge_label_df = pd.DataFrame.from_records([
+        {"x": edge["label_x"], "y": edge["label_y"], "label": edge["weight"]} for edge in edges
+    ])
+    edge_labels = (
+        alt
+        .Chart(edge_label_df)
+        .mark_text(fontSize=11, dy=-8)
+        .encode(x="x:Q", y="y:Q", text="label:N")
+    )
+    node_df = pd.DataFrame.from_records(nodes)
+    node_dots = (
+        alt
+        .Chart(node_df)
+        .mark_circle(size=180, color=theme.palette.primary)
+        .encode(x="x:Q", y="y:Q")
+    )
+    node_labels = (
+        alt
+        .Chart(node_df)
+        .mark_text(fontSize=12, fontWeight="bold", align="left", dx=10)
+        .encode(x="x:Q", y="y:Q", text="label:N")
+    )
+    layered = alt.layer(line_chart, edge_labels, node_dots, node_labels).properties(title=input_data.title)
+    return apply_theme(layered, input_data.settings)
