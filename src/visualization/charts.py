@@ -170,11 +170,19 @@ def chart_lln_running_mean(input_data: LLNChartInput) -> alt.Chart:
         .mark_line(color=theme.palette.primary, strokeWidth=theme.line_stroke_width)
         .encode(x=alt.X("step:Q", title="Tamaño de muestra"), y=alt.Y("running_mean:Q", title="Media acumulada"))
     )
+    expected_label = "Media teórica"
     expected = (
         alt
-        .Chart(pd.DataFrame({"expected_mean": [input_data.lln_result.underlying_mean]}))
-        .mark_rule(color=theme.palette.secondary, strokeDash=[6, 4])
-        .encode(y="expected_mean:Q")
+        .Chart(pd.DataFrame({"expected_mean": [input_data.lln_result.underlying_mean], "marca": [expected_label]}))
+        .mark_rule(strokeDash=[6, 4])
+        .encode(
+            y="expected_mean:Q",
+            color=alt.Color(
+                "marca:N",
+                scale=alt.Scale(domain=[expected_label], range=[theme.palette.secondary]),
+                legend=alt.Legend(title=None, orient="bottom"),
+            ),
+        )
     )
     layered = alt.layer(running, expected).properties(title=input_data.title)
     return apply_theme(layered, input_data.settings)
@@ -201,8 +209,11 @@ def chart_bootstrap_distribution(input_data: BootstrapDistributionChartInput) ->
             y=alt.Y("count()", title="Frecuencia"),
         )
     )
+    lower_label = "Cuantil inferior"
+    upper_label = "Cuantil superior"
+    point_label = "Estimación puntual"
     bounds = pd.DataFrame({
-        "boundary": ["lower", "upper", "point"],
+        "boundary": [lower_label, upper_label, point_label],
         "value": [
             input_data.bootstrap_result.lower_quantile,
             input_data.bootstrap_result.upper_quantile,
@@ -217,7 +228,11 @@ def chart_bootstrap_distribution(input_data: BootstrapDistributionChartInput) ->
             x="value:Q",
             color=alt.Color(
                 "boundary:N",
-                scale=alt.Scale(range=[theme.palette.secondary, theme.palette.secondary, theme.palette.accent]),
+                scale=alt.Scale(
+                    domain=[lower_label, upper_label, point_label],
+                    range=[theme.palette.secondary, theme.palette.secondary, theme.palette.accent],
+                ),
+                legend=alt.Legend(title=None, orient="bottom"),
             ),
         )
     )
@@ -257,7 +272,14 @@ def chart_confidence_interval(input_data: ConfidenceIntervalChartInput) -> alt.C
             x="lower:Q",
             x2="upper:Q",
             y=alt.Y("replicate:O", title="Réplica"),
-            color=alt.Color("covers:N", scale=alt.Scale(range=[theme.palette.danger, theme.palette.primary])),
+            color=alt.Color(
+                "covers:N",
+                scale=alt.Scale(
+                    domain=[False, True],
+                    range=[theme.palette.danger, theme.palette.primary],
+                ),
+                legend=alt.Legend(title="Cubre la media", orient="bottom"),
+            ),
         )
     )
     points = (
@@ -268,11 +290,19 @@ def chart_confidence_interval(input_data: ConfidenceIntervalChartInput) -> alt.C
     )
     layers = [bars, points]
     if input_data.target_mean is not None:
+        target_label = "Media verdadera"
         target = (
             alt
-            .Chart(pd.DataFrame({"target": [input_data.target_mean]}))
-            .mark_rule(color=theme.palette.muted, strokeDash=[6, 4])
-            .encode(x="target:Q")
+            .Chart(pd.DataFrame({"target": [input_data.target_mean], "marca": [target_label]}))
+            .mark_rule(strokeDash=[6, 4])
+            .encode(
+                x="target:Q",
+                color=alt.Color(
+                    "marca:N",
+                    scale=alt.Scale(domain=[target_label], range=[theme.palette.muted]),
+                    legend=alt.Legend(title=None, orient="bottom"),
+                ),
+            )
         )
         layers.append(target)
     layered = alt.layer(*layers).properties(title=input_data.title)
@@ -296,11 +326,19 @@ def chart_descriptive_summary(input_data: DescriptiveSummaryChartInput) -> alt.C
         .mark_boxplot(extent=1.5, color=theme.palette.primary, size=40)
         .encode(x=alt.X("value:Q", title="Valor"))
     )
+    mean_label = "Media muestral"
     mean_mark = (
         alt
-        .Chart(pd.DataFrame({"mean": [input_data.statistics.location.mean]}))
-        .mark_rule(color=theme.palette.accent, strokeWidth=theme.line_stroke_width, strokeDash=[4, 4])
-        .encode(x="mean:Q")
+        .Chart(pd.DataFrame({"mean": [input_data.statistics.location.mean], "marca": [mean_label]}))
+        .mark_rule(strokeWidth=theme.line_stroke_width, strokeDash=[4, 4])
+        .encode(
+            x="mean:Q",
+            color=alt.Color(
+                "marca:N",
+                scale=alt.Scale(domain=[mean_label], range=[theme.palette.accent]),
+                legend=alt.Legend(title=None, orient="bottom"),
+            ),
+        )
     )
     layered = alt.layer(box, mean_mark).properties(title=input_data.title)
     return apply_theme(layered, input_data.settings)
