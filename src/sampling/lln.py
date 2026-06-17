@@ -1,7 +1,7 @@
 import numpy as np
 from pydantic import BaseModel, ConfigDict, Field
 
-from core import Settings
+from core import RichMarkdownModel, Settings
 from distributions.continuous import ContinuousDistribution
 from distributions.discrete import DiscreteDistribution
 
@@ -16,7 +16,7 @@ class LLNSimulationInput(BaseModel):
     settings: Settings = Settings()
 
 
-class LLNSimulationResult(BaseModel):
+class LLNSimulationResult(RichMarkdownModel):
     model_config = _ARBITRARY
 
     step: np.ndarray

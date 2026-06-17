@@ -4,6 +4,8 @@ from enum import StrEnum
 from pydantic import BaseModel, ConfigDict, Field
 from scipy import stats
 
+from core import RichMarkdownModel
+
 _FROZEN = ConfigDict(frozen=True)
 
 
@@ -24,7 +26,7 @@ class OneSampleMeanTestInput(BaseModel):
     significance_level: float = Field(default=0.05, gt=0.0, lt=1.0)
 
 
-class OneSampleMeanTestResult(BaseModel):
+class OneSampleMeanTestResult(RichMarkdownModel):
     model_config = _FROZEN
 
     test_statistic: float
@@ -67,7 +69,7 @@ class OneSampleProportionTestInput(BaseModel):
     significance_level: float = Field(default=0.05, gt=0.0, lt=1.0)
 
 
-class OneSampleProportionTestResult(BaseModel):
+class OneSampleProportionTestResult(RichMarkdownModel):
     model_config = _FROZEN
 
     test_statistic: float

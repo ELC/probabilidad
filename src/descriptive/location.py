@@ -1,11 +1,11 @@
 import numpy as np
 from pandera.typing import DataFrame
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 
-from core import Observations
+from core import Observations, RichMarkdownModel
 
 
-class LocationStatistics(BaseModel):
+class LocationStatistics(RichMarkdownModel):
     model_config = ConfigDict(frozen=True)
 
     mean: float

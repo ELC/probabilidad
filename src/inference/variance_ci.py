@@ -1,6 +1,8 @@
 from pydantic import BaseModel, ConfigDict, Field
 from scipy import stats
 
+from core import RichMarkdownModel
+
 _FROZEN = ConfigDict(frozen=True)
 
 
@@ -12,7 +14,7 @@ class VarianceInput(BaseModel):
     confidence_level: float = Field(default=0.95, gt=0.0, lt=1.0)
 
 
-class VarianceConfidenceInterval(BaseModel):
+class VarianceConfidenceInterval(RichMarkdownModel):
     model_config = _FROZEN
 
     point_estimate: float

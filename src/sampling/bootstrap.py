@@ -4,7 +4,7 @@ import numpy as np
 from pandera.typing import DataFrame
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from core import Observations, Settings
+from core import Observations, RichMarkdownModel, Settings
 
 _ARBITRARY = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
@@ -25,7 +25,7 @@ class BootstrapInput(BaseModel):
         return self
 
 
-class BootstrapMeanResult(BaseModel):
+class BootstrapMeanResult(RichMarkdownModel):
     model_config = _ARBITRARY
 
     bootstrap_means: np.ndarray

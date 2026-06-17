@@ -23,11 +23,13 @@ project:
     - plugins/ethicalads.mjs
 
   toc:
-    - file: chapters/01_unidad1_tratamiento_datos.ipynb
-    - file: chapters/02_unidad2_probabilidad.ipynb
-    - file: chapters/03_unidad3_variables_aleatorias.ipynb
-    - file: chapters/04_unidad4_va_bidimensionales_suma.ipynb
-    - file: chapters/05_unidad5_inferencia.ipynb
+    - file: chapters/descriptive_statistics.ipynb
+    - file: chapters/probability.ipynb
+    - file: chapters/random_variables.ipynb
+    - file: chapters/joint_and_sums.ipynb
+    - file: chapters/inference.ipynb
+    - file: chapters/glossary.md
+    - file: chapters/pedagogy.md
 
 site:
   template: book-theme
@@ -37,16 +39,20 @@ site:
       :::
 
   nav:
-    - title: Unidad 1
-      url: /chapters/unidad1-tratamiento-datos
-    - title: Unidad 2
-      url: /chapters/unidad2-probabilidad
-    - title: Unidad 3
-      url: /chapters/unidad3-variables-aleatorias
-    - title: Unidad 4
-      url: /chapters/unidad4-va-bidimensionales-suma
-    - title: Unidad 5
-      url: /chapters/unidad5-inferencia
+    - title: Tratamiento de datos
+      url: /chapters/descriptive-statistics
+    - title: Probabilidad
+      url: /chapters/probability
+    - title: Variables aleatorias
+      url: /chapters/random-variables
+    - title: Sumas y promedios
+      url: /chapters/joint-and-sums
+    - title: Inferencia
+      url: /chapters/inference
+    - title: Glosario
+      url: /chapters/glossary
+    - title: Enfoque pedagógico
+      url: /chapters/pedagogy
 
   options:
     folders: true

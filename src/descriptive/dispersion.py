@@ -1,11 +1,11 @@
 import numpy as np
 from pandera.typing import DataFrame
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 
-from core import Observations
+from core import Observations, RichMarkdownModel
 
 
-class DispersionStatistics(BaseModel):
+class DispersionStatistics(RichMarkdownModel):
     model_config = ConfigDict(frozen=True)
 
     sample_variance: float

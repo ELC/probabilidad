@@ -5,14 +5,14 @@ import pandas as pd
 from pandera.typing import DataFrame
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from core import PMFTable, Settings
+from core import PMFTable, RichMarkdownModel, Settings
 from distributions.continuous import ContinuousDistribution
 from distributions.discrete import DiscreteDistribution
 
 _ARBITRARY = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
 
-class DensityGrid(BaseModel):
+class DensityGrid(RichMarkdownModel):
     model_config = _ARBITRARY
 
     grid: np.ndarray
@@ -21,14 +21,14 @@ class DensityGrid(BaseModel):
     distribution_name: str
 
 
-class ProbabilityMassTable(BaseModel):
+class ProbabilityMassTable(RichMarkdownModel):
     model_config = _ARBITRARY
 
     table: DataFrame[PMFTable]
     distribution_name: str
 
 
-class TailProbabilityResult(BaseModel):
+class TailProbabilityResult(RichMarkdownModel):
     model_config = ConfigDict(frozen=True)
 
     lower_bound: float | None = None
@@ -36,14 +36,14 @@ class TailProbabilityResult(BaseModel):
     probability: float = Field(ge=0.0, le=1.0)
 
 
-class QuantileResult(BaseModel):
+class QuantileResult(RichMarkdownModel):
     model_config = ConfigDict(frozen=True)
 
     probability: float = Field(ge=0.0, le=1.0)
     quantile: float
 
 
-class SurvivalResult(BaseModel):
+class SurvivalResult(RichMarkdownModel):
     model_config = ConfigDict(frozen=True)
 
     threshold: float
@@ -148,7 +148,7 @@ def survival_of_continuous(input_data: SurvivalInput) -> SurvivalResult:
     )
 
 
-class DistributionMoments(BaseModel):
+class DistributionMoments(RichMarkdownModel):
     model_config = ConfigDict(frozen=True)
 
     mean: float

@@ -3,10 +3,12 @@ from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from core import RichMarkdownModel
+
 _FROZEN = ConfigDict(frozen=True)
 
 
-class TotalProbabilityBranch(BaseModel):
+class TotalProbabilityBranch(RichMarkdownModel):
     model_config = _FROZEN
 
     label: str
@@ -31,7 +33,7 @@ class TotalProbabilityInput(BaseModel):
         return self
 
 
-class TotalProbabilityResult(BaseModel):
+class TotalProbabilityResult(RichMarkdownModel):
     model_config = _FROZEN
 
     joint_probabilities: tuple[float, ...]

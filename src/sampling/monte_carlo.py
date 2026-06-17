@@ -1,7 +1,7 @@
 import numpy as np
 from pydantic import BaseModel, ConfigDict, Field
 
-from core import Settings
+from core import RichMarkdownModel, Settings
 from distributions.continuous import ContinuousDistribution
 from distributions.discrete import DiscreteDistribution
 
@@ -16,7 +16,7 @@ class MonteCarloInput(BaseModel):
     settings: Settings = Settings()
 
 
-class MonteCarloResult(BaseModel):
+class MonteCarloResult(RichMarkdownModel):
     model_config = _ARBITRARY
 
     samples: np.ndarray

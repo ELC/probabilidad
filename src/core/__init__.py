@@ -13,6 +13,7 @@ from core.parameters import (
     StandardNormalParams,
     StudentTParams,
 )
+from core.repr import RichMarkdownModel
 from core.schemas import (
     BivariateObservations,
     FrequencyTable,
@@ -40,6 +41,7 @@ __all__ = [
     "Observations",
     "PMFTable",
     "PoissonParams",
+    "RichMarkdownModel",
     "Settings",
     "StandardNormalParams",
     "StudentTParams",

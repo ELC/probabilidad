@@ -1,5 +1,5 @@
 import sympy as sp
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 from sympy.stats import Binomial, E, Exponential, Normal, Poisson, Uniform, variance
 
 from core import (
@@ -8,10 +8,11 @@ from core import (
     ExponentialParams,
     NormalParams,
     PoissonParams,
+    RichMarkdownModel,
 )
 
 
-class SymbolicMoments(BaseModel):
+class SymbolicMoments(RichMarkdownModel):
     model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
     name: str

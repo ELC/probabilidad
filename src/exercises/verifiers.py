@@ -4,13 +4,14 @@ import numpy as np
 from pydantic import BaseModel, ConfigDict, Field
 from scipy import stats
 
+from core import RichMarkdownModel
 from distributions.continuous import ContinuousDistribution
 from distributions.discrete import DiscreteDistribution
 
 _ARBITRARY = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
 
-class VerificationResult(BaseModel):
+class VerificationResult(RichMarkdownModel):
     model_config = _ARBITRARY
 
     passed: bool

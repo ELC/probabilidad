@@ -70,11 +70,12 @@ help = """
 Build static HTML with executed notebooks
 Related docs:
 --execute: https://jupyterbook.org/stable/execution/execution/#execute-demo-content-at-build-time
+--execute-parallel: cap concurrent kernels to keep sympy parsers from OOM-ing
 --html: https://jupyterbook.org/stable/build-and-publish/publish/#custom-web-servers-and-other-static-hosts
 --ci: Just a flag to indicate that this is a CI build
 """
 cwd = "book"
-cmd = "jupyter book build --html --execute --ci"
+cmd = "jupyter book build --html --execute --execute-parallel 2 --ci"
 
 [tool.poe.tasks.serve-book-preview]
 help = """
@@ -230,7 +231,6 @@ extend-exclude = ["_build"]
   "RUF003",
 ]
 "book/**/*_nbqa_*" = ["D", "B018"]
-"scripts/**" = ["D", "INP001", "ERA001", "PLR0915", "PLR2004"]
 
 [tool.ruff.lint]
 extend-select = ["ALL"]
@@ -245,12 +245,12 @@ ignore = [
   "ARG002",              # unused method argument
   "DOC501",              # raised exception missing from docstring
   "DOC502",              # documented exception from inner function
-  "N999",                # chapter notebooks use numeric ordering prefixes
+  "N999",                # chapter notebooks use English filenames; TOC controls order
   "RUF001",              # widget descriptions use Greek letters intentionally
   "RUF069",              # explicit float comparison to 0 used as guard clauses
   "PLR0913",             # widget private helpers take many scalar slider values
   "PLR0917",             # widget private helpers take many positional values
-  "INP001",              # we intentionally have non-package directories (book/, scripts/)
+  "INP001",              # we intentionally have non-package directories (book/)
 ]
 
 [tool.ruff.format]
@@ -287,7 +287,7 @@ disable = [
   "missing-module-docstring",
   "missing-class-docstring",
   "missing-function-docstring",
-  "invalid-name",                   # chapter notebooks use numeric ordering prefixes
+  "invalid-name",                   # chapter notebooks use English filenames; TOC controls order
   "line-too-long",                  # handled by ruff format
   "import-error",                   # already validated by mypy
   "duplicate-code",
@@ -304,7 +304,6 @@ disable = [
   "unused-import",                  # nbqa concat marks symbols re-exported between cells
   "unused-variable",                # last-cell display variables
   "unused-argument",                # widget callbacks bind unused change events
-  "too-many-lines",                 # scripts/build_notebooks.py is a notebook generator
 ]
 
 #########################

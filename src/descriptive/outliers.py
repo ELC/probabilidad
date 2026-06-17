@@ -1,11 +1,11 @@
 import numpy as np
 from pandera.typing import DataFrame
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 
-from core import Observations
+from core import Observations, RichMarkdownModel
 
 
-class OutlierReport(BaseModel):
+class OutlierReport(RichMarkdownModel):
     model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
     lower_fence: float

@@ -1,7 +1,7 @@
 import numpy as np
 from pydantic import BaseModel, ConfigDict, Field
 
-from core import Settings
+from core import RichMarkdownModel, Settings
 
 _ARBITRARY = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
@@ -15,7 +15,7 @@ class GaltonBoardInput(BaseModel):
     settings: Settings = Settings()
 
 
-class GaltonBoardResult(BaseModel):
+class GaltonBoardResult(RichMarkdownModel):
     model_config = _ARBITRARY
 
     bin_positions: np.ndarray

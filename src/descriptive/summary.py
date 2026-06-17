@@ -1,13 +1,13 @@
 from pandera.typing import DataFrame
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 
-from core import Observations
+from core import Observations, RichMarkdownModel
 from descriptive.dispersion import DispersionStatistics, compute_dispersion
 from descriptive.location import LocationStatistics, compute_location
 from descriptive.outliers import OutlierReport, detect_outliers_tukey
 
 
-class DescriptiveStatistics(BaseModel):
+class DescriptiveStatistics(RichMarkdownModel):
     model_config = ConfigDict(frozen=True)
 
     location: LocationStatistics

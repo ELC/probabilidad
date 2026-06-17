@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 
+from core import RichMarkdownModel
 from probability.total_probability import (
     TotalProbabilityBranch,
     TotalProbabilityInput,
@@ -15,7 +16,7 @@ class BayesInput(BaseModel):
     branches: tuple[TotalProbabilityBranch, ...]
 
 
-class BayesPosterior(BaseModel):
+class BayesPosterior(RichMarkdownModel):
     model_config = _FROZEN
 
     label: str

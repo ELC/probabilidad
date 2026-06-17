@@ -2,6 +2,8 @@ from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from core import RichMarkdownModel
+
 _FROZEN = ConfigDict(frozen=True)
 
 
@@ -19,7 +21,7 @@ class ConditionalInput(BaseModel):
         return self
 
 
-class ConditionalProbability(BaseModel):
+class ConditionalProbability(RichMarkdownModel):
     model_config = _FROZEN
 
     probability: float = Field(ge=0.0, le=1.0)

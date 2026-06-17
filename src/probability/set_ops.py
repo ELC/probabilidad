@@ -2,6 +2,8 @@ from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from core import RichMarkdownModel
+
 _FROZEN = ConfigDict(frozen=True)
 
 
@@ -20,7 +22,7 @@ class JointEventInput(BaseModel):
         return self
 
 
-class JointEventProbabilities(BaseModel):
+class JointEventProbabilities(RichMarkdownModel):
     model_config = _FROZEN
 
     union: float = Field(ge=0.0, le=1.0)
@@ -63,7 +65,7 @@ class SetOperationInput(BaseModel):
         return self
 
 
-class SetOperationResult(BaseModel):
+class SetOperationResult(RichMarkdownModel):
     model_config = _FROZEN
 
     union: frozenset[str]
