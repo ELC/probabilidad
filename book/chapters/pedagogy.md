@@ -2,7 +2,7 @@
 
 Esta sección explica **cómo está construido** el libro. No usa ningún concepto
 nuevo; es una guía para entender por qué cada capítulo recorre las secciones en
-el mismo orden y por qué los hilos atraviesan todo el material.
+el mismo orden y por qué algunos escenarios reaparecen una y otra vez.
 
 ## Concreto, pictórico, abstracto (CPA)
 
@@ -50,30 +50,24 @@ versión natural son:
 
 En cada uno la idea es la misma: el dibujo viene **antes** que la cuenta.
 
-## Hilos narrativos
+## Escenarios recurrentes
 
-Tres hilos atraviesan el libro y se «picotean» en los capítulos según
-corresponda:
+Tres situaciones aparecen una y otra vez en los capítulos sin avisar al lector
+que «vuelve el ejemplo X»: la sala de espera de una clínica, una encuesta
+electoral y una línea de producción que inspecciona piezas. La idea es que
+cada una de las tres se vuelva familiar de manera implícita y que el lector,
+al leer un capítulo nuevo, reconozca el escenario antes que la fórmula. La
+sala de espera atraviesa todo el libro: empieza como una muestra de minutos,
+se modela como Exponencial, su promedio aparece bajo el TCL y termina con un
+IC para la espera media. La encuesta entra como Bayes, se vuelve Binomial,
+después una proporción asintóticamente Normal y, al final, un IC con su
+tamaño muestral. La línea de producción pasa de conteos por turno a una
+Bin/Poisson, a una aproximación Normal y a un test de hipótesis.
 
-- **Hilo A — Sala de espera de una clínica.** Aparece en Tratamiento de datos
-  (estadística descriptiva sobre los minutos de espera), en Probabilidad
-  (probabilidad condicional de seguir esperando), en Variables aleatorias
-  (modelo Exponencial), en Sumas y promedios (TCL aplicado al promedio diario)
-  y en Inferencia (IC para la espera media).
-- **Hilo B — Encuesta electoral.** Aparece como ejemplo de Bayes en
-  Probabilidad, como Binomial en Variables aleatorias, como proporción
-  asintóticamente Normal en Sumas y promedios, y como IC + tamaño muestral en
-  Inferencia.
-- **Hilo C — Línea de producción.** Conteo de defectos en Tratamiento de
-  datos; verdadero positivo de un test de calidad en Probabilidad; Binomial y
-  Poisson en Variables aleatorias; aproximación Normal en Sumas y promedios;
-  test de hipótesis en Inferencia.
-
-Cada capítulo además incluye **al menos un ejemplo independiente** —
-desconectado de los hilos — para que el lector vea que las técnicas no están
-casadas con un escenario particular: alturas en el capítulo de variables
-aleatorias, tablero de Galton en sumas, bootstrap sobre una muestra sintética
-en inferencia.
+En paralelo, cada capítulo intercala **al menos un ejemplo deliberadamente
+ajeno** a esos tres escenarios — un dado, alturas adultas, el tablero de
+Galton, una muestra sintética para bootstrap — para mostrar que las técnicas
+no quedan amarradas a una historia en particular.
 
 ## Preguntas de inicio y síntesis
 
