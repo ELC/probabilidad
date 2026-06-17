@@ -192,7 +192,7 @@ class BayesAnywidgetInput(BaseModel):
     initial_specificity: float = 0.95
 
 
-class BayesAnywidget(anywidget.AnyWidget):
+class BayesAnywidget(anywidget.AnyWidget):  # pylint: disable=abstract-method
     _esm = _ESM
     _css = _CSS
     prevalence = traitlets.Float(0.01).tag(sync=True)

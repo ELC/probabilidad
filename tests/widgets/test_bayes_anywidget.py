@@ -28,8 +28,8 @@ def test_bayes_anywidget_carries_initial_traits(fixed_settings: Settings) -> Non
 
 def test_bayes_anywidget_bundles_esm_and_css(fixed_settings: Settings) -> None:
     widget = build_bayes_anywidget(BayesAnywidgetInput(settings=fixed_settings))
-    assert "export default" in widget._esm  # noqa: SLF001
-    assert "bayes-anywidget" in widget._css  # noqa: SLF001
+    assert "export default" in widget._esm  # noqa: SLF001  # pylint: disable=protected-access
+    assert "bayes-anywidget" in widget._css  # noqa: SLF001  # pylint: disable=protected-access
 
 
 def test_bayes_anywidget_input_rejects_invalid_floats() -> None:
