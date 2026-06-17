@@ -1,9 +1,13 @@
 from typing import Any
 
+import altair as alt
+
 from core import Settings
 
+alt.data_transformers.disable_max_rows()
 
-def apply_theme(chart: Any, settings: Settings, set_size: bool = True) -> Any:
+
+def apply_theme(chart: Any, settings: Settings, *, set_size: bool = True) -> Any:
     theme = settings.chart_theme
     palette = theme.palette
     sized = chart.properties(width=theme.width, height=theme.height) if set_size else chart

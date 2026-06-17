@@ -525,10 +525,12 @@ class PartitionDiagramInput(BaseModel):
 def chart_partition_diagram(input_data: PartitionDiagramInput) -> alt.Chart:  # noqa: PLR0914
     theme = input_data.settings.chart_theme
     if len(input_data.partition_labels) != len(input_data.partition_weights):
-        raise ValueError("partition_labels and partition_weights must have the same length")
+        msg = "partition_labels and partition_weights must have the same length"
+        raise ValueError(msg)
     weights = np.asarray(input_data.partition_weights, dtype=float)
     if weights.sum() <= 0:
-        raise ValueError("partition_weights must sum to a positive number")
+        msg = "partition_weights must sum to a positive number"
+        raise ValueError(msg)
     fractions = weights / weights.sum()
     edges = np.concatenate(([0.0], np.cumsum(fractions)))
     records = []
@@ -565,7 +567,8 @@ def chart_partition_diagram(input_data: PartitionDiagramInput) -> alt.Chart:  # 
     layers: list[alt.Chart] = [rectangles, text]
     if input_data.overlay_label is not None and input_data.overlay_fractions is not None:
         if len(input_data.overlay_fractions) != len(input_data.partition_labels):
-            raise ValueError("overlay_fractions must match partition length")
+            msg = "overlay_fractions must match partition length"
+            raise ValueError(msg)
         overlay_records = []
         for index, fraction in enumerate(input_data.overlay_fractions):
             overlay_records.append({
@@ -647,8 +650,7 @@ def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # no
             })
     edge_records = []
     for edge_index, edge in enumerate(edges):
-        edge_records.append({"x": edge["x"][0], "y": edge["y"][0], "edge_id": edge_index})
-        edge_records.append({"x": edge["x"][1], "y": edge["y"][1], "edge_id": edge_index})
+        edge_records.extend(({"x": edge["x"][0], "y": edge["y"][0], "edge_id": edge_index}, {"x": edge["x"][1], "y": edge["y"][1], "edge_id": edge_index}))
     edge_df = pd.DataFrame.from_records(edge_records)
     line_chart = (
         alt

@@ -1,5 +1,6 @@
 import json
 
+import pytest
 from pandera.typing import DataFrame
 
 from core import (
@@ -138,6 +139,22 @@ def test_chart_lln_multiple_trajectories(fixed_settings: Settings) -> None:
             distribution=distribution,
             horizon=400,
             trajectory_count=8,
+            settings=fixed_settings,
+        )
+    )
+    chart = chart_lln_multiple_trajectories(
+        LLNMultipleTrajectoriesChartInput(lln_result=lln_result, settings=fixed_settings)
+    )
+    assert chart.to_dict()
+
+
+def test_chart_lln_multiple_trajectories_handles_large_datasets(fixed_settings: Settings) -> None:
+    distribution = make_normal(NormalParams())
+    lln_result = simulate_lln_multiple_trajectories(
+        LLNMultipleTrajectoriesInput(
+            distribution=distribution,
+            horizon=4_000,
+            trajectory_count=30,
             settings=fixed_settings,
         )
     )
@@ -288,7 +305,7 @@ def test_chart_partition_diagram_renders_overlay(fixed_settings: Settings) -> No
 
 
 def test_chart_partition_diagram_rejects_mismatched_lengths(fixed_settings: Settings) -> None:
-    try:
+    with pytest.raises(ValueError, match="same length"):
         chart_partition_diagram(
             PartitionDiagramInput(
                 partition_labels=("A_1", "A_2"),
@@ -296,15 +313,10 @@ def test_chart_partition_diagram_rejects_mismatched_lengths(fixed_settings: Sett
                 settings=fixed_settings,
             )
         )
-    except ValueError as error:
-        assert "same length" in str(error)
-    else:
-        msg = "expected ValueError for mismatched lengths"
-        raise AssertionError(msg)
 
 
 def test_chart_partition_diagram_rejects_zero_weights(fixed_settings: Settings) -> None:
-    try:
+    with pytest.raises(ValueError, match="positive"):
         chart_partition_diagram(
             PartitionDiagramInput(
                 partition_labels=("A_1", "A_2"),
@@ -312,15 +324,10 @@ def test_chart_partition_diagram_rejects_zero_weights(fixed_settings: Settings) 
                 settings=fixed_settings,
             )
         )
-    except ValueError as error:
-        assert "positive" in str(error)
-    else:
-        msg = "expected ValueError for zero weights"
-        raise AssertionError(msg)
 
 
 def test_chart_partition_diagram_rejects_overlay_length_mismatch(fixed_settings: Settings) -> None:
-    try:
+    with pytest.raises(ValueError, match="overlay"):
         chart_partition_diagram(
             PartitionDiagramInput(
                 partition_labels=("A_1", "A_2"),
@@ -330,11 +337,6 @@ def test_chart_partition_diagram_rejects_overlay_length_mismatch(fixed_settings:
                 settings=fixed_settings,
             )
         )
-    except ValueError as error:
-        assert "overlay" in str(error)
-    else:
-        msg = "expected ValueError for overlay length mismatch"
-        raise AssertionError(msg)
 
 
 def test_chart_probability_tree_emits_joint_probabilities(fixed_settings: Settings) -> None:
