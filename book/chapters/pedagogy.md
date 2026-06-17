@@ -71,18 +71,23 @@ no quedan amarradas a una historia en particular.
 
 ## Apertura y transición entre capítulos
 
-Cada capítulo abre con un **párrafo narrativo** que retoma la situación
-concreta donde dejamos el capítulo anterior y plantea la pregunta nueva
-sin enumerar qué herramientas vendrán. La idea es que el lector descubra
-el contenido como si leyera una historia: a medida que el problema se
-resiste a las herramientas viejas, el texto introduce las nuevas como
-respuesta natural, no como temario anunciado.
+Cada capítulo entra y sale del recorrido con el mismo ritmo de cuatro
+movimientos: **mirar atrás** brevemente al capítulo anterior usando los
+mismos hilos narrativos (clínica, encuesta, línea de producción),
+**mostrar la limitación** que aparece apenas el contexto se mueve un
+paso (un paciente nuevo, un turno todavía sin medir, una respuesta más),
+**plantear tres preguntas concretas** una por hilo, y recién entonces
+**nombrar la herramienta** que las resuelve. Ese pulso se repite tanto
+en el párrafo de apertura como en el de cierre.
 
-El cierre sigue la misma lógica. En vez de una sección de «síntesis» con
-respuestas enumeradas, el último párrafo deja una pregunta abierta que
-las técnicas del capítulo no alcanzan a responder. Ese pase suelto, no
-anunciado, es el que conecta con el capítulo siguiente sin cortar el
-ritmo de lectura.
+La consecuencia es que el lector llega a cada nueva técnica con la
+pregunta ya hecha, no con un temario anunciado por adelantado. La
+herramienta aparece como respuesta natural a un problema que el texto
+acaba de plantear; el capítulo siguiente arranca cuando esa respuesta,
+a su vez, deja al descubierto una nueva limitación. El último capítulo
+cierra el ciclo dejando un cliffhanger hacia regresión, estadística
+bayesiana y series de tiempo — temas que continúan la misma maquinaria
+de ida y vuelta entre datos y parámetros.
 
 Para una guía rápida de notación y términos al pasar entre capítulos,
 conviene tener abierto el [glosario](glossary.md).
