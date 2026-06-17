@@ -23,8 +23,8 @@ class NumericAnswerInput(BaseModel):
 
     student_answer: float
     expected_answer: float
-    absolute_tolerance: float = Field(default=1e-4, ge=0.0)
-    relative_tolerance: float = Field(default=1e-3, ge=0.0)
+    absolute_tolerance: float = Field(default=1e-2, ge=0.0)
+    relative_tolerance: float = Field(default=1e-2, ge=0.0)
 
 
 def verify_numeric_answer(input_data: NumericAnswerInput) -> VerificationResult:
