@@ -246,7 +246,12 @@ UNIT_2_CELLS = [
         ")\n"
         "from probability.total_probability import TotalProbabilityBranch\n"
         "from symbolic import bayes_theorem, total_probability_theorem\n"
-        "from widgets import BayesExplorerInput, build_bayes_explorer\n"
+        "from widgets import (\n"
+        "    BayesAnywidgetInput,\n"
+        "    BayesExplorerInput,\n"
+        "    build_bayes_anywidget,\n"
+        "    build_bayes_explorer,\n"
+        ")\n"
     ),
     code_cell("settings = Settings()"),
     markdown_cell(
@@ -380,11 +385,38 @@ UNIT_2_CELLS = [
         ")"
     ),
     markdown_cell(
+        "## Bonus técnico — `ipywidgets` vs. `anywidget`\n\n"
+        "El explorador de Bayes de arriba está hecho con **ipywidgets**: sus sliders\n"
+        "(`FloatSlider`) viven en el kernel de Python y cada cambio dispara un callback\n"
+        "que re-renderiza la chart de Altair desde Python. Eso es ideal en Binder/Jupyter,\n"
+        "pero **en la versión estática del libro no hay kernel**: los sliders aparecen pero\n"
+        "no recalculan nada.\n\n"
+        "**`anywidget`** permite empaquetar un módulo ESM (JavaScript) **dentro** de la salida\n"
+        "del notebook. La fórmula de Bayes se computa en el navegador y la chart SVG se\n"
+        "redibuja sin tocar Python. El resultado: la misma celda sigue siendo interactiva\n"
+        "en el HTML publicado, sin Binder.\n\n"
+        "La implementación vive en `src/widgets/bayes_anywidget.py`. La fórmula de Bayes\n"
+        "está escrita dos veces (una en Python en `src/probability/bayes.py` y otra en JS\n"
+        "embebido) — es el costo de no necesitar el kernel.\n"
+    ),
+    code_cell(
+        "build_bayes_anywidget(\n"
+        "    BayesAnywidgetInput(\n"
+        "        settings=settings,\n"
+        "        initial_prevalence=0.01,\n"
+        "        initial_sensitivity=0.99,\n"
+        "        initial_specificity=0.95,\n"
+        "    )\n"
+        ")"
+    ),
+    markdown_cell(
         "## Para llevarse\n\n"
         "- La regla aditiva existe **para no contar dos veces** la intersección.\n"
         "- Condicionar = **restringir el universo**.\n"
         "- Bayes invierte el sentido del condicionamiento usando la probabilidad total como denominador.\n"
         "- La tasa base manda más de lo que la intuición sugiere.\n"
+        "- **`ipywidgets`** necesita un kernel vivo; **`anywidget`** empaqueta la lógica en JS\n"
+        "  y sigue interactivo en el HTML estático.\n"
     ),
 ]
 
