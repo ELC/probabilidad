@@ -69,34 +69,38 @@ ajeno** a esos tres escenarios — un dado, alturas adultas, el tablero de
 Galton, una muestra sintética para bootstrap — para mostrar que las técnicas
 no quedan amarradas a una historia en particular.
 
-## Preguntas de inicio, síntesis y transición
+## Apertura y transición entre capítulos
 
-Cada capítulo arranca con una sección **«Preguntas de inicio»** (tres o cuatro
-preguntas concretas) y cierra con una **«Síntesis y respuestas»** que resuelve
-una a una esas preguntas, referenciando las ecuaciones numeradas que dieron la
-respuesta. Después viene un **párrafo final sin encabezado**: una transición
-deliberadamente narrativa, no una lista de «temas del próximo capítulo».
-Plantea, en el mismo tono del resto del texto, qué quedó abierto y por qué hace
-falta otra herramienta para responderlo. Ese pase suelto, no anunciado, es el
-que mantiene la continuidad sin cortar el ritmo de lectura.
+Cada capítulo abre con un **párrafo narrativo** que retoma la situación
+concreta donde dejamos el capítulo anterior y plantea la pregunta nueva
+sin enumerar qué herramientas vendrán. La idea es que el lector descubra
+el contenido como si leyera una historia: a medida que el problema se
+resiste a las herramientas viejas, el texto introduce las nuevas como
+respuesta natural, no como temario anunciado.
 
-Para una guía rápida de notación y términos al pasar entre capítulos, conviene
-tener abierto el [glosario](glossary.md).
+El cierre sigue la misma lógica. En vez de una sección de «síntesis» con
+respuestas enumeradas, el último párrafo deja una pregunta abierta que
+las técnicas del capítulo no alcanzan a responder. Ese pase suelto, no
+anunciado, es el que conecta con el capítulo siguiente sin cortar el
+ritmo de lectura.
+
+Para una guía rápida de notación y términos al pasar entre capítulos,
+conviene tener abierto el [glosario](glossary.md).
 
 ## Cómo recorrer cada capítulo
 
 Una sugerencia de lectura, especialmente para una primera pasada:
 
-1. Leé las **preguntas de inicio** y anotá, sin pensarlo demasiado, qué
-   responderías ahora mismo.
+1. Leé el **párrafo de apertura** prestando atención a la pregunta que se
+   plantea, y anotá, sin pensarlo demasiado, qué responderías ahora mismo.
 2. Recorré las secciones de **caso concreto + imagen + fórmula + intuición**
    en orden, sin saltearte el gráfico.
 3. Detenete en el **widget interactivo**: cambiá un parámetro a la vez y
    tratá de **predecir** qué va a pasar antes de mirar el gráfico nuevo.
 4. Hacé los **ejercicios** sin ejecutar la verificación primero. Después
    compará tu respuesta con la del módulo de `exercises`.
-5. Volvé a las preguntas de inicio y comparalas con la sección **Síntesis y
-   respuestas**: ¿qué cambió en tu intuición?
+5. Cuando llegues al **párrafo de cierre**, fijate qué pregunta nueva
+   queda abierta: esa es la que motiva el capítulo que sigue.
 
-Este ciclo (pregunta → exploración → fórmula → vuelta a la pregunta) es lo
-que mantiene el material del libro hilado de principio a fin.
+Este ciclo (pregunta → exploración → fórmula → nueva pregunta) es lo que
+mantiene el material del libro hilado de principio a fin.
