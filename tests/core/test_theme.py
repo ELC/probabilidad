@@ -3,7 +3,17 @@ from core.theme import ChartTheme, ColorPalette
 
 def test_color_palette_has_all_colors() -> None:
     palette = ColorPalette()
-    for field in ("primary", "secondary", "accent", "danger", "muted", "highlight", "background", "grid"):
+    for field in (
+        "primary",
+        "secondary",
+        "accent",
+        "success",
+        "danger",
+        "muted",
+        "highlight",
+        "background",
+        "grid",
+    ):
         value = getattr(palette, field)
         assert value.startswith("#")
         assert len(value) == 7
@@ -34,3 +44,11 @@ def test_chart_theme_has_bmh_styling_fields() -> None:
     assert theme.label_color.startswith("#")
     assert theme.title_color.startswith("#")
     assert theme.axis_color.startswith("#")
+
+
+def test_color_palette_uses_firebrick_for_danger() -> None:
+    assert ColorPalette().danger.upper() == "#B22222"
+
+
+def test_color_palette_uses_bmh_green_for_success() -> None:
+    assert ColorPalette().success.upper() == "#467821"

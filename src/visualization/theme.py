@@ -43,7 +43,7 @@ def apply_theme(chart: Any, settings: Settings) -> Any:
                 palette.primary,
                 palette.secondary,
                 palette.accent,
-                palette.danger,
+                palette.success,
                 palette.muted,
                 palette.highlight,
             ]
