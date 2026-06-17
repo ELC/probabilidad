@@ -42,6 +42,94 @@ DISPLAY_NAMES: dict[str, str] = {
     "StandardizationStatement": "Estandarización",
 }
 
+FIELD_LABELS: dict[str, str] = {
+    "alternative": "Hipótesis alternativa",
+    "bin_counts": "Frecuencias por casilla",
+    "bin_positions": "Posiciones de casillas",
+    "bootstrap_means": "Medias bootstrap",
+    "coefficient_of_variation": "Coeficiente de variación",
+    "complement_a": "Complemento de A",
+    "complement_b": "Complemento de B",
+    "confidence_level": "Nivel de confianza",
+    "critical_value": "Valor crítico",
+    "cumulative": "Acumulada",
+    "degrees_of_freedom": "Grados de libertad",
+    "density": "Densidad",
+    "dispersion": "Dispersión",
+    "distribution_name": "Distribución",
+    "excess_kurtosis": "Curtosis (exceso)",
+    "expectation": "Esperanza",
+    "first_quartile": "Primer cuartil",
+    "grid": "Grilla",
+    "interquartile_range": "Rango intercuartil",
+    "intersection": "Intersección",
+    "joint_probabilities": "Probabilidades conjuntas",
+    "joint_probability": "Probabilidad conjunta",
+    "label": "Etiqueta",
+    "likelihood": "Verosimilitud",
+    "location": "Posición",
+    "lower_bound": "Cota inferior",
+    "lower_critical_value": "Valor crítico inferior",
+    "lower_fence": "Cota inferior",
+    "lower_quantile": "Cuantil inferior",
+    "margin_of_error": "Margen de error",
+    "maximum": "Máximo",
+    "mean": "Media",
+    "median": "Mediana",
+    "message": "Mensaje",
+    "minimum": "Mínimo",
+    "name": "Nombre",
+    "neither": "Ninguno",
+    "normal_approximation_mean": "Media de la aproximación normal",
+    "normal_approximation_standard_deviation": "Desvío de la aproximación normal",
+    "only_a": "Solo A",
+    "only_b": "Solo B",
+    "outlier_count": "Cantidad de outliers",
+    "outlier_values": "Valores atípicos",
+    "outliers": "Outliers",
+    "p_value": "Valor p",
+    "passed": "Verificación",
+    "point_estimate": "Estimador puntual",
+    "posterior": "Posterior",
+    "prior": "Prior",
+    "probability": "Probabilidad",
+    "quantile": "Cuantil",
+    "range_width": "Rango",
+    "reject_null": "Rechaza H₀",
+    "required_sample_size": "Tamaño de muestra requerido",
+    "running_mean": "Media acumulada",
+    "sample_mean": "Media muestral",
+    "sample_means": "Medias muestrales",
+    "sample_size": "Tamaño de muestra",
+    "sample_size_per_replicate": "Tamaño por réplica",
+    "sample_standard_deviation": "Desvío estándar muestral",
+    "sample_variance": "Varianza muestral",
+    "samples": "Muestras",
+    "skewness": "Asimetría",
+    "standard_deviation": "Desvío estándar",
+    "standard_error": "Error estándar",
+    "standardized_means": "Medias estandarizadas",
+    "step": "Paso",
+    "survival_probability": "Probabilidad de supervivencia",
+    "symmetric_difference": "Diferencia simétrica",
+    "table": "Tabla",
+    "test_statistic": "Estadístico de prueba",
+    "third_quartile": "Tercer cuartil",
+    "threshold": "Umbral",
+    "total_probability": "Probabilidad total",
+    "underlying_mean": "Media subyacente",
+    "underlying_standard_deviation": "Desvío estándar subyacente",
+    "union": "Unión",
+    "upper_bound": "Cota superior",
+    "upper_critical_value": "Valor crítico superior",
+    "upper_fence": "Cota superior",
+    "upper_quantile": "Cuantil superior",
+    "value": "Valor",
+    "values": "Valores",
+    "variance": "Varianza",
+    "z_scores": "Puntajes z",
+}
+
 _TABLE_STYLE = (
     "border-collapse: collapse; margin: 0; font-family: var(--jp-content-font-family, sans-serif); font-size: 0.95em;"
 )
@@ -50,16 +138,41 @@ _HEADER_STYLE = (
     " background: rgba(120, 120, 120, 0.12); border-bottom: 1px solid rgba(120, 120, 120, 0.4);"
 )
 _CELL_STYLE = "padding: 0.2em 0.6em; border-bottom: 1px solid rgba(120, 120, 120, 0.2); vertical-align: top;"
-_FIELD_STYLE = _CELL_STYLE + " font-family: var(--jp-code-font-family, monospace); white-space: nowrap;"
+_FIELD_STYLE = _CELL_STYLE + " white-space: nowrap; text-align: left;"
+_CODE_STYLE = (
+    "font-family: var(--jp-code-font-family, monospace); font-size: 0.8em;"
+    " color: rgba(120, 120, 120, 0.95); font-weight: normal;"
+)
 _GROUP_STYLE = "display: flex; flex-direction: column; gap: 0.6em; align-items: flex-start;"
-_LABEL_STYLE = (
-    "font-family: var(--jp-code-font-family, monospace); font-size: 0.85em; color: rgba(120, 120, 120, 0.95);"
+_RICH_LABEL_STYLE = (
+    "font-size: 0.9em; font-weight: 500; padding-bottom: 0.2em; color: var(--jp-ui-font-color1, inherit);"
 )
 _OUTER_TITLE_STYLE = "font-weight: 600; font-size: 1em; padding: 0.1em 0; color: var(--jp-ui-font-color1, inherit);"
 
 
 def display_name_for(model_class: type) -> str:
     return DISPLAY_NAMES.get(model_class.__name__, model_class.__name__)
+
+
+def field_label_for(field_name: str) -> str:
+    return FIELD_LABELS.get(field_name, field_name)
+
+
+def _field_label_html(field_name: str) -> str:
+    label = field_label_for(field_name)
+    code_html = f'<div style="{_CODE_STYLE}">{html.escape(field_name)}</div>'
+    if label == field_name:
+        return code_html
+    return f"{html.escape(label)}{code_html}"
+
+
+def _rich_label_html(field_name: str, index: int | None = None) -> str:
+    label = field_label_for(field_name)
+    suffix = f"[{index}]" if index is not None else ""
+    code_html = f'<span style="{_CODE_STYLE}">{html.escape(field_name)}{suffix}</span>'
+    if label == field_name:
+        return code_html
+    return f'<span style="{_RICH_LABEL_STYLE}">{html.escape(label)}{suffix}</span> {code_html}'
 
 
 def _format_float(value: float) -> str:
@@ -125,14 +238,17 @@ def _scalar_table_html(title: str, rows_html: str) -> str:
     )
 
 
-def _labelled(label: str | None, body_html: str) -> str:
+def _labelled(label: str | None, body_html: str, label_index: int | None = None) -> str:
     if label is None:
         return body_html
-    label_html = f'<div style="{_LABEL_STYLE}">{html.escape(label)}</div>'
-    return f"<div>{label_html}{body_html}</div>"
+    return f"<div>{_rich_label_html(label, label_index)}{body_html}</div>"
 
 
-def _model_to_html(model: RichMarkdownModel, label: str | None = None) -> str:
+def _model_to_html(
+    model: RichMarkdownModel,
+    label: str | None = None,
+    label_index: int | None = None,
+) -> str:
     title = html.escape(display_name_for(type(model)))
     # pylint: disable-next=not-an-iterable
     field_names = list(type(model).model_fields)
@@ -156,12 +272,12 @@ def _model_to_html(model: RichMarkdownModel, label: str | None = None) -> str:
 
     body = "".join(blocks)
     inner = body if len(blocks) <= 1 else f'<div style="{_GROUP_STYLE}">{body}</div>'
-    return _labelled(label, inner)
+    return _labelled(label, inner, label_index)
 
 
 def _scalar_rows_html(scalar_fields: list[tuple[str, Any]]) -> str:
     return "".join(
-        f'<tr><th style="{_FIELD_STYLE}">{html.escape(name)}</th>'
+        f'<tr><th style="{_FIELD_STYLE}">{_field_label_html(name)}</th>'
         f'<td style="{_CELL_STYLE}">{_value_to_html(value)}</td></tr>'
         for name, value in scalar_fields
     )
@@ -170,7 +286,7 @@ def _scalar_rows_html(scalar_fields: list[tuple[str, Any]]) -> str:
 def _rich_field_blocks(name: str, value: Any) -> list[str]:
     if _is_rich(value):
         return [_model_to_html(value, label=name)]
-    return [_model_to_html(item, label=f"{name}[{index}]") for index, item in enumerate(value)]
+    return [_model_to_html(item, label=name, label_index=index) for index, item in enumerate(value)]
 
 
 def _sequence_to_html(value: tuple[Any, ...] | list[Any]) -> str:

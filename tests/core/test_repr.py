@@ -6,7 +6,7 @@ import pytest
 from pydantic import BaseModel, ConfigDict
 
 from core import RichMarkdownModel
-from core.repr import DISPLAY_NAMES, display_name_for, format_value
+from core.repr import DISPLAY_NAMES, FIELD_LABELS, display_name_for, field_label_for, format_value
 
 
 class _NestedModel(RichMarkdownModel):
@@ -58,6 +58,15 @@ def test_display_name_for_unknown_class_returns_class_name() -> None:
         pass
 
     assert display_name_for(_Unknown) == "_Unknown"
+
+
+def test_field_label_for_known_field_returns_spanish() -> None:
+    name = next(iter(FIELD_LABELS))
+    assert field_label_for(name) == FIELD_LABELS[name]
+
+
+def test_field_label_for_unknown_field_returns_field_name() -> None:
+    assert field_label_for("__totally_unknown__") == "__totally_unknown__"
 
 
 def test_format_value_rounds_floats_to_two_decimals() -> None:
@@ -173,6 +182,27 @@ def test_repr_html_renders_outer_table_with_scalar_fields() -> None:
     assert "None" in rendered
 
 
+def test_repr_html_uses_spanish_field_labels_with_english_code() -> None:
+    class _ScalarModel(RichMarkdownModel):
+        sample_mean: float
+        sample_standard_deviation: float
+
+    rendered = _ScalarModel(sample_mean=4.14, sample_standard_deviation=1.12)._repr_html_()  # pylint: disable=protected-access
+    assert "Media muestral" in rendered
+    assert "Desvío estándar muestral" in rendered
+    assert "sample_mean" in rendered
+    assert "sample_standard_deviation" in rendered
+
+
+def test_repr_html_omits_spanish_when_field_is_not_in_label_map() -> None:
+    class _AdHocModel(RichMarkdownModel):
+        custom_thing: int
+
+    rendered = _AdHocModel(custom_thing=3)._repr_html_()  # pylint: disable=protected-access
+    assert "custom_thing" in rendered
+    assert rendered.count("custom_thing") == 1
+
+
 def test_repr_markdown_falls_back_to_html_table() -> None:
     nested = _NestedModel(name="hijo", value=2.5)
     markdown = nested._repr_markdown_()  # pylint: disable=protected-access
@@ -206,6 +236,8 @@ def test_repr_html_drops_outer_table_when_all_fields_are_rich() -> None:
     )
     rendered = container._repr_html_()  # pylint: disable=protected-access
     assert rendered.count("<table") == 2
+    assert "Posición" in rendered
+    assert "Dispersión" in rendered
     assert ">location<" in rendered
     assert ">dispersion<" in rendered
     assert "centro" in rendered
