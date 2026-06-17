@@ -38,7 +38,7 @@ def build_bayes_explorer(input_data: BayesExplorerInput) -> widgets.Widget:
         )
         posteriors = evaluate_bayes(BayesInput(branches=(sick_branch, healthy_branch)))
         sick_posterior = posteriors[0].posterior
-        posterior_label.value = f"<b>P(Enfermo | Test positivo) = {sick_posterior:.4f}</b>"
+        posterior_label.value = f"<b>P(Enfermo | Test positivo) = {sick_posterior:.3f}</b>"
         data = pd.DataFrame({
             "hipótesis": [posterior.label for posterior in posteriors],
             "previo": [posterior.prior for posterior in posteriors],

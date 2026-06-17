@@ -58,7 +58,7 @@ def build_continuous_distribution_explorer(input_data: ContinuousDistributionExp
             )
         )
         probability_label.value = (
-            f"<b>P({lower_slider.value:.2f} ≤ X ≤ {upper_slider.value:.2f})</b> = {probability.probability:.4f}"
+            f"<b>P({lower_slider.value:.2f} ≤ X ≤ {upper_slider.value:.2f})</b> = {probability.probability:.3f}"
         )
         chart = chart_density(DensityChartInput(density_grid=density, settings=input_data.settings))
         with output:

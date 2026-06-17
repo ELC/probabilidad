@@ -35,11 +35,11 @@ def verify_numeric_answer(input_data: NumericAnswerInput) -> VerificationResult:
         rel_tol=input_data.relative_tolerance,
     )
     if is_close:
-        return VerificationResult(passed=True, message=f"OK — esperado {input_data.expected_answer:.6f}")
+        return VerificationResult(passed=True, message=f"OK — esperado {input_data.expected_answer:.2f}")
     return VerificationResult(
         passed=False,
         message=(
-            f"Diferencia: tu respuesta {input_data.student_answer:.6f}, esperado {input_data.expected_answer:.6f}"
+            f"Diferencia: tu respuesta {input_data.student_answer:.2f}, esperado {input_data.expected_answer:.2f}"
         ),
     )
 
@@ -59,13 +59,13 @@ def verify_interval_contains(input_data: IntervalContainsInput) -> VerificationR
     if contains:
         return VerificationResult(
             passed=True,
-            message=f"OK — el intervalo [{input_data.lower_bound:.4f}, {input_data.upper_bound:.4f}] contiene {input_data.target_value:.4f}",
+            message=f"OK — el intervalo [{input_data.lower_bound:.2f}, {input_data.upper_bound:.2f}] contiene {input_data.target_value:.2f}",
         )
     return VerificationResult(
         passed=False,
         message=(
-            f"El intervalo [{input_data.lower_bound:.4f}, {input_data.upper_bound:.4f}] no contiene "
-            f"{input_data.target_value:.4f}"
+            f"El intervalo [{input_data.lower_bound:.2f}, {input_data.upper_bound:.2f}] no contiene "
+            f"{input_data.target_value:.2f}"
         ),
     )
 
@@ -88,7 +88,7 @@ def verify_distribution_match(input_data: DistributionMatchInput) -> Verificatio
         return VerificationResult(
             passed=passed,
             message=(
-                f"KS = {float(statistic):.4f}, p = {float(p_value):.4f} — "
+                f"KS = {float(statistic):.3f}, p = {float(p_value):.3f} — "
                 f"{'no se rechaza H₀' if passed else 'se rechaza H₀'} "
                 f"contra {input_data.expected_distribution.spanish_name}"
             ),
@@ -111,7 +111,7 @@ def verify_distribution_match(input_data: DistributionMatchInput) -> Verificatio
     return VerificationResult(
         passed=passed,
         message=(
-            f"χ² = {float(statistic):.4f}, p = {float(p_value):.4f} — "
+            f"χ² = {float(statistic):.3f}, p = {float(p_value):.3f} — "
             f"{'no se rechaza H₀' if passed else 'se rechaza H₀'} "
             f"contra {input_data.expected_distribution.spanish_name}"
         ),
