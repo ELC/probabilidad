@@ -10,10 +10,8 @@ from pydantic import BaseModel, ConfigDict
 from core import NormalParams, Observations, Settings
 from descriptive import FrequencyTableInput, build_frequency_table, summarize_observations
 from visualization import (
-    DescriptiveSummaryChartInput,
-    FrequencyChartInput,
-    chart_descriptive_summary,
-    chart_frequency_table,
+    ObservationsOverviewInput,
+    chart_observations_overview,
 )
 
 
@@ -46,21 +44,17 @@ def build_descriptive_explorer(input_data: DescriptiveExplorerInput) -> widgets.
         frequency_table = build_frequency_table(
             FrequencyTableInput(observations=observations, bin_count=bin_slider.value)
         )
-        frequency_chart = chart_frequency_table(
-            FrequencyChartInput(frequency_table=frequency_table, settings=input_data.settings)
+        overview = chart_observations_overview(
+            ObservationsOverviewInput(
+                observations=observations,
+                frequency_table=frequency_table,
+                statistics=statistics,
+                settings=input_data.settings,
+            )
         )
         with output:
             output.clear_output(wait=True)
-            display(frequency_chart)
-            display(
-                chart_descriptive_summary(
-                    DescriptiveSummaryChartInput(
-                        observations=observations,
-                        statistics=statistics,
-                        settings=input_data.settings,
-                    )
-                )
-            )
+            display(overview)
 
     for control in (mean_slider, deviation_slider, sample_slider, bin_slider):
         control.observe(render, names="value")

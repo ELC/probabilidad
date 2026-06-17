@@ -47,6 +47,7 @@ from visualization import (
     HistogramChartInput,
     LLNChartInput,
     LLNMultipleTrajectoriesChartInput,
+    ObservationsOverviewInput,
     PartitionDiagramInput,
     ProbabilityMassChartInput,
     ProbabilityTreeInput,
@@ -60,6 +61,7 @@ from visualization import (
     chart_histogram,
     chart_lln_multiple_trajectories,
     chart_lln_running_mean,
+    chart_observations_overview,
     chart_partition_diagram,
     chart_probability_mass,
     chart_probability_tree,
@@ -217,6 +219,25 @@ def test_chart_descriptive_summary(normal_observations: DataFrame[Observations],
         )
     )
     assert chart.to_dict()
+
+
+def test_chart_observations_overview_shares_x_axis(
+    normal_observations: DataFrame[Observations], fixed_settings: Settings
+) -> None:
+    statistics = summarize_observations(normal_observations)
+    table = build_frequency_table(FrequencyTableInput(observations=normal_observations))
+    chart = chart_observations_overview(
+        ObservationsOverviewInput(
+            observations=normal_observations,
+            frequency_table=table,
+            statistics=statistics,
+            settings=fixed_settings,
+        )
+    )
+    spec = chart.to_dict()
+    assert spec["vconcat"], "expected vconcat with two stacked panels"
+    assert len(spec["vconcat"]) == 2
+    assert spec["resolve"]["scale"]["x"] == "shared"
 
 
 def test_chart_venn_two_sets_renders_intersection_label(fixed_settings: Settings) -> None:

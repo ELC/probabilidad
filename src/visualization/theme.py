@@ -3,12 +3,12 @@ from typing import Any
 from core import Settings
 
 
-def apply_theme(chart: Any, settings: Settings) -> Any:
+def apply_theme(chart: Any, settings: Settings, set_size: bool = True) -> Any:
     theme = settings.chart_theme
     palette = theme.palette
+    sized = chart.properties(width=theme.width, height=theme.height) if set_size else chart
     return (
-        chart
-        .properties(width=theme.width, height=theme.height)
+        sized
         .configure_view(fill=palette.background, stroke="transparent")
         .configure_axis(
             grid=True,

@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from scipy import stats
 
 from core import FrequencyTable, Observations, Settings
+from core.theme import ChartTheme
 from descriptive.summary import DescriptiveStatistics
 from distributions.evaluations import DensityGrid, ProbabilityMassTable
 from inference.mean_ci import MeanConfidenceInterval
@@ -49,9 +50,12 @@ class FrequencyChartInput(BaseModel):
     settings: Settings = Settings()
 
 
-def chart_frequency_table(input_data: FrequencyChartInput) -> alt.Chart:
-    theme = input_data.settings.chart_theme
-    base = alt.Chart(input_data.frequency_table)
+def _build_frequency_chart(
+    frequency_table: DataFrame[FrequencyTable],
+    title: str,
+    theme: ChartTheme,
+) -> alt.Chart:
+    base = alt.Chart(frequency_table)
     bars = base.mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary).encode(
         x=alt.X("midpoint:Q", title="Marca de clase"),
         y=alt.Y("absolute_frequency:Q", title="Frecuencia absoluta"),
@@ -64,8 +68,16 @@ def chart_frequency_table(input_data: FrequencyChartInput) -> alt.Chart:
             axis=alt.Axis(title="Frecuencia rel. acumulada"),
         ),
     )
-    layered = alt.layer(bars, ogive).resolve_scale(y="independent").properties(title=input_data.title)
-    return apply_theme(layered, input_data.settings)
+    return alt.layer(bars, ogive).resolve_scale(y="independent").properties(title=title)
+
+
+def chart_frequency_table(input_data: FrequencyChartInput) -> alt.Chart:
+    chart = _build_frequency_chart(
+        input_data.frequency_table,
+        input_data.title,
+        input_data.settings.chart_theme,
+    )
+    return apply_theme(chart, input_data.settings)
 
 
 class DensityChartInput(BaseModel):
@@ -364,18 +376,22 @@ class DescriptiveSummaryChartInput(BaseModel):
     settings: Settings = Settings()
 
 
-def chart_descriptive_summary(input_data: DescriptiveSummaryChartInput) -> alt.Chart:
-    theme = input_data.settings.chart_theme
+def _build_descriptive_summary_chart(
+    observations: DataFrame[Observations],
+    statistics: DescriptiveStatistics,
+    title: str,
+    theme: ChartTheme,
+) -> alt.Chart:
     box = (
         alt
-        .Chart(input_data.observations)
+        .Chart(observations)
         .mark_boxplot(extent=1.5, color=theme.palette.primary, size=40)
         .encode(x=alt.X("value:Q", title="Valor"))
     )
     mean_label = "Media muestral"
     mean_mark = (
         alt
-        .Chart(pd.DataFrame({"mean": [input_data.statistics.location.mean], "marca": [mean_label]}))
+        .Chart(pd.DataFrame({"mean": [statistics.location.mean], "marca": [mean_label]}))
         .mark_rule(strokeWidth=theme.line_stroke_width, strokeDash=[4, 4])
         .encode(
             x="mean:Q",
@@ -386,8 +402,49 @@ def chart_descriptive_summary(input_data: DescriptiveSummaryChartInput) -> alt.C
             ),
         )
     )
-    layered = alt.layer(box, mean_mark).properties(title=input_data.title)
-    return apply_theme(layered, input_data.settings)
+    return alt.layer(box, mean_mark).properties(title=title)
+
+
+def chart_descriptive_summary(input_data: DescriptiveSummaryChartInput) -> alt.Chart:
+    chart = _build_descriptive_summary_chart(
+        input_data.observations,
+        input_data.statistics,
+        input_data.title,
+        input_data.settings.chart_theme,
+    )
+    return apply_theme(chart, input_data.settings)
+
+
+class ObservationsOverviewInput(BaseModel):
+    model_config = _ARBITRARY
+
+    observations: DataFrame[Observations]
+    frequency_table: DataFrame[FrequencyTable]
+    statistics: DescriptiveStatistics
+    frequency_title: str = "Distribución de frecuencias"
+    summary_title: str = "Boxplot con marcas de resumen"
+    settings: Settings = Settings()
+
+
+def chart_observations_overview(input_data: ObservationsOverviewInput) -> alt.Chart:
+    theme = input_data.settings.chart_theme
+    histogram = _build_frequency_chart(
+        input_data.frequency_table,
+        input_data.frequency_title,
+        theme,
+    ).properties(width=theme.width, height=theme.height)
+    boxplot = _build_descriptive_summary_chart(
+        input_data.observations,
+        input_data.statistics,
+        input_data.summary_title,
+        theme,
+    ).properties(width=theme.width, height=120)
+    composed = (
+        alt
+        .vconcat(histogram, boxplot, spacing=10)
+        .resolve_scale(x="shared")
+    )
+    return apply_theme(composed, input_data.settings, set_size=False)
 
 
 class VennTwoSetsInput(BaseModel):
