@@ -69,15 +69,16 @@ ajeno** a esos tres escenarios — un dado, alturas adultas, el tablero de
 Galton, una muestra sintética para bootstrap — para mostrar que las técnicas
 no quedan amarradas a una historia en particular.
 
-## Preguntas de inicio y síntesis
+## Preguntas de inicio, síntesis y transición
 
-Cada capítulo arranca con una sección **«Preguntas de inicio»** (3 a 4
-preguntas concretas) y termina con dos secciones simétricas:
-
-- **Síntesis y respuestas** — resuelve, una a una, las preguntas planteadas al
-  inicio y referencia las ecuaciones numeradas que dieron la respuesta.
-- **Próximas preguntas** — formula los interrogantes que el próximo capítulo
-  va a abordar. Ese pase es el que da continuidad al recorrido.
+Cada capítulo arranca con una sección **«Preguntas de inicio»** (tres o cuatro
+preguntas concretas) y cierra con una **«Síntesis y respuestas»** que resuelve
+una a una esas preguntas, referenciando las ecuaciones numeradas que dieron la
+respuesta. Después viene un **párrafo final sin encabezado**: una transición
+deliberadamente narrativa, no una lista de «temas del próximo capítulo».
+Plantea, en el mismo tono del resto del texto, qué quedó abierto y por qué hace
+falta otra herramienta para responderlo. Ese pase suelto, no anunciado, es el
+que mantiene la continuidad sin cortar el ritmo de lectura.
 
 Para una guía rápida de notación y términos al pasar entre capítulos, conviene
 tener abierto el [glosario](glossary.md).
