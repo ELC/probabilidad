@@ -91,16 +91,24 @@ def test_format_value_handles_empty_array() -> None:
     assert format_value(np.array([])) == "(vacío)"
 
 
+def test_format_value_renders_array_as_inline_list() -> None:
+    rendered = format_value(np.array([0.65]))
+    assert rendered == "0.65"
+    rendered = format_value(np.array([1.0, 2.0, 3.0]))
+    assert rendered == "1.00, 2.00, 3.00"
+
+
 def test_format_value_truncates_long_arrays() -> None:
-    rendered = format_value(np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]))
-    assert "..." in rendered
-    assert "1.00" in rendered
-    assert "4.00" in rendered
+    rendered = format_value(np.arange(1.0, 13.0))
+    assert rendered.startswith("1.00, 2.00")
+    assert rendered.endswith(", ...")
+    assert "8.00" in rendered
+    assert "9.00" not in rendered
 
 
-def test_format_value_renders_two_dimensional_array() -> None:
+def test_format_value_flattens_two_dimensional_array() -> None:
     rendered = format_value(np.array([[1.0, 2.0], [3.0, 4.0]]))
-    assert "2×2" in rendered
+    assert rendered == "1.00, 2.00, 3.00, 4.00"
 
 
 def test_format_value_handles_tuples_and_lists_inline() -> None:

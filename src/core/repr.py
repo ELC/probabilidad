@@ -70,16 +70,7 @@ def _format_float(value: float) -> str:
     return f"{value:.2f}"
 
 
-def _format_array(value: np.ndarray) -> str:
-    size = int(value.size)
-    if size == 0:
-        return "(vacío)"
-    head_count = min(4, size)
-    flat = value.flatten()
-    head = ", ".join(_format_float(float(x)) for x in flat[:head_count])
-    suffix = ", ..." if size > head_count else ""
-    shape = "×".join(str(dim) for dim in value.shape)
-    return f"array[{shape}] [{head}{suffix}]"
+_MAX_INLINE_ITEMS = 8
 
 
 def _format_basemodel(value: BaseModel) -> str:
@@ -93,7 +84,13 @@ def _format_bool(value: bool) -> str:  # noqa: FBT001
 def _format_sequence_text(value: tuple[Any, ...] | list[Any]) -> str:
     if not value:
         return "(vacío)"
-    return ", ".join(format_value(item) for item in value)
+    head = value[:_MAX_INLINE_ITEMS]
+    suffix = ", ..." if len(value) > _MAX_INLINE_ITEMS else ""
+    return ", ".join(format_value(item) for item in head) + suffix
+
+
+def _format_array(value: np.ndarray) -> str:
+    return _format_sequence_text(value.flatten().tolist())
 
 
 def _format_set_text(value: frozenset[Any] | set[Any]) -> str:
