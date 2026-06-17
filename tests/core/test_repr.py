@@ -29,6 +29,12 @@ class _OuterModel(RichMarkdownModel):
     optional_field: float | None
 
 
+class _NestedListModel(RichMarkdownModel):
+    model_config = ConfigDict(frozen=True)
+
+    members: tuple[_NestedModel, ...]
+
+
 class _PlainModel(BaseModel):
     model_config = ConfigDict(frozen=True)
 
@@ -96,10 +102,9 @@ def test_format_value_renders_two_dimensional_array() -> None:
     assert "2×2" in rendered
 
 
-def test_format_value_handles_tuples_and_lists() -> None:
+def test_format_value_handles_tuples_and_lists_inline() -> None:
     rendered = format_value((1.0, 2.0, 3.0))
-    assert "- 1.00" in rendered
-    assert "- 3.00" in rendered
+    assert rendered == "1.00, 2.00, 3.00"
     assert format_value(()) == "(vacío)"
 
 
@@ -113,15 +118,7 @@ def test_format_value_handles_frozenset() -> None:
 
 def test_format_value_handles_plain_basemodel() -> None:
     rendered = format_value(_PlainModel(value=3))
-    assert rendered.startswith("`_PlainModel")
-
-
-def test_format_value_handles_nested_rich_model() -> None:
-    nested = _NestedModel(name="hijo", value=2.5)
-    rendered = format_value(nested)
-    assert "**" in rendered
-    assert "name: hijo" in rendered
-    assert "value: 2.50" in rendered
+    assert rendered == "_PlainModel(...)"
 
 
 def test_format_value_handles_unknown_object_uses_str() -> None:
@@ -136,7 +133,7 @@ def test_format_value_handles_none() -> None:
     assert format_value(None) == "None"
 
 
-def test_repr_markdown_renders_table_for_outer_model() -> None:
+def test_repr_html_renders_table_for_outer_model() -> None:
     outer = _OuterModel(
         integer_field=3,
         float_field=1.234,
@@ -148,23 +145,77 @@ def test_repr_markdown_renders_table_for_outer_model() -> None:
         set_field=frozenset({"x"}),
         optional_field=None,
     )
-    markdown = outer._repr_markdown_()  # pylint: disable=protected-access
-    assert markdown.startswith("**")
-    assert "| Campo | Valor |" in markdown
-    assert "`float_field`" in markdown
-    assert "1.23" in markdown
-    assert "Sí" in markdown
-    assert "name: hijo" in markdown
-    assert "None" in markdown
+    rendered = outer._repr_html_()  # pylint: disable=protected-access
+    assert rendered.startswith("<table")
+    assert 'colspan="2"' in rendered
+    assert "<thead>" in rendered
+    assert "<tbody>" in rendered
+    assert "float_field" in rendered
+    assert "1.23" in rendered
+    assert "Sí" in rendered
+    assert "hijo" in rendered
+    assert "None" in rendered
+
+
+def test_repr_markdown_falls_back_to_html_table() -> None:
+    nested = _NestedModel(name="hijo", value=2.5)
+    markdown = nested._repr_markdown_()  # pylint: disable=protected-access
+    assert markdown.startswith("<table")
+    assert "hijo" in markdown
+
+
+def test_repr_html_renders_nested_table_for_rich_model_field() -> None:
+    outer = _OuterModel(
+        integer_field=3,
+        float_field=1.234,
+        boolean_field=True,
+        string_field="hola",
+        nested_field=_NestedModel(name="hijo", value=2.5),
+        array_field=np.array([1.0, 2.0]),
+        tuple_field=(0.5, 0.75),
+        set_field=frozenset({"x"}),
+        optional_field=None,
+    )
+    rendered = outer._repr_html_()  # pylint: disable=protected-access
+    assert rendered.count("<table") >= 2
+
+
+def test_repr_html_renders_list_of_nested_models_as_ul() -> None:
+    container = _NestedListModel(
+        members=(
+            _NestedModel(name="a", value=1.0),
+            _NestedModel(name="b", value=2.0),
+        ),
+    )
+    rendered = container._repr_html_()  # pylint: disable=protected-access
+    assert "<ul" in rendered
+    assert "<li>" in rendered
+    assert "a" in rendered
+    assert "b" in rendered
+
+
+def test_repr_html_renders_empty_list_field() -> None:
+    container = _NestedListModel(members=())
+    rendered = container._repr_html_()  # pylint: disable=protected-access
+    assert "(vacío)" in rendered
+
+
+def test_repr_html_escapes_field_and_value_text() -> None:
+    class _UnsafeModel(RichMarkdownModel):
+        text: str
+
+    rendered = _UnsafeModel(text="<script>alert(1)</script>")._repr_html_()  # pylint: disable=protected-access
+    assert "&lt;script&gt;" in rendered
+    assert "<script>alert(1)</script>" not in rendered
 
 
 @pytest.mark.parametrize(
-    ("value", "expected_substring"),
+    ("value", "expected"),
     [
         (math.pi, "3.14"),
-        ([1.0, 2.0], "- 1.00"),
+        ([1.0, 2.0], "1.00, 2.00"),
         ({"a": 1}, "{'a': 1}"),
     ],
 )
-def test_format_value_parametrized_substrings(value: object, expected_substring: str) -> None:
-    assert expected_substring in format_value(value)
+def test_format_value_parametrized_substrings(value: object, expected: str) -> None:
+    assert expected in format_value(value)
