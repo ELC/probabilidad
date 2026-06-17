@@ -175,14 +175,13 @@ def test_repr_html_renders_outer_table_with_scalar_fields() -> None:
     assert 'colspan="2"' in rendered
     assert "<thead>" in rendered
     assert "<tbody>" in rendered
-    assert "float_field" in rendered
     assert "1.23" in rendered
     assert "Sí" in rendered
     assert "hijo" in rendered
     assert "None" in rendered
 
 
-def test_repr_html_uses_spanish_field_labels_with_english_code() -> None:
+def test_repr_html_uses_spanish_field_labels_only() -> None:
     class _ScalarModel(RichMarkdownModel):
         sample_mean: float
         sample_standard_deviation: float
@@ -190,11 +189,11 @@ def test_repr_html_uses_spanish_field_labels_with_english_code() -> None:
     rendered = _ScalarModel(sample_mean=4.14, sample_standard_deviation=1.12)._repr_html_()  # pylint: disable=protected-access
     assert "Media muestral" in rendered
     assert "Desvío estándar muestral" in rendered
-    assert "sample_mean" in rendered
-    assert "sample_standard_deviation" in rendered
+    assert "sample_mean" not in rendered
+    assert "sample_standard_deviation" not in rendered
 
 
-def test_repr_html_omits_spanish_when_field_is_not_in_label_map() -> None:
+def test_repr_html_falls_back_to_field_name_when_label_unknown() -> None:
     class _AdHocModel(RichMarkdownModel):
         custom_thing: int
 
@@ -238,8 +237,8 @@ def test_repr_html_drops_outer_table_when_all_fields_are_rich() -> None:
     assert rendered.count("<table") == 2
     assert "Posición" in rendered
     assert "Dispersión" in rendered
-    assert ">location<" in rendered
-    assert ">dispersion<" in rendered
+    assert "location" not in rendered
+    assert "dispersion" not in rendered
     assert "centro" in rendered
     assert "ancho" in rendered
 

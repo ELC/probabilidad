@@ -139,10 +139,6 @@ _HEADER_STYLE = (
 )
 _CELL_STYLE = "padding: 0.2em 0.6em; border-bottom: 1px solid rgba(120, 120, 120, 0.2); vertical-align: top;"
 _FIELD_STYLE = _CELL_STYLE + " white-space: nowrap; text-align: left;"
-_CODE_STYLE = (
-    "font-family: var(--jp-code-font-family, monospace); font-size: 0.8em;"
-    " color: rgba(120, 120, 120, 0.95); font-weight: normal;"
-)
 _GROUP_STYLE = "display: flex; flex-direction: column; gap: 0.6em; align-items: flex-start;"
 _RICH_LABEL_STYLE = (
     "font-size: 0.9em; font-weight: 500; padding-bottom: 0.2em; color: var(--jp-ui-font-color1, inherit);"
@@ -159,20 +155,12 @@ def field_label_for(field_name: str) -> str:
 
 
 def _field_label_html(field_name: str) -> str:
-    label = field_label_for(field_name)
-    code_html = f'<div style="{_CODE_STYLE}">{html.escape(field_name)}</div>'
-    if label == field_name:
-        return code_html
-    return f"{html.escape(label)}{code_html}"
+    return html.escape(field_label_for(field_name))
 
 
 def _rich_label_html(field_name: str, index: int | None = None) -> str:
-    label = field_label_for(field_name)
     suffix = f"[{index}]" if index is not None else ""
-    code_html = f'<span style="{_CODE_STYLE}">{html.escape(field_name)}{suffix}</span>'
-    if label == field_name:
-        return code_html
-    return f'<span style="{_RICH_LABEL_STYLE}">{html.escape(label)}{suffix}</span> {code_html}'
+    return f'<span style="{_RICH_LABEL_STYLE}">{html.escape(field_label_for(field_name))}{suffix}</span>'
 
 
 def _format_float(value: float) -> str:
