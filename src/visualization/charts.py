@@ -61,7 +61,7 @@ def chart_frequency_table(input_data: FrequencyChartInput) -> alt.Chart:
         x=alt.X("midpoint:Q"),
         y=alt.Y(
             "cumulative_relative_frequency:Q",
-            axis=alt.Axis(title="Frecuencia rel. acumulada", titleColor=theme.palette.secondary),
+            axis=alt.Axis(title="Frecuencia rel. acumulada"),
         ),
     )
     layered = alt.layer(bars, ogive).resolve_scale(y="independent").properties(title=input_data.title)
