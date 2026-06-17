@@ -1,3 +1,5 @@
+from typing import Any
+
 import altair as alt
 import numpy as np
 import pandas as pd
@@ -381,7 +383,7 @@ def _build_descriptive_summary_chart(
     statistics: DescriptiveStatistics,
     title: str,
     theme: ChartTheme,
-) -> alt.Chart:
+) -> Any:
     box = (
         alt
         .Chart(observations)
@@ -439,11 +441,7 @@ def chart_observations_overview(input_data: ObservationsOverviewInput) -> alt.Ch
         input_data.summary_title,
         theme,
     ).properties(width=theme.width, height=120)
-    composed = (
-        alt
-        .vconcat(histogram, boxplot, spacing=10)
-        .resolve_scale(x="shared")
-    )
+    composed = alt.vconcat(histogram, boxplot, spacing=10).resolve_scale(x="shared")
     return apply_theme(composed, input_data.settings, set_size=False)
 
 
@@ -486,10 +484,7 @@ def chart_venn_two_sets(input_data: VennTwoSetsInput) -> alt.Chart:
         "label": [input_data.set_a_label, input_data.set_b_label],
     })
     set_labels = (
-        alt
-        .Chart(set_label_data)
-        .mark_text(fontSize=15, fontWeight="bold")
-        .encode(x="x:Q", y="y:Q", text="label:N")
+        alt.Chart(set_label_data).mark_text(fontSize=15, fontWeight="bold").encode(x="x:Q", y="y:Q", text="label:N")
     )
     intersection_label = (
         input_data.intersection_label
@@ -503,10 +498,8 @@ def chart_venn_two_sets(input_data: VennTwoSetsInput) -> alt.Chart:
         .mark_text(fontSize=13, fontWeight="bold", color=theme.title_color)
         .encode(x="x:Q", y="y:Q", text="label:N")
     )
-    layered = (
-        alt
-        .layer(circles, set_labels, intersection_text)
-        .properties(title=input_data.title, width=chart_width, height=chart_height)
+    layered = alt.layer(circles, set_labels, intersection_text).properties(
+        title=input_data.title, width=chart_width, height=chart_height
     )
     return apply_theme(layered, input_data.settings, set_size=False)
 
@@ -616,8 +609,10 @@ def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # no
     root_x, branch_x, leaf_x = 0.0, 1.0, 2.2
     branch_ys = (1.0, -1.0)
     leaf_offsets = (0.45, -0.45)
-    edges = []
-    nodes = [{"x": root_x, "y": 0.0, "label": input_data.root_label, "kind": "root"}]
+    edges: list[dict[str, Any]] = []
+    nodes: list[dict[str, Any]] = [
+        {"x": root_x, "y": 0.0, "label": input_data.root_label, "kind": "root"},
+    ]
     for branch_index, (branch_label, branch_prob) in enumerate(
         zip(input_data.branch_labels, input_data.branch_probabilities, strict=True),
     ):
@@ -648,9 +643,12 @@ def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # no
                 "label": f"{branch_label}∩{leaf_label}: {joint:.3f}",
                 "kind": "leaf",
             })
-    edge_records = []
+    edge_records: list[dict[str, Any]] = []
     for edge_index, edge in enumerate(edges):
-        edge_records.extend(({"x": edge["x"][0], "y": edge["y"][0], "edge_id": edge_index}, {"x": edge["x"][1], "y": edge["y"][1], "edge_id": edge_index}))
+        edge_records.extend((
+            {"x": edge["x"][0], "y": edge["y"][0], "edge_id": edge_index},
+            {"x": edge["x"][1], "y": edge["y"][1], "edge_id": edge_index},
+        ))
     edge_df = pd.DataFrame.from_records(edge_records)
     line_chart = (
         alt
@@ -666,19 +664,9 @@ def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # no
     edge_label_df = pd.DataFrame.from_records([
         {"x": edge["label_x"], "y": edge["label_y"], "label": edge["weight"]} for edge in edges
     ])
-    edge_labels = (
-        alt
-        .Chart(edge_label_df)
-        .mark_text(fontSize=11, dy=-8)
-        .encode(x="x:Q", y="y:Q", text="label:N")
-    )
+    edge_labels = alt.Chart(edge_label_df).mark_text(fontSize=11, dy=-8).encode(x="x:Q", y="y:Q", text="label:N")
     node_df = pd.DataFrame.from_records(nodes)
-    node_dots = (
-        alt
-        .Chart(node_df)
-        .mark_circle(size=180, color=theme.palette.primary)
-        .encode(x="x:Q", y="y:Q")
-    )
+    node_dots = alt.Chart(node_df).mark_circle(size=180, color=theme.palette.primary).encode(x="x:Q", y="y:Q")
     node_labels = (
         alt
         .Chart(node_df)
