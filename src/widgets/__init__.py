@@ -11,6 +11,10 @@ from widgets.discrete_explorer import (
 )
 from widgets.lln_explorer import LLNExplorerInput, build_lln_explorer
 from widgets.mean_ci_explorer import MeanCIExplorerInput, build_mean_ci_explorer
+from widgets.pivot_inversion_explorer import (
+    PivotInversionExplorerInput,
+    build_pivot_inversion_explorer,
+)
 
 __all__ = [
     "BayesExplorerInput",
@@ -20,6 +24,7 @@ __all__ = [
     "DiscreteDistributionExplorerInput",
     "LLNExplorerInput",
     "MeanCIExplorerInput",
+    "PivotInversionExplorerInput",
     "build_bayes_explorer",
     "build_clt_explorer",
     "build_continuous_distribution_explorer",
@@ -27,4 +32,5 @@ __all__ = [
     "build_discrete_distribution_explorer",
     "build_lln_explorer",
     "build_mean_ci_explorer",
+    "build_pivot_inversion_explorer",
 ]

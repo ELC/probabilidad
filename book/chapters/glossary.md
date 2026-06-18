@@ -50,13 +50,14 @@ indica).
 | $Z_n$ | Promedio estandarizado | [El TCL formal](#sec-sums-clt), ec. (4.3) |
 | $\hat{p}$ | Proporción muestral | [IC para una proporción](#sec-inf-proportion), ec. (5.4) |
 | $\alpha$ | Nivel de significancia / probabilidad de error tipo I | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known) |
-| $z_{1-\alpha/2}$ | Cuantil de la Normal estándar | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known), ec. (5.2), (5.4) |
-| $t_{n-1,\,1-\alpha/2}$ | Cuantil de la $t$ de Student | [IC con $\sigma$ desconocido — la $t$ de Student](#sec-inf-mean-unknown), ec. (5.3) |
-| $\chi^2_{n-1}$ | Distribución chi-cuadrado con $n-1$ grados de libertad | [IC para la varianza — la $\chi^2$](#sec-inf-variance), ec. (5.5) |
-| $H_0$, $H_1$ | Hipótesis nula y alternativa | [Test de hipótesis sobre la espera media](#sec-inf-test), ec. (5.7) |
-| $\mu_0$ | Valor de control bajo $H_0$ | [Test de hipótesis sobre la espera media](#sec-inf-test), ec. (5.7) |
-| $T$ (estadístico) | Estadístico del test $t$ | [Test de hipótesis sobre la espera media](#sec-inf-test), ec. (5.7) |
-| $E$ | Margen de error | [Tamaño muestral para una precisión dada](#sec-inf-sample-size), ec. (5.8), (5.9) |
+| $z_{1-\alpha/2}$ | Cuantil de la Normal estándar | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known), ec. (5.2), (5.4); [El método del pivote](#sec-inf-pivot) |
+| $t_{n-1,\,1-\alpha/2}$ | Cuantil de la $t$ de Student | [IC con $\sigma$ desconocido — la $t$ de Student](#sec-inf-mean-unknown), ec. (5.3); [El método del pivote](#sec-inf-pivot) |
+| $\chi^2_{n-1}$ | Distribución chi-cuadrado con $n-1$ grados de libertad | [IC para la varianza — la $\chi^2$](#sec-inf-variance), ec. (5.5); [El método del pivote](#sec-inf-pivot) |
+| $Q(\mathbf{X};\,\theta)$ | Cantidad pivote: función de datos y parámetro con distribución libre de $\theta$ | [El método del pivote](#sec-inf-pivot), ec. (5.7) |
+| $H_0$, $H_1$ | Hipótesis nula y alternativa | [Test de hipótesis sobre la espera media](#sec-inf-test), ec. (5.12) |
+| $\mu_0$ | Valor de control bajo $H_0$ | [Test de hipótesis sobre la espera media](#sec-inf-test), ec. (5.12) |
+| $T$ (estadístico) | Estadístico del test $t$ | [Test de hipótesis sobre la espera media](#sec-inf-test), ec. (5.12) |
+| $E$ | Margen de error | [Tamaño muestral para una precisión dada](#sec-inf-sample-size), ec. (5.13), (5.14) |
 
 ## Términos
 
@@ -94,14 +95,15 @@ indica).
 | Tablero de Galton | Suma de $\pm 1$ independientes; ilustra el TCL. | [El tablero de Galton](#sec-sums-galton) |
 | TCL | Teorema central del límite: $Z_n \to \mathcal{N}(0,1)$. | [El TCL formal](#sec-sums-clt), ec. (4.3) |
 | Aproximación Binomial-Normal | $\text{Bin}(n,p) \approx \mathcal{N}(np, np(1-p))$ para $n$ grande. | [Aproximación Binomial → Normal](#sec-sums-binomial-normal), ec. (4.4) |
-| Pivote | Función de los datos cuya distribución es libre de parámetros. | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known), ec. (5.1) |
-| Intervalo de confianza | Procedimiento que cubre $\theta$ con probabilidad $1 - \alpha$. | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known), ec. (5.2) |
+| Pivote / cantidad pivote | Función de los datos y del parámetro cuya distribución es libre de parámetros desconocidos. | [El método del pivote](#sec-inf-pivot), ec. (5.7) |
+| Método del pivote | Receta general que construye un IC eligiendo dos cuantiles de la distribución del pivote y despejando el parámetro. La forma "estadístico ± percentil × dispersión" aparece como caso particular cuando el pivote es afín y la referencia es simétrica. | [El método del pivote](#sec-inf-pivot), ec. (5.7)–(5.11) |
+| Intervalo de confianza | Procedimiento que cubre $\theta$ con probabilidad $1 - \alpha$. | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known), ec. (5.2); [El método del pivote](#sec-inf-pivot) |
 | Margen de error | Mitad del ancho del intervalo de confianza. | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known), ec. (5.2), (5.4) |
-| Hipótesis nula | Afirmación de control que el test intenta refutar. | [Test de hipótesis sobre la espera media](#sec-inf-test), ec. (5.7) |
+| Hipótesis nula | Afirmación de control que el test intenta refutar. | [Test de hipótesis sobre la espera media](#sec-inf-test), ec. (5.12) |
 | Hipótesis alternativa | Lo que aceptamos si rechazamos $H_0$. | [Test de hipótesis sobre la espera media](#sec-inf-test) |
 | $p$-valor | Probabilidad bajo $H_0$ de un estadístico tan extremo o más. | [Test de hipótesis sobre la espera media](#sec-inf-test) |
 | Bootstrap | Remuestreo con reemplazo para estimar distribuciones. | [Bootstrap sin supuestos paramétricos](#sec-inf-bootstrap) |
-| Tamaño muestral | $n$ necesario para asegurar un margen de error dado. | [Tamaño muestral para una precisión dada](#sec-inf-sample-size), ec. (5.8), (5.9) |
+| Tamaño muestral | $n$ necesario para asegurar un margen de error dado. | [Tamaño muestral para una precisión dada](#sec-inf-sample-size), ec. (5.13), (5.14) |
 | Contrato del modelo | Lista breve de cuándo aplica una herramienta, qué supuestos necesita, qué puede romperla y cómo interpretar su salida. | Aparece como pausa de lectura junto a modelos y procedimientos principales. |
 | Supuesto | Condición que debe ser razonable para que una fórmula o aproximación sostenga la interpretación prometida. | Aparece en los contratos de modelo. |
 | Comunicación de incertidumbre | Traducción de un resultado estadístico a una frase que conserva rango, nivel de confianza, límites y decisión posible. | [Capstone — un memo con incertidumbre](#sec-inf-capstone) |
