@@ -21,17 +21,26 @@ adicionales que aprovechan que estamos en un cuaderno ejecutable:
 3. **Abstracto.** La fórmula numerada `(U.k)`, presentada en pasos: «partimos
    de», «sustituimos», «despejamos». Así toda fórmula nueva referencia a
    alguna anterior y nunca aparece de la nada.
-4. **Intuición.** Un párrafo que explica **por qué** la fórmula tiene sentido
-   en lenguaje natural. A esta altura, el lector ya tiene los tres elementos
+4. **Predicción.** Antes de ejecutar un gráfico, una simulación o un widget, el
+   texto pide anticipar dirección, forma o magnitud. Ese pequeño compromiso
+   mental vuelve más memorable la sorpresa cuando el resultado confirma o
+   corrige la intuición.
+5. **Intuición.** Un párrafo que explica **por qué** la fórmula tiene sentido
+   en lenguaje natural. A esta altura, el lector ya tiene los elementos
    anteriores y puede confirmar lo que la fórmula dice.
-5. **Exploración interactiva.** Un widget (`build_*_explorer`) que permite
+6. **Exploración interactiva.** Un widget (`build_*_explorer`) que permite
    variar parámetros y ver cómo reacciona el gráfico y los números. Es donde
    la intuición se vuelve estable.
+7. **Verificación y transferencia.** Cada ejercicio funciona como auto-chequeo:
+   el lector intenta una respuesta, ejecuta una verificación y después traduce
+   el número a una decisión o interpretación.
 
 Esta progresión está **implícita** en cada capítulo: no vas a encontrar
 secciones tituladas «Concreto» o «Pictórico». En cambio vas a leer encabezados
 como «Un experimento concreto», «Una imagen mental» o «La fórmula». La
-progresión está, pero no se anuncia.
+progresión está, pero no se anuncia. Lo que sí aparece de manera visible son
+pequeñas pausas de aprendizaje: **Antes de mirar**, **Chequeo rápido**,
+**Trampa común** y **Decisión de ingeniería**.
 
 ## Método Singapur y modelado por barras
 
@@ -92,6 +101,21 @@ de ida y vuelta entre datos y parámetros.
 Para una guía rápida de notación y términos al pasar entre capítulos,
 conviene tener abierto el [glosario](glossary.md).
 
+## Interactividad sin entrega
+
+El libro no está pensado como courseware ni como una plataforma donde el
+estudiante entrega una versión completada. La interactividad cumple otra
+función: convertir la lectura en experimentación guiada. Antes de una salida
+importante, el lector predice; después ejecuta o inspecciona; finalmente
+explica si el resultado cambió su intuición.
+
+Ese ciclo aprovecha tres ideas robustas de aprendizaje: la **generación**
+(intentar una respuesta antes de verla), la **recuperación activa** (recordar
+conceptos previos en un contexto nuevo) y la **retroalimentación inmediata**
+(comparar la predicción con una verificación o un gráfico). Los ejercicios, por
+eso, no buscan recolectar tareas: buscan que el lector practique, se equivoque
+barato y ajuste su modelo mental.
+
 ## Cómo recorrer cada capítulo
 
 Una sugerencia de lectura, especialmente para una primera pasada:
@@ -100,12 +124,16 @@ Una sugerencia de lectura, especialmente para una primera pasada:
    plantea, y anotá, sin pensarlo demasiado, qué responderías ahora mismo.
 2. Recorré las secciones de **caso concreto + imagen + fórmula + intuición**
    en orden, sin saltearte el gráfico.
-3. Detenete en el **widget interactivo**: cambiá un parámetro a la vez y
+3. Cuando aparezca **Antes de mirar**, escribí o pensá una predicción concreta:
+   dirección, forma, orden de magnitud o comparación.
+4. Detenete en el **widget interactivo**: cambiá un parámetro a la vez y
    tratá de **predecir** qué va a pasar antes de mirar el gráfico nuevo.
-4. Hacé los **ejercicios** sin ejecutar la verificación primero. Después
-   compará tu respuesta con la del módulo de `exercises`.
-5. Cuando llegues al **párrafo de cierre**, fijate qué pregunta nueva
+5. Hacé los **ejercicios** sin ejecutar la verificación primero. Después
+   compará tu respuesta con el módulo de `exercises` y explicá qué significa el
+   resultado en la historia.
+6. Cuando llegues al **párrafo de cierre**, fijate qué pregunta nueva
    queda abierta: esa es la que motiva el capítulo que sigue.
 
-Este ciclo (pregunta → exploración → fórmula → nueva pregunta) es lo que
-mantiene el material del libro hilado de principio a fin.
+Este ciclo (pregunta → predicción → exploración → fórmula → verificación →
+transferencia → nueva pregunta) es lo que mantiene el material del libro hilado
+de principio a fin.
