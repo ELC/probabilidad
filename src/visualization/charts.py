@@ -464,6 +464,10 @@ class VennTwoSetsInput(BaseModel):
 _VENN_REGION_IDS = ("10", "01", "11")
 
 
+def _format_probability(probability: float) -> str:
+    return f"{probability:.3g}"
+
+
 def chart_venn_two_sets(input_data: VennTwoSetsInput) -> Figure:  # noqa: PLR0914
     probability_a = input_data.probability_a
     probability_b = input_data.probability_b
@@ -492,7 +496,7 @@ def chart_venn_two_sets(input_data: VennTwoSetsInput) -> Figure:  # noqa: PLR091
     axes.set_facecolor(palette.background)
     diagram = venn2(
         subsets=subsets,
-        set_labels=(input_data.set_a_label, input_data.set_b_label),
+        set_labels=("", ""),
         ax=axes,
     )
     region_colors = {"10": palette.primary, "01": palette.secondary, "11": palette.accent}
@@ -504,18 +508,40 @@ def chart_venn_two_sets(input_data: VennTwoSetsInput) -> Figure:  # noqa: PLR091
     intersection_label = (
         input_data.intersection_label
         if input_data.intersection_label is not None
-        else f"{probability_intersection:.3f}"
+        else _format_probability(probability_intersection)
     )
-    region_label_texts = {"10": f"{subset_a_only:.3f}", "01": f"{subset_b_only:.3f}", "11": intersection_label}
+    region_label_texts = {
+        "10": _format_probability(subset_a_only),
+        "01": _format_probability(subset_b_only),
+        "11": intersection_label,
+    }
     for region_id, text in region_label_texts.items():
         label = diagram.get_label_by_id(region_id)
         label.set_text(text)
         label.set_color(theme.label_color)
         label.set_fontsize(theme.font_size)
-    for set_id in ("A", "B"):
-        set_label = diagram.get_label_by_id(set_id)
-        set_label.set_color(theme.title_color)
-        set_label.set_fontsize(theme.font_size + 1)
+    legend_handles = [
+        plt.Rectangle((0, 0), 1, 1, facecolor=palette.primary, alpha=0.5, edgecolor=palette.muted),
+        plt.Rectangle((0, 0), 1, 1, facecolor=palette.secondary, alpha=0.5, edgecolor=palette.muted),
+    ]
+    axes.legend(
+        legend_handles,
+        [input_data.set_a_label, input_data.set_b_label],
+        loc="upper right",
+        frameon=False,
+        labelcolor=theme.title_color,
+        fontsize=theme.font_size,
+    )
+    axes.text(
+        0.02,
+        0.98,
+        f"P(Ω) = {_format_probability(1.0)}",
+        transform=axes.transAxes,
+        color=theme.title_color,
+        fontsize=theme.font_size,
+        verticalalignment="top",
+        horizontalalignment="left",
+    )
     figure.suptitle(input_data.title, color=theme.title_color, fontsize=theme.font_size + 3)
     figure.tight_layout()
     return figure
@@ -641,7 +667,7 @@ def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # no
             "y": [0.0, branch_y],
             "label_x": (root_x + branch_x) / 2,
             "label_y": (0.0 + branch_y) / 2 + slope_sign * edge_label_y_offset,
-            "weight": f"{branch_label}: {branch_prob:.2f}",
+            "weight": f"{branch_label}: {_format_probability(branch_prob)}",
         })
         nodes.append({"x": branch_x, "y": branch_y, "label": branch_label, "kind": "branch"})
         for leaf_index, (leaf_label, conditional_prob) in enumerate(
@@ -654,13 +680,13 @@ def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # no
                 "y": [branch_y, leaf_y],
                 "label_x": (branch_x + leaf_x) / 2,
                 "label_y": (branch_y + leaf_y) / 2 + leaf_slope_sign * edge_label_y_offset,
-                "weight": f"{leaf_label}|{branch_label}: {conditional_prob:.2f}",
+                "weight": f"{leaf_label}|{branch_label}: {_format_probability(conditional_prob)}",
             })
             joint = branch_prob * conditional_prob
             nodes.append({
                 "x": leaf_x,
                 "y": leaf_y,
-                "label": f"{branch_label}∩{leaf_label}: {joint:.3f}",
+                "label": f"{branch_label}∩{leaf_label}: {_format_probability(joint)}",
                 "kind": "leaf",
             })
     edge_records: list[dict[str, Any]] = []

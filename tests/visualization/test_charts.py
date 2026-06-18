@@ -270,10 +270,15 @@ def test_chart_venn_two_sets_renders_set_labels(fixed_settings: Settings) -> Non
         )
     )
     assert len(figure.axes) == 1
-    texts = [text.get_text() for text in figure.axes[0].texts]
-    assert "Esperan mucho" in texts
-    assert "Llegan tarde" in texts
-    assert any("0.200" in text for text in texts)
+    axes = figure.axes[0]
+    texts = [text.get_text() for text in axes.texts]
+    legend = axes.get_legend()
+    assert legend is not None
+    legend_labels = [text.get_text() for text in legend.get_texts()]
+    assert "Esperan mucho" in legend_labels
+    assert "Llegan tarde" in legend_labels
+    assert "P(Ω) = 1" in texts
+    assert "0.2" in texts
     plt.close(figure)
 
 
@@ -406,4 +411,4 @@ def test_chart_probability_tree_emits_joint_probabilities(fixed_settings: Settin
     flattened = str(chart.to_dict(format="vega"))
     assert "Enfermo" in flattened
     assert "Sano" in flattened
-    assert "0.010" in flattened
+    assert "0.01" in flattened
