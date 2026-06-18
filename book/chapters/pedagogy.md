@@ -25,22 +25,26 @@ adicionales que aprovechan que estamos en un cuaderno ejecutable:
    texto pide anticipar dirección, forma o magnitud. Ese pequeño compromiso
    mental vuelve más memorable la sorpresa cuando el resultado confirma o
    corrige la intuición.
-5. **Intuición.** Un párrafo que explica **por qué** la fórmula tiene sentido
+5. **Contrato del modelo.** Las herramientas importantes explicitan cuándo
+   aplican, qué supuestos piden, qué puede romperlas y cómo interpretar el
+   resultado sin exagerarlo.
+6. **Intuición.** Un párrafo que explica **por qué** la fórmula tiene sentido
    en lenguaje natural. A esta altura, el lector ya tiene los elementos
    anteriores y puede confirmar lo que la fórmula dice.
-6. **Exploración interactiva.** Un widget (`build_*_explorer`) que permite
+7. **Exploración interactiva.** Un widget (`build_*_explorer`) que permite
    variar parámetros y ver cómo reacciona el gráfico y los números. Es donde
    la intuición se vuelve estable.
-7. **Verificación y transferencia.** Cada ejercicio funciona como auto-chequeo:
-   el lector intenta una respuesta, ejecuta una verificación y después traduce
-   el número a una decisión o interpretación.
+8. **Verificación, interpretación y decisión.** Cada ejercicio funciona como
+   auto-chequeo: el lector intenta una respuesta, ejecuta una verificación,
+   traduce el número a una interpretación y ensaya una decisión o una frase de
+   comunicación.
 
 Esta progresión está **implícita** en cada capítulo: no vas a encontrar
 secciones tituladas «Concreto» o «Pictórico». En cambio vas a leer encabezados
 como «Un experimento concreto», «Una imagen mental» o «La fórmula». La
 progresión está, pero no se anuncia. Lo que sí aparece de manera visible son
 pequeñas pausas de aprendizaje: **Antes de mirar**, **Chequeo rápido**,
-**Trampa común** y **Decisión de ingeniería**.
+**Trampa común**, **Contrato del modelo** y **Decisión de ingeniería**.
 
 ## Método Singapur y modelado por barras
 
@@ -89,6 +93,11 @@ paso (un paciente nuevo, un turno todavía sin medir, una respuesta más),
 **nombrar la herramienta** que las resuelve. Ese pulso se repite tanto
 en el párrafo de apertura como en el de cierre.
 
+Desde el segundo capítulo, esa mirada atrás aparece también como una breve
+**recuperación activa**: dos o tres preguntas que obligan al lector a traer a la
+memoria una idea anterior antes de usarla de nuevo. La intención no es evaluar,
+sino bajar la carga cognitiva y reforzar conexiones espaciadas entre capítulos.
+
 La consecuencia es que el lector llega a cada nueva técnica con la
 pregunta ya hecha, no con un temario anunciado por adelantado. La
 herramienta aparece como respuesta natural a un problema que el texto
@@ -116,6 +125,11 @@ conceptos previos en un contexto nuevo) y la **retroalimentación inmediata**
 eso, no buscan recolectar tareas: buscan que el lector practique, se equivoque
 barato y ajuste su modelo mental.
 
+Las verificaciones numéricas se complementan con interpretación y decisión. Un
+resultado estadístico no queda cerrado hasta que el lector puede decir qué
+significa en la historia, qué supuesto sostiene la conclusión y cómo lo
+comunicaría sin convertir incertidumbre en certeza.
+
 ## Cómo recorrer cada capítulo
 
 Una sugerencia de lectura, especialmente para una primera pasada:
@@ -126,12 +140,15 @@ Una sugerencia de lectura, especialmente para una primera pasada:
    en orden, sin saltearte el gráfico.
 3. Cuando aparezca **Antes de mirar**, escribí o pensá una predicción concreta:
    dirección, forma, orden de magnitud o comparación.
-4. Detenete en el **widget interactivo**: cambiá un parámetro a la vez y
+4. Cuando aparezca un **Contrato del modelo**, leelo como una lista de chequeo:
+   cuándo aplica, qué supuesto exige, qué lo puede romper y qué interpretación
+   autoriza.
+5. Detenete en el **widget interactivo**: cambiá un parámetro a la vez y
    tratá de **predecir** qué va a pasar antes de mirar el gráfico nuevo.
-5. Hacé los **ejercicios** sin ejecutar la verificación primero. Después
-   compará tu respuesta con el módulo de `exercises` y explicá qué significa el
-   resultado en la historia.
-6. Cuando llegues al **párrafo de cierre**, fijate qué pregunta nueva
+6. Hacé los **ejercicios** sin ejecutar la verificación primero. Después
+   compará tu respuesta con el módulo de `exercises`, explicá qué significa el
+   resultado en la historia y ensayá una recomendación o frase de comunicación.
+7. Cuando llegues al **párrafo de cierre**, fijate qué pregunta nueva
    queda abierta: esa es la que motiva el capítulo que sigue.
 
 Este ciclo (pregunta → predicción → exploración → fórmula → verificación →
