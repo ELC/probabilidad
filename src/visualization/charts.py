@@ -1,8 +1,11 @@
 from typing import Any
 
 import altair as alt
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.figure import Figure
+from matplotlib_venn import venn2, venn2_circles
 from pandera.typing import DataFrame
 from pydantic import BaseModel, ConfigDict, Field
 from scipy import stats
@@ -448,6 +451,9 @@ def chart_observations_overview(input_data: ObservationsOverviewInput) -> alt.Ch
 class VennTwoSetsInput(BaseModel):
     model_config = _ARBITRARY
 
+    probability_a: float
+    probability_b: float
+    probability_intersection: float
     set_a_label: str = "A"
     set_b_label: str = "B"
     intersection_label: str | None = None
@@ -455,53 +461,63 @@ class VennTwoSetsInput(BaseModel):
     settings: Settings = Settings()
 
 
-def chart_venn_two_sets(input_data: VennTwoSetsInput) -> alt.Chart:
-    theme = input_data.settings.chart_theme
-    chart_width = 520
-    chart_height = 300
-    centers = pd.DataFrame({
-        "x": [-0.7, 0.7],
-        "y": [0.0, 0.0],
-        "label": [input_data.set_a_label, input_data.set_b_label],
-    })
-    color_scale = alt.Scale(
-        domain=[input_data.set_a_label, input_data.set_b_label],
-        range=[theme.palette.primary, theme.palette.secondary],
-    )
-    circles = (
-        alt
-        .Chart(centers)
-        .mark_circle(size=42000, opacity=0.5, stroke=theme.palette.muted, strokeWidth=2)
-        .encode(
-            x=alt.X("x:Q", scale=alt.Scale(domain=[-2.6, 2.6]), axis=None),
-            y=alt.Y("y:Q", scale=alt.Scale(domain=[-1.5, 1.5]), axis=None),
-            color=alt.Color("label:N", scale=color_scale, legend=None),
+_VENN_REGION_IDS = ("10", "01", "11")
+
+
+def chart_venn_two_sets(input_data: VennTwoSetsInput) -> Figure:  # noqa: PLR0914
+    probability_a = input_data.probability_a
+    probability_b = input_data.probability_b
+    probability_intersection = input_data.probability_intersection
+    for name, value in (
+        ("probability_a", probability_a),
+        ("probability_b", probability_b),
+        ("probability_intersection", probability_intersection),
+    ):
+        if not 0.0 <= value <= 1.0:
+            msg = f"{name} must lie in [0, 1]; got {value}"
+            raise ValueError(msg)
+    if probability_intersection > min(probability_a, probability_b):
+        msg = (
+            "probability_intersection must not exceed min(probability_a, probability_b);"
+            f" got {probability_intersection} > {min(probability_a, probability_b)}"
         )
+        raise ValueError(msg)
+    subset_a_only = probability_a - probability_intersection
+    subset_b_only = probability_b - probability_intersection
+    subsets = (subset_a_only, subset_b_only, probability_intersection)
+    theme = input_data.settings.chart_theme
+    palette = theme.palette
+    figure, axes = plt.subplots(figsize=(theme.width / 100, theme.height / 100))
+    figure.patch.set_facecolor(palette.background)
+    axes.set_facecolor(palette.background)
+    diagram = venn2(
+        subsets=subsets,
+        set_labels=(input_data.set_a_label, input_data.set_b_label),
+        ax=axes,
     )
-    set_label_data = pd.DataFrame({
-        "x": [-1.7, 1.7],
-        "y": [1.2, 1.2],
-        "label": [input_data.set_a_label, input_data.set_b_label],
-    })
-    set_labels = (
-        alt.Chart(set_label_data).mark_text(fontSize=15, fontWeight="bold").encode(x="x:Q", y="y:Q", text="label:N")
-    )
+    region_colors = {"10": palette.primary, "01": palette.secondary, "11": palette.accent}
+    for region_id, color in region_colors.items():
+        patch = diagram.get_patch_by_id(region_id)
+        patch.set_color(color)
+        patch.set_alpha(0.5)
+    venn2_circles(subsets=subsets, ax=axes, linewidth=1.5, color=palette.muted)
     intersection_label = (
         input_data.intersection_label
         if input_data.intersection_label is not None
-        else f"{input_data.set_a_label} ∩ {input_data.set_b_label}"
+        else f"P({input_data.set_a_label} \u2229 {input_data.set_b_label}) = {probability_intersection:.3f}"
     )
-    intersection_data = pd.DataFrame({"x": [0.0], "y": [0.0], "label": [intersection_label]})
-    intersection_text = (
-        alt
-        .Chart(intersection_data)
-        .mark_text(fontSize=13, fontWeight="bold", color=theme.title_color)
-        .encode(x="x:Q", y="y:Q", text="label:N")
-    )
-    layered = alt.layer(circles, set_labels, intersection_text).properties(
-        title=input_data.title, width=chart_width, height=chart_height
-    )
-    return apply_theme(layered, input_data.settings, set_size=False)
+    diagram.get_label_by_id("11").set_text(intersection_label)
+    for region_id in _VENN_REGION_IDS:
+        label = diagram.get_label_by_id(region_id)
+        label.set_color(theme.label_color)
+        label.set_fontsize(theme.font_size)
+    for set_id in ("A", "B"):
+        set_label = diagram.get_label_by_id(set_id)
+        set_label.set_color(theme.title_color)
+        set_label.set_fontsize(theme.font_size + 1)
+    figure.suptitle(input_data.title, color=theme.title_color, fontsize=theme.font_size + 3)
+    figure.tight_layout()
+    return figure
 
 
 class PartitionDiagramInput(BaseModel):

@@ -1254,6 +1254,17 @@ wheels = [
 ]
 
 [[package]]
+name = "matplotlib-venn"
+version = "1.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "scipy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e8/f7/47bddf95492f4d1370ed7164d2b16407805e8eeb38231361de65d387a562/matplotlib-venn-1.1.2.tar.gz", hash = "sha256:6f2b07a03e9bb5a62de2f32f965216739e175176f9d654dd19e7af2c22ec36e3", size = 40821, upload-time = "2025-02-25T10:44:24.294Z" }
+
+[[package]]
 name = "mccabe"
 version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1768,6 +1779,7 @@ dependencies = [
     { name = "jupyter-book" },
     { name = "jupyterlab" },
     { name = "matplotlib" },
+    { name = "matplotlib-venn" },
     { name = "numpy" },
     { name = "pandas" },
     { name = "pandera", extra = ["mypy"] },
@@ -1800,6 +1812,7 @@ requires-dist = [
     { name = "jupyter-book", specifier = ">=2,<3" },
     { name = "jupyterlab", specifier = ">=4.5" },
     { name = "matplotlib", specifier = ">=3.10.8" },
+    { name = "matplotlib-venn", specifier = ">=1.1" },
     { name = "numpy", specifier = ">=2.0" },
     { name = "pandas", specifier = ">=3.0.1" },
     { name = "pandera", extras = ["mypy"], specifier = ">=0.30.1" },

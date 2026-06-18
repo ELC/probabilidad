@@ -1,5 +1,6 @@
 import json
 
+import matplotlib.pyplot as plt
 import pytest
 from pandera.typing import DataFrame
 
@@ -257,27 +258,79 @@ def test_chart_observations_overview_shares_x_axis(
     assert spec["resolve"]["scale"]["x"] == "shared"
 
 
-def test_chart_venn_two_sets_renders_intersection_label(fixed_settings: Settings) -> None:
-    chart = chart_venn_two_sets(
-        VennTwoSetsInput(set_a_label="Esperan mucho", set_b_label="Llegan tarde", settings=fixed_settings)
+def test_chart_venn_two_sets_renders_set_labels(fixed_settings: Settings) -> None:
+    figure = chart_venn_two_sets(
+        VennTwoSetsInput(
+            probability_a=0.5,
+            probability_b=0.4,
+            probability_intersection=0.2,
+            set_a_label="Esperan mucho",
+            set_b_label="Llegan tarde",
+            settings=fixed_settings,
+        )
     )
-    spec = chart.to_dict(format="vega")
-    assert "∩" in str(spec)
-    assert "Esperan mucho" in str(spec)
-    assert "Llegan tarde" in str(spec)
+    assert len(figure.axes) == 1
+    texts = [text.get_text() for text in figure.axes[0].texts]
+    assert "Esperan mucho" in texts
+    assert "Llegan tarde" in texts
+    assert any("0.200" in text for text in texts)
+    plt.close(figure)
 
 
 def test_chart_venn_two_sets_accepts_custom_intersection_label(fixed_settings: Settings) -> None:
-    chart = chart_venn_two_sets(
+    figure = chart_venn_two_sets(
         VennTwoSetsInput(
-            set_a_label="A: sale par",
-            set_b_label="B: sale al menos 4",
+            probability_a=3 / 6,
+            probability_b=3 / 6,
+            probability_intersection=2 / 6,
+            set_a_label="A",
+            set_b_label="B",
             intersection_label="A ∩ B = {4, 6}",
             settings=fixed_settings,
         )
     )
-    spec_text = str(chart.to_dict(format="vega"))
-    assert "A ∩ B = {4, 6}" in spec_text
+    texts = [text.get_text() for text in figure.axes[0].texts]
+    assert "A ∩ B = {4, 6}" in texts
+    plt.close(figure)
+
+
+def test_chart_venn_two_sets_handles_nested_subset(fixed_settings: Settings) -> None:
+    figure = chart_venn_two_sets(
+        VennTwoSetsInput(
+            probability_a=0.21,
+            probability_b=0.45,
+            probability_intersection=0.21,
+            set_a_label="T",
+            set_b_label="S",
+            settings=fixed_settings,
+        )
+    )
+    assert figure.axes
+    plt.close(figure)
+
+
+def test_chart_venn_two_sets_rejects_inconsistent_intersection(fixed_settings: Settings) -> None:
+    with pytest.raises(ValueError, match="probability_intersection must not exceed"):
+        chart_venn_two_sets(
+            VennTwoSetsInput(
+                probability_a=0.3,
+                probability_b=0.4,
+                probability_intersection=0.35,
+                settings=fixed_settings,
+            )
+        )
+
+
+def test_chart_venn_two_sets_rejects_out_of_range_probability(fixed_settings: Settings) -> None:
+    with pytest.raises(ValueError, match="must lie in"):
+        chart_venn_two_sets(
+            VennTwoSetsInput(
+                probability_a=1.2,
+                probability_b=0.4,
+                probability_intersection=0.1,
+                settings=fixed_settings,
+            )
+        )
 
 
 def test_chart_partition_diagram_renders_strips(fixed_settings: Settings) -> None:

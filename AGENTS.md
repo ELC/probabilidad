@@ -44,7 +44,8 @@ imports from several slices.
 
 - **No primitive obsession**: every public function takes exactly one Pydantic `BaseModel` input
   (or none for factories) and returns one typed result (`BaseModel`, `alt.Chart`,
-  `ipywidgets.Widget`, or `sympy.Expr`).
+  `ipywidgets.Widget`, `sympy.Expr`, or `matplotlib.figure.Figure` when the chart is a
+  specialized diagram not natively supported by Altair, e.g. `matplotlib_venn`).
 - **Pure functions only**. Side effects (display, observe, mutation) live inside widget factory
   callbacks; the surrounding code is referentially transparent.
 - **No global state**: no module-level mutables, no implicit theme registration. Theme is applied
