@@ -623,9 +623,10 @@ class ProbabilityTreeInput(BaseModel):
 
 def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # noqa: PLR0914
     theme = input_data.settings.chart_theme
-    root_x, branch_x, leaf_x = 0.0, 1.0, 2.2
-    branch_ys = (1.0, -1.0)
-    leaf_offsets = (0.45, -0.45)
+    root_x, branch_x, leaf_x = 0.0, 1.1, 2.6
+    branch_ys = (1.1, -1.1)
+    leaf_offsets = (0.7, -0.7)
+    edge_label_y_offset = 0.12
     edges: list[dict[str, Any]] = []
     nodes: list[dict[str, Any]] = [
         {"x": root_x, "y": 0.0, "label": input_data.root_label, "kind": "root"},
@@ -634,11 +635,12 @@ def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # no
         zip(input_data.branch_labels, input_data.branch_probabilities, strict=True),
     ):
         branch_y = branch_ys[branch_index]
+        slope_sign = 1.0 if branch_y >= 0.0 else -1.0
         edges.append({
             "x": [root_x, branch_x],
             "y": [0.0, branch_y],
             "label_x": (root_x + branch_x) / 2,
-            "label_y": (0.0 + branch_y) / 2,
+            "label_y": (0.0 + branch_y) / 2 + slope_sign * edge_label_y_offset,
             "weight": f"{branch_label}: {branch_prob:.2f}",
         })
         nodes.append({"x": branch_x, "y": branch_y, "label": branch_label, "kind": "branch"})
@@ -646,11 +648,12 @@ def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # no
             zip(input_data.leaf_labels, input_data.conditional_probabilities[branch_index], strict=True),
         ):
             leaf_y = branch_y + leaf_offsets[leaf_index]
+            leaf_slope_sign = 1.0 if leaf_offsets[leaf_index] >= 0.0 else -1.0
             edges.append({
                 "x": [branch_x, leaf_x],
                 "y": [branch_y, leaf_y],
                 "label_x": (branch_x + leaf_x) / 2,
-                "label_y": (branch_y + leaf_y) / 2,
+                "label_y": (branch_y + leaf_y) / 2 + leaf_slope_sign * edge_label_y_offset,
                 "weight": f"{leaf_label}|{branch_label}: {conditional_prob:.2f}",
             })
             joint = branch_prob * conditional_prob
@@ -672,23 +675,23 @@ def chart_probability_tree(input_data: ProbabilityTreeInput) -> alt.Chart:  # no
         .Chart(edge_df)
         .mark_line(color=theme.palette.muted, strokeWidth=1.5)
         .encode(
-            x=alt.X("x:Q", scale=alt.Scale(domain=[-0.4, 3.4]), axis=None),
-            y=alt.Y("y:Q", scale=alt.Scale(domain=[-1.9, 1.9]), axis=None),
+            x=alt.X("x:Q", scale=alt.Scale(domain=[-0.4, 4.4]), axis=None),
+            y=alt.Y("y:Q", scale=alt.Scale(domain=[-2.2, 2.2]), axis=None),
             detail="edge_id:N",
         )
-        .properties(width=520, height=320)
+        .properties(width=560, height=360)
     )
     edge_label_df = pd.DataFrame.from_records([
         {"x": edge["label_x"], "y": edge["label_y"], "label": edge["weight"]} for edge in edges
     ])
-    edge_labels = alt.Chart(edge_label_df).mark_text(fontSize=11, dy=-8).encode(x="x:Q", y="y:Q", text="label:N")
+    edge_labels = alt.Chart(edge_label_df).mark_text(fontSize=10).encode(x="x:Q", y="y:Q", text="label:N")
     node_df = pd.DataFrame.from_records(nodes)
     node_dots = alt.Chart(node_df).mark_circle(size=180, color=theme.palette.primary).encode(x="x:Q", y="y:Q")
     node_labels = (
         alt
         .Chart(node_df)
-        .mark_text(fontSize=12, fontWeight="bold", align="left", dx=10)
+        .mark_text(fontSize=12, fontWeight="bold", align="left", dx=12)
         .encode(x="x:Q", y="y:Q", text="label:N")
     )
     layered = alt.layer(line_chart, edge_labels, node_dots, node_labels).properties(title=input_data.title)
-    return apply_theme(layered, input_data.settings)
+    return apply_theme(layered, input_data.settings, set_size=False)
