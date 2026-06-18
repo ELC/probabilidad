@@ -127,7 +127,7 @@ FIELD_LABELS: dict[str, str] = {
     "value": "Valor",
     "values": "Valores",
     "variance": "Varianza",
-    "z_scores": "Puntajes z",
+    "z_scores": "Z-scores (puntajes z)",
 }
 
 _TABLE_STYLE = (

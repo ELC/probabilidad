@@ -25,7 +25,8 @@ indica).
 | $s^2$, $S^2$ | Varianza muestral | [Resumir con tres miradas](#sec-descriptive-summary) |
 | $Q_1$, $Q_3$ | Primer y tercer cuartil | [Detección de outliers — la regla de Tukey](#sec-descriptive-tukey), ec. (1.4) |
 | $\text{IQR}$ | Rango intercuartil $Q_3 - Q_1$ | [Detección de outliers — la regla de Tukey](#sec-descriptive-tukey), ec. (1.4) |
-| $z_i$ | $z$-score muestral de la observación $x_i$ | [Posición relativa: el $z$-score](#sec-descriptive-zscore), ec. (1.5) |
+| $z_i$ | $z$-score (standard score) muestral de la observación $x_i$ | [Posición relativa: el $z$-score](#sec-descriptive-zscore), ec. (1.5) |
+| $z_{\text{obs}}$ | Valor observado del estadístico $Z$ en un test $z$ ($z$-statistic) | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known), ec. (5.1) |
 | $X$, $Y$, $T$ | Variables aleatorias | [Contar defectos con una Binomial](#sec-rv-binomial) |
 | $X_i$ | $i$-ésima v.a. en una secuencia i.i.d. | [La proporción observada se estabiliza](#sec-sums-lln) |
 | $E[X]$, $\mu$ | Esperanza | [Contar defectos con una Binomial](#sec-rv-binomial) |
@@ -69,7 +70,8 @@ indica).
 | Tabla de frecuencias | Conteo absoluto, relativo y acumulado por intervalos. | [Una muestra de tiempos de espera](#sec-descriptive-sample) |
 | Suma de cuadrados | $\sum(x_i - \bar{x})^2$, paso intermedio para $s$. | [Resumir con tres miradas](#sec-descriptive-summary) |
 | Outlier | Observación fuera de $[Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}]$. | [Detección de outliers — la regla de Tukey](#sec-descriptive-tukey) |
-| $z$-score | Distancia a la media expresada en unidades de desvío. | [Posición relativa: el $z$-score](#sec-descriptive-zscore) |
+| $z$-score (*standard score*) | Distancia de una observación a la media, expresada en unidades de desvío estándar. | [Posición relativa: el $z$-score](#sec-descriptive-zscore) |
+| $z$-statistic | Valor del estadístico de prueba estandarizado bajo $H_0$ en un test $z$. | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known), [Test de hipótesis sobre la espera media](#sec-inf-test) |
 | Coeficiente de variación | Cociente $s/\bar{x}$, adimensional. | [Posición relativa: el $z$-score](#sec-descriptive-zscore) |
 | Evento | Subconjunto del espacio muestral. | [Un experimento concreto](#sec-prob-experiment) |
 | Partición | Familia de eventos disjuntos cuya unión es $\Omega$. | [Probabilidad total — la versión general](#sec-prob-total), ec. (2.5) |
