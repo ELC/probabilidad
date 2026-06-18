@@ -63,6 +63,9 @@ indica).
 | --- | --- | --- |
 | Observación | Valor numérico registrado de una unidad de la muestra. | [Una muestra de tiempos de espera](#sec-descriptive-sample) |
 | Muestra | Conjunto finito de observaciones; en código vive como `Observations`. | [Una muestra de tiempos de espera](#sec-descriptive-sample) |
+| Representatividad | Grado en que la muestra se parece al proceso o población sobre la que queremos decidir. | [Antes de inferir: cómo se juntaron los datos](#sec-descriptive-sampling) |
+| Sesgo | Patrón de recolección o medición que empuja los datos sistemáticamente en una dirección. | [Antes de inferir: cómo se juntaron los datos](#sec-descriptive-sampling) |
+| Independencia | Condición bajo la cual una observación no arrastra mecánicamente a la siguiente. | [Antes de inferir: cómo se juntaron los datos](#sec-descriptive-sampling) |
 | Tabla de frecuencias | Conteo absoluto, relativo y acumulado por intervalos. | [Una muestra de tiempos de espera](#sec-descriptive-sample) |
 | Suma de cuadrados | $\sum(x_i - \bar{x})^2$, paso intermedio para $s$. | [Resumir con tres miradas](#sec-descriptive-summary) |
 | Outlier | Observación fuera de $[Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}]$. | [Detección de outliers — la regla de Tukey](#sec-descriptive-tukey) |
@@ -99,4 +102,4 @@ indica).
 | Tamaño muestral | $n$ necesario para asegurar un margen de error dado. | [Tamaño muestral para una precisión dada](#sec-inf-sample-size), ec. (5.8), (5.9) |
 | Contrato del modelo | Lista breve de cuándo aplica una herramienta, qué supuestos necesita, qué puede romperla y cómo interpretar su salida. | Aparece como pausa de lectura junto a modelos y procedimientos principales. |
 | Supuesto | Condición que debe ser razonable para que una fórmula o aproximación sostenga la interpretación prometida. | Aparece en los contratos de modelo. |
-| Comunicación de incertidumbre | Traducción de un resultado estadístico a una frase que conserva rango, nivel de confianza, límites y decisión posible. | [Capstone — un memo con incertidumbre](#capstone-un-memo-con-incertidumbre) |
+| Comunicación de incertidumbre | Traducción de un resultado estadístico a una frase que conserva rango, nivel de confianza, límites y decisión posible. | [Capstone — un memo con incertidumbre](#sec-inf-capstone) |

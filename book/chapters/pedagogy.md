@@ -43,8 +43,9 @@ Esta progresión está **implícita** en cada capítulo: no vas a encontrar
 secciones tituladas «Concreto» o «Pictórico». En cambio vas a leer encabezados
 como «Un experimento concreto», «Una imagen mental» o «La fórmula». La
 progresión está, pero no se anuncia. Lo que sí aparece de manera visible son
-pequeñas pausas de aprendizaje: **Antes de mirar**, **Chequeo rápido**,
-**Trampa común**, **Contrato del modelo** y **Decisión de ingeniería**.
+pequeñas pausas de aprendizaje: **Antes de mirar**, **Intentá antes de
+ejecutar**, **Chequeo rápido**, **Trampa común**, **Contrato del modelo**,
+**Comunicación** y **Decisión de ingeniería**.
 
 ## Método Singapur y modelado por barras
 
