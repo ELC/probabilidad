@@ -504,11 +504,12 @@ def chart_venn_two_sets(input_data: VennTwoSetsInput) -> Figure:  # noqa: PLR091
     intersection_label = (
         input_data.intersection_label
         if input_data.intersection_label is not None
-        else f"P({input_data.set_a_label} \u2229 {input_data.set_b_label}) = {probability_intersection:.3f}"
+        else f"{probability_intersection:.3f}"
     )
-    diagram.get_label_by_id("11").set_text(intersection_label)
-    for region_id in _VENN_REGION_IDS:
+    region_label_texts = {"10": f"{subset_a_only:.3f}", "01": f"{subset_b_only:.3f}", "11": intersection_label}
+    for region_id, text in region_label_texts.items():
         label = diagram.get_label_by_id(region_id)
+        label.set_text(text)
         label.set_color(theme.label_color)
         label.set_fontsize(theme.font_size)
     for set_id in ("A", "B"):
