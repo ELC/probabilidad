@@ -132,5 +132,8 @@ indica).
 | Bootstrap | Remuestreo con reemplazo para estimar distribuciones. | [Bootstrap sin supuestos paramétricos](#sec-inf-bootstrap) |
 | Tamaño muestral | $n$ necesario para asegurar un margen de error dado. | [Tamaño muestral para una precisión dada](#sec-inf-sample-size), ec. (5.13), (5.14) |
 | Contrato del modelo | Lista breve de cuándo aplica una herramienta, qué supuestos necesita, qué puede romperla y cómo interpretar su salida. | Aparece como pausa de lectura junto a modelos y procedimientos principales. |
+| Situación de decisión | Bloque breve que presenta quién decide, qué pregunta operativa está abierta, qué riesgo hay y qué herramienta se necesitará. | Aparece al inicio de los capítulos principales. |
+| Intuición operativa | Capa previa a la forma matemática que explica qué problema resuelve una idea y cómo leerla en una decisión. | Aparece en secciones matemáticamente densas. |
+| Idea para retener | Frase breve que resume una distinción conceptual o una trampa frecuente para facilitar recuperación posterior. | Aparece junto a conceptos centrales. |
 | Supuesto | Condición que debe ser razonable para que una fórmula o aproximación sostenga la interpretación prometida. | Aparece en los contratos de modelo. |
 | Comunicación de incertidumbre | Traducción de un resultado estadístico a una frase que conserva rango, nivel de confianza, límites y decisión posible. | [Capstone — un memo con incertidumbre](#sec-inf-capstone) |

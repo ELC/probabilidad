@@ -41,6 +41,11 @@ cuando deja de describir una observación para describir un promedio.
 Las tres preguntas comparten respuesta y caen, finalmente, sobre el
 **teorema central del límite**.
 
+> **Situación de decisión.** La pregunta de ingeniería ya no es “qué pasó con
+> una observación”, sino cuántas observaciones alcanzan para confiar en un
+> promedio, una proporción o un total. Más datos compran estabilidad, pero con
+> costo y rendimientos decrecientes.
+
 ```{code-cell} python
 :tags: [hide-input]
 import math
@@ -274,6 +279,8 @@ centrada; y por eso, con muchas filas, empieza a verse como una campana.
 (sec-sums-clt)=
 ## El TCL formal
 
+### Intuición operativa
+
 El histograma del tablero forma una campana centrada, simétrica,
 con colas que decaen rápido — la misma silueta que apareció con la
 Normal en el capítulo anterior. Pero acá nadie partió de una Normal:
@@ -283,6 +290,8 @@ finalmente, el contenido del **Teorema Central del Límite**: si
 promediamos suficientes copias i.i.d. de cualquier variable con
 varianza finita, la distribución del promedio se vuelve
 aproximadamente Normal.
+
+### Forma matemática
 
 La forma precisa del enunciado es la siguiente. Tomamos $X_1, X_2, \dots$
 i.i.d. con $E[X_i] = \mu$ y $\mathrm{Var}(X_i) = \sigma^2 < \infty$.
@@ -304,6 +313,9 @@ de la LLN, no dice que el promedio se pegue a un número fijo; dice que, despué
 de centrar y escalar, la **forma** de su distribución se acerca a una Normal.
 LLN responde «¿se estabiliza el promedio?». TCL responde «¿qué forma tienen
 sus errores cuando todavía fluctúa?».
+
+**Idea para retener.** La LLN dice dónde se estabiliza el promedio; el TCL dice
+cómo fluctúa mientras todavía se mueve.
 
 (sec-sums-standard-error)=
 ## El error estándar del promedio
@@ -509,16 +521,17 @@ verify_input = NumericAnswerInput(
 verify_numeric_answer(verify_input)
 ```
 
-Hasta acá el flujo siempre fue el mismo: dados los parámetros — una tasa, una
-proporción real, un desvío estándar — calcular probabilidades sobre las
-observaciones. Con LLN y TCL también ganamos una regla práctica: más datos
-vuelven más estable el promedio y más predecible su fluctuación.
+**Ahora podemos** explicar por qué más datos vuelven más estable un promedio y
+por qué la fluctuación de promedios o totales grandes suele tomar forma de
+campana.
 
-En la práctica, sin embargo, los parámetros casi nunca se conocen; lo que se
-tiene son los datos, y la pregunta natural es la **inversa**: dado lo medido,
-¿qué se puede afirmar de lo que no vemos? ¿Cuál es el rango plausible para la
-verdadera espera media de la clínica?, ¿cuánto se acerca la proporción
-observada en la encuesta a la verdadera?, ¿alcanzan los conteos de la línea de
-producción para descartar la afirmación de que los defectos están bajo el 5%?
-Ese cambio de sentido — de los parámetros a los datos a los parámetros otra
-vez — es el oficio de la **inferencia**.
+**Lo que todavía falta** es invertir el sentido de la pregunta. Hasta acá, dados
+los parámetros — una tasa, una proporción real, un desvío estándar — calculamos
+probabilidades sobre observaciones. En la práctica, casi siempre tenemos los
+datos y desconocemos los parámetros.
+
+**La pregunta que empuja el capítulo siguiente** es qué puede afirmarse sobre lo
+que no vemos: ¿cuál es el rango plausible para la verdadera espera media?,
+¿cuánto se acerca la proporción observada a la del barrio entero?, ¿alcanzan los
+conteos de la línea para descartar una afirmación de control? Ese cambio de
+sentido — de los datos a los parámetros — es el oficio de la **inferencia**.

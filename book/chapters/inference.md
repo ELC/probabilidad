@@ -35,6 +35,11 @@ el TCL permite pasar de datos observados a rangos plausibles.
 Esas preguntas tienen nombre propio: **inferencia estadística**, y son
 el oficio que sostiene buena parte de la estadística aplicada.
 
+> **Situación de decisión.** Lucía no necesita una fórmula aislada en un
+> informe: necesita decidir si actúa, mide más o comunica incertidumbre. La
+> inferencia será útil solo si separa evidencia, supuesto y recomendación sin
+> convertir una muestra limitada en certeza.
+
 ```{code-cell} python
 :tags: [hide-input]
 import numpy as np
@@ -96,6 +101,8 @@ settings = Settings()
 (sec-inf-mean-known)=
 ## IC para la espera media con $\sigma$ conocido
 
+### Intuición operativa
+
 Tenemos $n = 36$ esperas con $\bar{x} = 12$ y, por datos históricos,
 $\sigma = 3$. Buscamos un IC al 95%.
 
@@ -103,6 +110,12 @@ $\sigma = 3$. Buscamos un IC al 95%.
 número puntual: necesita un rango defendible. Si duplicáramos $n$ manteniendo
 la misma variabilidad histórica, ¿esperás que ese rango se ensanche o se
 achique?
+
+El intervalo no intenta adivinar el valor exacto de $\mu$. Construye una zona
+razonable alrededor de lo observado, más ancha cuando hay más variabilidad o
+menos datos, y más angosta cuando la muestra trae más información.
+
+### Forma matemática
 
 **Paso 1 — pivot.** Por la ecuación [](#eq-clt) sabemos que el
 promedio estandarizado tiende a Normal estándar:
@@ -140,6 +153,8 @@ clinic_known_interval
 
 ### Qué quiere decir «95% de confianza»
 
+### Intuición operativa
+
 **No** es «el verdadero $\mu$ está con probabilidad 0,95 en este intervalo».
 El verdadero $\mu$ es una constante. Lo aleatorio es la muestra y, por lo
 tanto, el intervalo. La afirmación correcta es:
@@ -156,6 +171,9 @@ prometido por la construcción.
 **Trampa común.** Después de ver un intervalo concreto, no decimos “hay 95% de
 probabilidad de que $\mu$ esté adentro”. Decimos que el procedimiento que lo
 produjo cubre a $\mu$ en el 95% de repeticiones comparables.
+
+**Idea para retener.** La confianza vive en el procedimiento que genera
+intervalos, no en una probabilidad subjetiva sobre un intervalo ya observado.
 
 ```{code-cell} python
 ci_explorer_input = MeanCIExplorerInput(settings=settings)
@@ -257,6 +275,8 @@ poll_interval
 (sec-inf-variance)=
 ## IC para la varianza — la $\chi^2$
 
+### Intuición operativa
+
 Hasta acá todos los IC fueron sobre la **media**. Una pregunta muy
 diferente —pero igual de operativa— pesa sobre la **dispersión**: la
 clínica observó un desvío muestral de $3$ minutos sobre $36$ esperas.
@@ -288,6 +308,8 @@ chi_square_chart_input = DensityChartInput(
 )
 chart_density(chi_square_chart_input)
 ```
+
+### Forma matemática
 
 El resultado clave es que, para $X_i$ Normales con varianza
 $\sigma^2$, la cantidad escalada
@@ -323,6 +345,8 @@ clinic_variance_interval
 (sec-inf-pivot)=
 ## El método del pivote — por qué todos los IC tienen la misma forma
 
+### Intuición operativa
+
 Los tres intervalos anteriores parecen tres recetas distintas. La de la
 Normal y la de la $t$ se escriben como **estadístico ± percentil × dispersión**;
 la de la $\chi^2$ no — es un cociente con dos cuantiles distintos en el
@@ -331,6 +355,12 @@ construcción detrás de las tres, o si simplemente fueron apareciendo por
 historia. La respuesta es la primera: hay una sola receta, llamada **método
 del pivote**, y la forma "± percentil × dispersión" es lo que ocurre en un
 caso particular.
+
+La intuición es simple: buscamos una cantidad cuya distribución conozcamos aun
+cuando el parámetro sea desconocido; después preguntamos para qué valores del
+parámetro los datos observados caen en la zona central esperada.
+
+### Forma matemática
 
 ### 1. Cantidad pivote
 
@@ -415,6 +445,10 @@ referencia es simétrica. Cuando esos dos supuestos fallan, como en la
 $\chi^2$, la misma receta sigue funcionando pero produce un intervalo
 asimétrico.
 
+**Idea para retener.** Un pivote convierte “no conozco el parámetro” en “sí
+conozco la distribución de esta cantidad”, y esa es la palanca para despejar un
+intervalo.
+
 **Antes de mirar.** En el explorador de abajo, antes de mover los controles
 anticipá: si subo $1-\alpha$ del 80% al 99%, ¿qué pasa con los cuantiles
 $a, b$ y, en consecuencia, con el ancho del IC? ¿Y si cambio de Normal a
@@ -438,6 +472,8 @@ build_pivot_inversion_explorer(pivot_explorer_input)
 (sec-inf-test)=
 ## Test de hipótesis sobre la espera media
 
+### Intuición operativa
+
 El manual de operaciones afirma que la espera media en la línea de
 inspección debería ser 11 minutos. Observamos $\bar{x} = 12$, $s = 3$,
 $n = 36$.
@@ -445,6 +481,12 @@ $n = 36$.
 **Antes de calcular.** Una diferencia de un minuto puede ser operativamente
 importante o irrelevante según el proceso. Separá dos preguntas: ¿hay evidencia
 estadística contra el valor de control? y ¿la diferencia importa en la práctica?
+
+Un test no decide por sí solo qué hacer. Ordena una pregunta más acotada: si el
+valor de control fuera cierto, ¿sería raro ver una muestra tan alejada como la
+que observamos?
+
+### Forma matemática
 
 $$ H_0: \mu = 11 \qquad H_1: \mu \neq 11 \qquad \alpha = 0{,}05 $$
 
@@ -517,6 +559,9 @@ de rechazo.
 **Trampa común.** Un $p$-valor chico no mide el tamaño del problema ni la
 probabilidad de que $H_0$ sea cierta. Mide cuán raro sería ver un resultado tan
 extremo, o más, si el valor de control fuera correcto.
+
+**Idea para retener.** El $p$-valor mide sorpresa bajo una hipótesis, no tamaño
+del efecto ni probabilidad de que la hipótesis sea verdadera.
 
 (sec-inf-bootstrap)=
 ## Bootstrap sin supuestos paramétricos
@@ -744,27 +789,25 @@ Una formulación demasiado fuerte sería: “Quedó demostrado que el sistema es
 
 ## Cierre del recorrido
 
-Las cinco unidades miraron las mismas situaciones desde ángulos cada vez más
-abstractos. La sala de espera empezó como una muestra de minutos resumida en
-un boxplot, terminó modelada como Exponencial, su promedio diario apareció
-junto al teorema central del límite y la espera media tuvo, finalmente, un
-intervalo de confianza. La encuesta arrancó como conteo de respuestas, se
-convirtió en un ejemplo de Bayes, después en una Binomial, en una proporción
-asintóticamente Normal y, en este capítulo, en un IC con un tamaño muestral
-calculado a propósito. La línea de producción pasó de defectos por turno a una
-Bin/Poisson, a una aproximación Normal, hasta caer en un test de hipótesis
-sobre la espera media de la inspección.
+**Ahora podemos** recorrer un ciclo completo entre datos y parámetros. La sala
+de espera empezó como una muestra de minutos resumida en un boxplot, terminó
+modelada como Exponencial, su promedio diario apareció junto al teorema central
+del límite y la espera media tuvo, finalmente, un intervalo de confianza. La
+encuesta pasó de conteo a Bayes, de Bayes a Binomial, de Binomial a proporción
+asintóticamente Normal y de ahí a un IC con tamaño muestral. La línea de
+producción pasó de defectos por turno a Bin/Poisson, a aproximación Normal y a
+un test de hipótesis.
 
-Lo que cierra acá es solo el primer ciclo de ida y vuelta entre datos y
-parámetros. La pregunta que sigue casi siempre es: ¿y si la espera no
-depende de un solo número sino de varios — la edad del paciente, la franja
-horaria, el día de la semana? Eso ya empuja a la **regresión**. ¿Y si en
-lugar de un único parámetro queremos creer en una distribución entera sobre
-los parámetros posibles, actualizable cada vez que llega un nuevo dato? Eso
-es **estadística bayesiana**. ¿Y si las observaciones llegan en orden
-temporal y el orden importa? **Series de tiempo**. Cada uno de esos hilos
-arranca exactamente donde este libro termina: con un IC, un p-valor o un
-tamaño de muestra como punto de partida.
+**Lo que todavía falta** es mirar problemas donde un solo parámetro ya no
+alcanza. La espera puede depender de la edad del paciente, la franja horaria o
+el día de la semana; las creencias sobre un parámetro pueden actualizarse como
+una distribución completa; las observaciones pueden llegar en orden temporal y
+hacer que el orden importe.
+
+**Las preguntas que quedan abiertas** empujan a regresión, estadística
+bayesiana y series de tiempo. Cada hilo arranca exactamente donde este libro
+termina: con un IC, un $p$-valor o un tamaño de muestra como punto de partida,
+y con la misma obligación de comunicar incertidumbre sin esconderla.
 
 Si necesitás repasar **símbolos** o **términos**, el [glosario](glossary.md)
 tiene tablas con todo lo que apareció. Si querés revisar **cómo está

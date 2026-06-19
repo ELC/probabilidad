@@ -26,6 +26,11 @@ investigar si hubo un caso excepcional que distorsionó la mañana. Esos
 pocos números, y la forma de calcularlos, son lo que vamos a aprender
 en este capítulo.
 
+> **Situación de decisión.** Lucía tiene que cerrar la mañana con una
+> recomendación concreta: mantener el esquema de turnos, reforzar una franja o
+> investigar un caso excepcional. El riesgo no es calcular mal una media; es
+> resumir una mañana irregular con un número que esconda justo lo que importa.
+
 ```{code-cell} python
 :tags: [hide-input]
 import numpy as np
@@ -240,6 +245,9 @@ esperas extremas.
 tuvieras que justificar una acción: ¿la media para estimar capacidad,
 la mediana para describir la experiencia típica, o la dispersión para
 medir estabilidad?
+
+**Idea para retener.** El centro cuenta una historia típica; la dispersión y
+los atípicos dicen cuánta confianza merece esa historia.
 
 (sec-descriptive-median)=
 ## Por qué la mediana resiste lo que la media no
@@ -751,16 +759,16 @@ Lucía tiene dos opciones para estimar la espera típica del mes:
 
 **Decisión de ingeniería.** Si el presupuesto solo permite una medición corta, ¿la usarías para cambiar turnos de inmediato o como señal para medir mejor? Escribí una frase que conserve esa incertidumbre.
 
-Con estos resúmenes, la responsable de operaciones ya puede separar tres
-mensajes: cómo fue la espera típica, cuán estable fue el servicio y si algún
-caso extremo merece revisión. Esa decisión, sin embargo, mira siempre lo que
-**ya pasó**: un puñado de mañanas en la clínica, algunos turnos de la línea de
-producción.
+**Ahora podemos** separar tres mensajes: cómo fue la espera típica, cuán
+estable fue el servicio y si algún caso extremo merece revisión.
 
-Apenas entra un paciente nuevo o llega un turno todavía no inspeccionado, estos
-resúmenes dejan de alcanzar: ¿qué tan probable es que el próximo paciente
-espere más de cinco minutos?, si ya lleva tres minutos esperando, ¿cambian las
-chances?, cuando alguien dice «sí» en la encuesta, ¿qué tan creíble es esa
-respuesta dado lo que ya sabemos de la población? Para responder hay que dejar
-de mirar muestras y empezar a hablar de futuros posibles — un idioma con su
-propia gramática, la **probabilidad**.
+**Lo que todavía falta** es salir de lo que ya pasó. Una muestra describe un
+puñado de mañanas en la clínica o algunos turnos de la línea, pero no asigna por
+sí sola chances al próximo paciente o al próximo lote.
+
+**La pregunta que empuja el capítulo siguiente** aparece apenas entra un
+paciente nuevo o llega un turno todavía no inspeccionado: ¿qué tan probable es
+que espere más de cinco minutos?, ¿cambian las chances si ya lleva tres minutos
+sentado?, ¿qué tan creíble es una respuesta «sí» en la encuesta? Para responder
+hay que hablar de futuros posibles — un idioma con su propia gramática, la
+**probabilidad**.

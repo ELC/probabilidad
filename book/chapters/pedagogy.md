@@ -29,12 +29,15 @@ adicionales que aprovechan que estamos en un cuaderno ejecutable:
    aplican, qué supuestos piden, qué puede romperlas y cómo interpretar el
    resultado sin exagerarlo.
 6. **Intuición.** Un párrafo que explica **por qué** la fórmula tiene sentido
-   en lenguaje natural. A esta altura, el lector ya tiene los elementos
-   anteriores y puede confirmar lo que la fórmula dice.
+   en lenguaje natural. En secciones densas aparece de forma explícita como
+   **Intuición operativa** antes de pasar a la **Forma matemática**.
 7. **Exploración interactiva.** Un widget (`build_*_explorer`) que permite
    variar parámetros y ver cómo reacciona el gráfico y los números. Es donde
    la intuición se vuelve estable.
-8. **Verificación, interpretación y decisión.** Cada ejercicio funciona como
+8. **Retención.** Algunas ideas centrales cierran con una **Idea para retener**:
+   una frase breve que contrasta conceptos cercanos o resume una trampa común
+   sin reemplazar la definición formal.
+9. **Verificación, interpretación y decisión.** Cada ejercicio funciona como
    auto-chequeo: el lector intenta una respuesta, ejecuta una verificación,
    traduce el número a una interpretación y ensaya una decisión o una frase de
    comunicación.
@@ -43,9 +46,10 @@ Esta progresión está **implícita** en cada capítulo: no vas a encontrar
 secciones tituladas «Concreto» o «Pictórico». En cambio vas a leer encabezados
 como «Un experimento concreto», «Una imagen mental» o «La fórmula». La
 progresión está, pero no se anuncia. Lo que sí aparece de manera visible son
-pequeñas pausas de aprendizaje: **Antes de mirar**, **Intentá antes de
-ejecutar**, **Chequeo rápido**, **Trampa común**, **Contrato del modelo**,
-**Comunicación** y **Decisión de ingeniería**.
+pequeñas pausas de aprendizaje: **Situación de decisión**, **Antes de mirar**,
+**Intentá antes de ejecutar**, **Chequeo rápido**, **Trampa común**,
+**Contrato del modelo**, **Idea para retener**, **Comunicación** y
+**Decisión de ingeniería**.
 
 ## Método Singapur y modelado por barras
 
@@ -85,14 +89,24 @@ no quedan amarradas a una historia en particular.
 
 ## Apertura y transición entre capítulos
 
-Cada capítulo entra y sale del recorrido con el mismo ritmo de cuatro
-movimientos: **mirar atrás** brevemente al capítulo anterior usando los
-mismos hilos narrativos (clínica, encuesta, línea de producción),
-**mostrar la limitación** que aparece apenas el contexto se mueve un
-paso (un paciente nuevo, un turno todavía sin medir, una respuesta más),
-**plantear tres preguntas concretas** una por hilo, y recién entonces
-**nombrar la herramienta** que las resuelve. Ese pulso se repite tanto
-en el párrafo de apertura como en el de cierre.
+Cada capítulo entra con una **Situación de decisión**: quién necesita decidir,
+qué pregunta operativa está abierta, qué riesgo aparece si se resume mal y qué
+herramienta estadística se vuelve necesaria. Esa entrada convierte el tema en
+una necesidad narrativa antes de convertirlo en una lista de definiciones.
+
+Cada capítulo sale del recorrido con el mismo ritmo de tres movimientos:
+**Ahora podemos** nombrar qué capacidad nueva ganó el lector, **Lo que todavía
+falta** explicita qué límite queda vivo, y **La pregunta que empuja el capítulo
+siguiente** muestra por qué la próxima herramienta no aparece de la nada. En el
+último capítulo, ese tercer movimiento abre preguntas hacia regresión,
+estadística bayesiana y series de tiempo.
+
+Entre apertura y cierre, el capítulo también **mira atrás** brevemente usando
+los mismos hilos narrativos (clínica, encuesta, línea de producción), **muestra
+la limitación** que aparece apenas el contexto se mueve un paso (un paciente
+nuevo, un turno todavía sin medir, una respuesta más), **plantea preguntas
+concretas** una por hilo y recién entonces **nombra la herramienta** que las
+resuelve.
 
 Desde el segundo capítulo, esa mirada atrás aparece también como una breve
 **recuperación activa**: dos o tres preguntas que obligan al lector a traer a la
@@ -135,8 +149,9 @@ comunicaría sin convertir incertidumbre en certeza.
 
 Una sugerencia de lectura, especialmente para una primera pasada:
 
-1. Leé el **párrafo de apertura** prestando atención a la pregunta que se
-   plantea, y anotá, sin pensarlo demasiado, qué responderías ahora mismo.
+1. Leé la **Situación de decisión** prestando atención a quién decide, qué
+   riesgo aparece y qué pregunta queda abierta. Anotá, sin pensarlo demasiado,
+   qué responderías ahora mismo.
 2. Recorré las secciones de **caso concreto + imagen + fórmula + intuición**
    en orden, sin saltearte el gráfico.
 3. Cuando aparezca **Antes de mirar**, escribí o pensá una predicción concreta:
@@ -146,12 +161,14 @@ Una sugerencia de lectura, especialmente para una primera pasada:
    autoriza.
 5. Detenete en el **widget interactivo**: cambiá un parámetro a la vez y
    tratá de **predecir** qué va a pasar antes de mirar el gráfico nuevo.
-6. Hacé los **ejercicios** sin ejecutar la verificación primero. Después
+6. Cuando encuentres una **Idea para retener**, usala como tarjeta mental:
+   preguntate qué dos conceptos contrasta o qué error frecuente intenta evitar.
+7. Hacé los **ejercicios** sin ejecutar la verificación primero. Después
    compará tu respuesta con el módulo de `exercises`, explicá qué significa el
    resultado en la historia y ensayá una recomendación o frase de comunicación.
-7. Cuando llegues al **párrafo de cierre**, fijate qué pregunta nueva
+8. Cuando llegues al **párrafo de cierre**, fijate qué pregunta nueva
    queda abierta: esa es la que motiva el capítulo que sigue.
 
-Este ciclo (pregunta → predicción → exploración → fórmula → verificación →
-transferencia → nueva pregunta) es lo que mantiene el material del libro hilado
-de principio a fin.
+Este ciclo (decisión → pregunta → predicción → exploración → fórmula →
+verificación → retención → transferencia → nueva pregunta) es lo que mantiene
+el material del libro hilado de principio a fin.

@@ -33,6 +33,12 @@ Las respuestas viven en la noción de **variable aleatoria** y en su
 eventos sueltos, donde la cuenta pasa a hacerse sobre intervalos
 enteros.
 
+> **Situación de decisión.** El equipo ya no pregunta solo si un evento ocurre:
+> necesita elegir un modelo para esperas, defectos o respuestas antes de
+> prometer tiempos, estimar riesgos o definir umbrales de alerta. Elegir mal la
+> distribución puede hacer que una decisión parezca precisa cuando solo estaba
+> apoyada en un modelo conveniente.
+
 ```{code-cell} python
 :tags: [hide-input]
 from core import (
@@ -111,6 +117,9 @@ $$ S_X(x) = P(X > x) = 1 - F_X(x) $$ (eq-survival)
 
 se llama **función de supervivencia** o cola derecha. En esperas, $S_X(5)$
 pregunta qué chance queda de superar cinco minutos.
+
+**Idea para retener.** En una discreta sumás barras; en una continua medís
+áreas. La CDF traduce ambas historias a “cuánto queda acumulado hasta acá”.
 
 (sec-rv-bernoulli)=
 ## Una respuesta sí/no: Bernoulli
@@ -778,18 +787,16 @@ verify_input = NumericAnswerInput(
 verify_numeric_answer(verify_input)
 ```
 
-Cada distribución de este capítulo describe **una sola observación**: el
-tiempo de un paciente, la respuesta de una persona, el conteo de un turno. Ya
-podemos elegir modelos distintos según la situación: una Binomial para éxitos
-en una tanda, una Poisson para eventos raros, una Normal para variación
-simétrica, una Exponencial para esperas sin memoria.
+**Ahora podemos** elegir modelos distintos según la situación: una Binomial
+para éxitos en una tanda, una Poisson para eventos raros, una Normal para
+variación simétrica y una Exponencial para esperas sin memoria.
 
-Pero ningún día de la clínica se decide con un solo paciente, ni una encuesta
-se publica con una sola respuesta, ni una jornada de la línea se resume en un
-único conteo. Lo que importa, casi siempre, es el **promedio** de muchas
-observaciones — y ahí aparecen preguntas que con lo de hasta acá no se pueden
-contestar: ¿cómo se distribuye el promedio de treinta esperas?, ¿por qué la
-encuesta gana confiabilidad a medida que crece la muestra?, ¿por qué tantos
-fenómenos terminan pareciendo Normales aunque la fuente no lo sea? Las tres
-respuestas comparten el mismo teorema y van a ocupar buena parte del recorrido
-que sigue.
+**Lo que todavía falta** es pasar de una observación a muchas. Ningún día de la
+clínica se decide con un solo paciente, ninguna encuesta se publica con una sola
+respuesta y ninguna jornada de la línea se resume en un único conteo.
+
+**La pregunta que empuja el capítulo siguiente** es qué pasa con promedios y
+totales: ¿cómo se distribuye el promedio de treinta esperas?, ¿por qué una
+encuesta gana estabilidad cuando crece la muestra?, ¿por qué tantos fenómenos
+terminan pareciendo Normales aunque la fuente no lo sea? Las tres respuestas
+comparten el mismo teorema.

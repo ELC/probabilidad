@@ -30,6 +30,11 @@ posibilidades, recalcular chances cuando aparece información nueva y
 mirar una pregunta desde el lado contrario. Primero los veremos con
 situaciones concretas; después les pondremos nombre y fórmula.
 
+> **Situación de decisión.** Lucía ya no mira una mañana cerrada: decide con la
+> sala todavía en movimiento. Necesita estimar qué puede pasar con el próximo
+> paciente, cuánto cambia la información nueva y cuándo una señal merece
+> modificar una acción operativa.
+
 ```{code-cell} python
 :tags: [hide-input]
 from core import Settings
@@ -437,6 +442,9 @@ Aunque el test es excelente, un positivo mueve la creencia del 1% al 16,7%.
 La clave está en la **tasa base**: como casi nadie está enfermo, los falsos
 positivos pesan mucho.
 
+**Idea para retener.** Bayes no convierte evidencia en certeza: redistribuye
+credibilidad usando una tasa base y un mecanismo de observación.
+
 **Chequeo rápido.** Si la prevalencia sube y la calidad del test queda igual,
 ¿esperás que $P(D \mid +)$ suba o baje? Hacé la predicción antes de mover los
 sliders del widget y después verificá cómo reacciona el posterior.
@@ -661,17 +669,17 @@ verify_input = NumericAnswerInput(
 verify_numeric_answer(verify_input)
 ```
 
-Con la probabilidad condicional, el analista ya puede actualizar una decisión
-cuando llega información nueva: un resultado de test, una alarma de inspección
-o una respuesta de encuesta. Pero las probabilidades que armamos hasta acá
-viven sobre conjuntos discretos: un dado, una caja, un test que da positivo o
-negativo.
+**Ahora podemos** combinar eventos, condicionar por información nueva y usar
+Bayes para actualizar una decisión cuando aparece un test, una alarma o una
+respuesta de encuesta.
 
-Muy pronto vamos a tener que asignar probabilidad a cosas que ni siquiera se
-pueden enumerar — el tiempo exacto de espera de un paciente, la altura precisa
-de una persona, el conteo de defectos en un turno cualquiera. ¿Cómo se le
-asigna probabilidad a un intervalo de minutos sin listar todos los resultados
-posibles? ¿Qué objeto matemático es capaz de modelar «cantidad de piezas
-defectuosas en un turno» de modo que ya tenga, por construcción, una media y
-una varianza? Ese objeto se llama **variable aleatoria**, y su PMF y su
-densidad son las herramientas que aparecen a continuación.
+**Lo que todavía falta** es asignar probabilidad a resultados que no se dejan
+enumerar de forma práctica. El dado, la caja y el test viven en conjuntos discretos;
+una espera exacta, una altura precisa o un conteo futuro piden un objeto más
+flexible.
+
+**La pregunta que empuja el capítulo siguiente** es cómo modelar «tiempo de
+espera», «respuestas afirmativas» o «defectos por turno» de modo que ya tengan,
+por construcción, una media, una varianza y probabilidades sobre intervalos.
+Ese objeto se llama **variable aleatoria**, y su PMF y su densidad son las
+herramientas que aparecen a continuación.
