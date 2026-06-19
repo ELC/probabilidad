@@ -118,10 +118,7 @@ def verify_categorical_choice(input_data: CategoricalChoiceInput) -> Verificatio
         return VerificationResult(passed=True, message=f"OK — '{input_data.expected_choice}'")
     return VerificationResult(
         passed=False,
-        message=(
-            f"Elegiste '{input_data.student_choice}'; la respuesta esperada es "
-            f"'{input_data.expected_choice}'"
-        ),
+        message=(f"Elegiste '{input_data.student_choice}'; la respuesta esperada es '{input_data.expected_choice}'"),
     )
 
 

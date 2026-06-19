@@ -217,7 +217,7 @@ extend-exclude = ["_build"]
 [tool.ruff.lint.per-file-ignores]
 "src/**/*.py" = ["D"]
 "src/**/__init__.py" = []
-"tests/**" = ["D", "PLR2004", "B017", "RUF069"]
+"tests/**" = ["D", "PLR2004", "PLC2701", "B017", "RUF069"]
 
 [tool.ruff.lint]
 extend-select = ["ALL"]

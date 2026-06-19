@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.figure import Figure
+from matplotlib.patches import Rectangle
 from matplotlib_venn import venn2, venn2_circles
 from pandera.typing import DataFrame
 from pydantic import BaseModel, ConfigDict, Field
@@ -521,8 +522,8 @@ def chart_venn_two_sets(input_data: VennTwoSetsInput) -> Figure:  # noqa: PLR091
         label.set_color(theme.label_color)
         label.set_fontsize(theme.font_size)
     legend_handles = [
-        plt.Rectangle((0, 0), 1, 1, facecolor=palette.primary, alpha=0.5, edgecolor=palette.muted),
-        plt.Rectangle((0, 0), 1, 1, facecolor=palette.secondary, alpha=0.5, edgecolor=palette.muted),
+        Rectangle((0, 0), 1, 1, facecolor=palette.primary, alpha=0.5, edgecolor=palette.muted),
+        Rectangle((0, 0), 1, 1, facecolor=palette.secondary, alpha=0.5, edgecolor=palette.muted),
     ]
     axes.legend(
         legend_handles,

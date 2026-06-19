@@ -68,9 +68,7 @@ def test_pivot_inversion_widens_with_confidence_for_student_t(fixed_settings: Se
 
 def test_pivot_inversion_chi_squared_interval_is_asymmetric(fixed_settings: Settings) -> None:
     input_data = PivotInversionExplorerInput(settings=fixed_settings)
-    lower, upper, point_estimate, parameter_label = _bounds_for_case(
-        PivotCase.CHI_SQUARED, input_data, 36, 0.95
-    )
+    lower, upper, point_estimate, parameter_label = _bounds_for_case(PivotCase.CHI_SQUARED, input_data, 36, 0.95)
     assert parameter_label == "σ²"
     assert lower < point_estimate < upper
     assert (upper - point_estimate) > (point_estimate - lower)

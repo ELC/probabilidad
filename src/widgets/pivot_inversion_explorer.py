@@ -64,7 +64,7 @@ def _build_pivot_chart(
     sample_size: int,
     confidence_level: float,
     settings: Settings,
-) -> tuple[alt.LayerChart, float, float]:
+) -> tuple[alt.LayerChart | alt.FacetChart, float, float]:
     distribution = _reference_distribution(case, sample_size)
     tail = (1.0 - confidence_level) / 2.0
     quantile_low = float(distribution.ppf(tail))
@@ -74,17 +74,20 @@ def _build_pivot_chart(
     inside = density[(density["q"] >= quantile_low) & (density["q"] <= quantile_high)]
     theme = settings.chart_theme
     line = (
-        alt.Chart(density)
+        alt
+        .Chart(density)
         .mark_line(color=theme.palette.primary, strokeWidth=theme.line_stroke_width)
         .encode(x=alt.X("q:Q", title=_pivot_axis_label(case)), y=alt.Y("density:Q", title="f(q)"))
     )
     area = (
-        alt.Chart(inside)
+        alt
+        .Chart(inside)
         .mark_area(opacity=theme.band_opacity, color=theme.palette.primary)
         .encode(x="q:Q", y="density:Q")
     )
     rules = (
-        alt.Chart(pd.DataFrame({"q": [quantile_low, quantile_high]}))
+        alt
+        .Chart(pd.DataFrame({"q": [quantile_low, quantile_high]}))
         .mark_rule(color=theme.palette.secondary, strokeWidth=2.0)
         .encode(x="q:Q")
     )
@@ -138,23 +141,26 @@ def _build_parameter_chart(
     point_estimate: float,
     parameter_label: str,
     settings: Settings,
-) -> alt.LayerChart:
+) -> alt.LayerChart | alt.FacetChart:
     theme = settings.chart_theme
     span = max(upper_bound - lower_bound, 1e-6)
     margin = span * 0.35
     domain = [lower_bound - margin, upper_bound + margin]
     bracket = (
-        alt.Chart(pd.DataFrame({"lower": [lower_bound], "upper": [upper_bound], "y": [1.0]}))
+        alt
+        .Chart(pd.DataFrame({"lower": [lower_bound], "upper": [upper_bound], "y": [1.0]}))
         .mark_rule(color=theme.palette.primary, strokeWidth=6.0)
         .encode(x=alt.X("lower:Q", scale=alt.Scale(domain=domain), title=parameter_label), x2="upper:Q", y="y:Q")
     )
     point = (
-        alt.Chart(pd.DataFrame({"value": [point_estimate], "y": [1.0]}))
+        alt
+        .Chart(pd.DataFrame({"value": [point_estimate], "y": [1.0]}))
         .mark_point(filled=True, color=theme.palette.accent, size=theme.point_size * 1.5)
         .encode(x="value:Q", y="y:Q")
     )
     bounds_marks = (
-        alt.Chart(pd.DataFrame({"value": [lower_bound, upper_bound]}))
+        alt
+        .Chart(pd.DataFrame({"value": [lower_bound, upper_bound]}))
         .mark_rule(color=theme.palette.secondary, strokeWidth=2.0)
         .encode(x="value:Q")
     )
