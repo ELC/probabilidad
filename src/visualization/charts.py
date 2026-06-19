@@ -64,17 +64,18 @@ def _build_frequency_chart(
     base = alt.Chart(frequency_table)
     bars = base.mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary).encode(
         x=alt.X("midpoint:Q", title="Marca de clase"),
-        y=alt.Y("absolute_frequency:Q", title="Frecuencia absoluta"),
+        y=alt.Y("relative_frequency:Q", title="Frecuencia relativa"),
         tooltip=["interval_start", "interval_end", "absolute_frequency", "relative_frequency"],
     )
-    ogive = base.mark_line(color=theme.palette.secondary, strokeWidth=theme.line_stroke_width).encode(
-        x=alt.X("midpoint:Q"),
-        y=alt.Y(
-            "cumulative_relative_frequency:Q",
-            axis=alt.Axis(title="Frecuencia rel. acumulada"),
-        ),
+    ogive = base.mark_line(
+        color=theme.palette.secondary,
+        strokeWidth=theme.line_stroke_width,
+        point=True,
+    ).encode(
+        x=alt.X("interval_end:Q"),
+        y=alt.Y("cumulative_relative_frequency:Q"),
     )
-    return alt.layer(bars, ogive).resolve_scale(y="independent").properties(title=title)
+    return alt.layer(bars, ogive).properties(title=title)
 
 
 def chart_frequency_table(input_data: FrequencyChartInput) -> alt.Chart:
