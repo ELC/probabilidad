@@ -1,6 +1,7 @@
 import json
 
 import matplotlib.pyplot as plt
+import pandas as pd
 import pytest
 from pandera.typing import DataFrame
 
@@ -53,6 +54,7 @@ from visualization import (
     PartitionDiagramInput,
     ProbabilityMassChartInput,
     ProbabilityTreeInput,
+    TypicalValuesComparisonChartInput,
     VennTwoSetsInput,
     chart_bootstrap_distribution,
     chart_clt_comparison,
@@ -67,6 +69,7 @@ from visualization import (
     chart_partition_diagram,
     chart_probability_mass,
     chart_probability_tree,
+    chart_typical_values_comparison,
     chart_venn_two_sets,
 )
 
@@ -74,12 +77,18 @@ from visualization import (
 def test_chart_histogram(normal_observations: DataFrame[Observations], fixed_settings: Settings) -> None:
     chart = chart_histogram(HistogramChartInput(observations=normal_observations, settings=fixed_settings))
     assert chart.to_dict()
+    assert chart.to_dict()["mark"]["binSpacing"] == 0
 
 
 def test_chart_frequency_table(normal_observations: DataFrame[Observations], fixed_settings: Settings) -> None:
     table = build_frequency_table(FrequencyTableInput(observations=normal_observations))
     chart = chart_frequency_table(FrequencyChartInput(frequency_table=table, settings=fixed_settings))
-    assert chart.to_dict()
+    chart_spec = chart.to_dict()
+    bars_layer = chart_spec["layer"][0]
+    assert bars_layer["mark"]["type"] == "rect"
+    assert bars_layer["encoding"]["x"]["field"] == "interval_start"
+    assert bars_layer["encoding"]["x2"]["field"] == "interval_end"
+    assert bars_layer["encoding"]["y2"]["field"] == "baseline"
 
 
 def test_chart_density_uses_distribution_name(fixed_settings: Settings) -> None:
@@ -237,6 +246,33 @@ def test_chart_descriptive_summary(normal_observations: DataFrame[Observations],
         )
     )
     assert chart.to_dict()
+
+
+def test_chart_typical_values_comparison_shows_extreme_observation_shift(
+    small_observations: DataFrame[Observations], fixed_settings: Settings
+) -> None:
+    observations_with_extreme = pd.concat(
+        [small_observations, pd.DataFrame({"value": [120.0]})], ignore_index=True
+    ).pipe(DataFrame[Observations])
+    original_statistics = summarize_observations(small_observations)
+    comparison_statistics = summarize_observations(observations_with_extreme)
+    chart = chart_typical_values_comparison(
+        TypicalValuesComparisonChartInput(
+            original_statistics=original_statistics,
+            comparison_statistics=comparison_statistics,
+            original_label="Original",
+            comparison_label="Con extremo",
+            settings=fixed_settings,
+        )
+    )
+    expected_rows = [
+        {"scenario": "Original", "measure": "Media", "value": original_statistics.location.mean},
+        {"scenario": "Original", "measure": "Mediana", "value": original_statistics.location.median},
+        {"scenario": "Con extremo", "measure": "Media", "value": comparison_statistics.location.mean},
+        {"scenario": "Con extremo", "measure": "Mediana", "value": comparison_statistics.location.median},
+    ]
+    datasets = list(chart.to_dict()["datasets"].values())
+    assert expected_rows in datasets
 
 
 def test_chart_observations_overview_shares_x_axis(

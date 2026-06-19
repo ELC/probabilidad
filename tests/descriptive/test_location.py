@@ -17,7 +17,7 @@ def test_compute_location_known_values(small_observations: DataFrame[Observation
 
 
 def test_compute_location_quartiles_known_sample() -> None:
-    observations = Observations.validate(pd.DataFrame({"value": [1.0, 2.0, 3.0, 4.0, 5.0]}))
+    observations = pd.DataFrame({"value": [1.0, 2.0, 3.0, 4.0, 5.0]}).pipe(DataFrame[Observations])
     statistics = compute_location(observations)
     assert math.isclose(statistics.first_quartile, 2.0)
     assert math.isclose(statistics.third_quartile, 4.0)

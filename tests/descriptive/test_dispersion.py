@@ -16,6 +16,6 @@ def test_compute_dispersion_known_values(small_observations: DataFrame[Observati
 
 
 def test_coefficient_of_variation_is_nan_for_zero_mean() -> None:
-    observations = Observations.validate(pd.DataFrame({"value": [-1.0, 1.0]}))
+    observations = pd.DataFrame({"value": [-1.0, 1.0]}).pipe(DataFrame[Observations])
     statistics = compute_dispersion(observations)
     assert math.isnan(statistics.coefficient_of_variation)

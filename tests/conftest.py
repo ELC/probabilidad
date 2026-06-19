@@ -15,17 +15,17 @@ def fixed_settings() -> Settings:
 def normal_observations(fixed_settings: Settings) -> DataFrame[Observations]:
     rng = np.random.default_rng(fixed_settings.random_seed)
     values = rng.normal(loc=10.0, scale=2.0, size=120)
-    return Observations.validate(pd.DataFrame({"value": values}))
+    return pd.DataFrame({"value": values}).pipe(DataFrame[Observations])
 
 
 @pytest.fixture
 def small_observations() -> DataFrame[Observations]:
-    return Observations.validate(pd.DataFrame({"value": [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]}))
+    return pd.DataFrame({"value": [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]}).pipe(DataFrame[Observations])
 
 
 @pytest.fixture
 def constant_observations() -> DataFrame[Observations]:
-    return Observations.validate(pd.DataFrame({"value": [3.0, 3.0, 3.0, 3.0]}))
+    return pd.DataFrame({"value": [3.0, 3.0, 3.0, 3.0]}).pipe(DataFrame[Observations])
 
 
 @pytest.fixture

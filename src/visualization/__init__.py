@@ -12,6 +12,7 @@ from visualization.charts import (
     PartitionDiagramInput,
     ProbabilityMassChartInput,
     ProbabilityTreeInput,
+    TypicalValuesComparisonChartInput,
     VennTwoSetsInput,
     chart_bootstrap_distribution,
     chart_clt_comparison,
@@ -26,6 +27,7 @@ from visualization.charts import (
     chart_partition_diagram,
     chart_probability_mass,
     chart_probability_tree,
+    chart_typical_values_comparison,
     chart_venn_two_sets,
 )
 from visualization.theme import apply_theme
@@ -44,6 +46,7 @@ __all__ = [
     "PartitionDiagramInput",
     "ProbabilityMassChartInput",
     "ProbabilityTreeInput",
+    "TypicalValuesComparisonChartInput",
     "VennTwoSetsInput",
     "apply_theme",
     "chart_bootstrap_distribution",
@@ -59,5 +62,6 @@ __all__ = [
     "chart_partition_diagram",
     "chart_probability_mass",
     "chart_probability_tree",
+    "chart_typical_values_comparison",
     "chart_venn_two_sets",
 ]

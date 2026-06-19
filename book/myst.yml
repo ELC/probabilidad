@@ -52,16 +52,6 @@ site:
   nav:
     - title: Bienvenida
       url: /chapters/welcome
-    - title: Tratamiento de datos
-      url: /chapters/descriptive-statistics
-    - title: Probabilidad
-      url: /chapters/probability
-    - title: Variables aleatorias
-      url: /chapters/random-variables
-    - title: Sumas y promedios
-      url: /chapters/joint-and-sums
-    - title: Inferencia
-      url: /chapters/inference
     - title: Glosario
       url: /chapters/glossary
     - title: Enfoque pedagógico

@@ -19,6 +19,7 @@ visualizar el resultado y correr la verificación.
 :tags: [hide-input]
 import numpy as np
 import pandas as pd
+from pandera.typing import DataFrame
 
 from core import Observations, Settings
 from descriptive import (
@@ -148,7 +149,7 @@ waiting_values = np.array([
     7.4, 8.8, 6.1, 7.7, 5.0, 9.6, 6.4, 8.1, 7.0, 5.8,
     8.5, 6.9, 7.3, 6.6, 8.0, 7.2, 6.0, 7.6, 9.1, 6.7,
 ])
-waiting_observations = Observations.validate(pd.DataFrame({"value": waiting_values}))
+waiting_observations = pd.DataFrame({"value": waiting_values}).pipe(DataFrame[Observations])
 frequency_table = build_frequency_table(
     FrequencyTableInput(observations=waiting_observations, bin_count=5)
 )
@@ -288,7 +289,7 @@ por encima → es outlier.
 
 ```{code-cell} python
 extended_values = np.append(waiting_values, 18.0)
-extended_observations = Observations.validate(pd.DataFrame({"value": extended_values}))
+extended_observations = pd.DataFrame({"value": extended_values}).pipe(DataFrame[Observations])
 chart_descriptive_summary(
     DescriptiveSummaryChartInput(
         observations=extended_observations,
@@ -402,7 +403,7 @@ right_skewed = np.concatenate([
     np.random.default_rng(settings.random_seed).gamma(shape=2.0, scale=2.0, size=200),
     np.array([12.0, 13.5, 15.0, 18.0]),
 ])
-right_observations = Observations.validate(pd.DataFrame({"value": right_skewed}))
+right_observations = pd.DataFrame({"value": right_skewed}).pipe(DataFrame[Observations])
 chart_histogram(
     HistogramChartInput(
         observations=right_observations,

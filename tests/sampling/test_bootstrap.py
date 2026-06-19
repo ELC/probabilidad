@@ -16,6 +16,6 @@ def test_bootstrap_mean_contains_sample_mean(
 
 
 def test_bootstrap_rejects_empty_observations() -> None:
-    empty = Observations.validate(pd.DataFrame({"value": pd.Series([], dtype=float)}))
+    empty = pd.DataFrame({"value": pd.Series([], dtype=float)}).pipe(DataFrame[Observations])
     with pytest.raises(ValidationError):
         BootstrapInput(observations=empty)

@@ -38,7 +38,7 @@ def chart_histogram(input_data: HistogramChartInput) -> alt.Chart:
     chart = (
         alt
         .Chart(input_data.observations)
-        .mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary)
+        .mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary, binSpacing=0)
         .encode(
             x=alt.X("value:Q", bin=alt.Bin(maxbins=input_data.bin_count), title="Valor"),
             y=alt.Y("count()", title="Frecuencia"),
@@ -61,19 +61,37 @@ def _build_frequency_chart(
     title: str,
     theme: ChartTheme,
 ) -> Any:
-    base = alt.Chart(frequency_table)
-    bars = base.mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary).encode(
-        x=alt.X("midpoint:Q", title="Marca de clase"),
-        y=alt.Y("relative_frequency:Q", title="Frecuencia relativa"),
-        tooltip=["interval_start", "interval_end", "absolute_frequency", "relative_frequency"],
+    bars_label = "Frecuencia relativa"
+    ogive_label = "Frecuencia rel. acumulada"
+    color_scale = alt.Scale(
+        domain=[bars_label, ogive_label],
+        range=[theme.palette.primary, theme.palette.secondary],
     )
-    ogive = base.mark_line(
-        color=theme.palette.secondary,
-        strokeWidth=theme.line_stroke_width,
-        point=True,
-    ).encode(
-        x=alt.X("interval_end:Q"),
-        y=alt.Y("cumulative_relative_frequency:Q"),
+    legend = alt.Legend(title=None, orient="bottom")
+    bars_data = frequency_table.assign(series=bars_label, baseline=0.0)
+    ogive_data = frequency_table.assign(series=ogive_label)
+    bars = (
+        alt
+        .Chart(bars_data)
+        .mark_rect(opacity=theme.bar_opacity)
+        .encode(
+            x=alt.X("interval_start:Q", title="Valor"),
+            x2="interval_end:Q",
+            y=alt.Y("relative_frequency:Q", title="Frecuencia relativa"),
+            y2="baseline:Q",
+            color=alt.Color("series:N", scale=color_scale, legend=legend),
+            tooltip=["interval_start", "interval_end", "absolute_frequency", "relative_frequency"],
+        )
+    )
+    ogive = (
+        alt
+        .Chart(ogive_data)
+        .mark_line(strokeWidth=theme.line_stroke_width, point=True)
+        .encode(
+            x=alt.X("interval_end:Q"),
+            y=alt.Y("cumulative_relative_frequency:Q"),
+            color=alt.Color("series:N", scale=color_scale, legend=legend),
+        )
     )
     return alt.layer(bars, ogive).properties(title=title)
 
@@ -152,7 +170,7 @@ def chart_clt_comparison(input_data: CLTComparisonChartInput) -> alt.Chart:
     histogram = (
         alt
         .Chart(data)
-        .mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary)
+        .mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary, binSpacing=0)
         .encode(
             x=alt.X("standardized_mean:Q", bin=alt.Bin(maxbins=input_data.bin_count), title="Media estandarizada"),
             y=alt.Y("count()", stack=None, title="Frecuencia"),
@@ -268,7 +286,7 @@ def chart_bootstrap_distribution(input_data: BootstrapDistributionChartInput) ->
     histogram = (
         alt
         .Chart(data)
-        .mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary)
+        .mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary, binSpacing=0)
         .encode(
             x=alt.X("bootstrap_mean:Q", bin=alt.Bin(maxbins=input_data.bin_count), title="Media bootstrap"),
             y=alt.Y("count()", title="Frecuencia"),
@@ -420,6 +438,73 @@ def chart_descriptive_summary(input_data: DescriptiveSummaryChartInput) -> alt.C
         input_data.settings.chart_theme,
     )
     return apply_theme(chart, input_data.settings)
+
+
+class TypicalValuesComparisonChartInput(BaseModel):
+    model_config = _ARBITRARY
+
+    original_statistics: DescriptiveStatistics
+    comparison_statistics: DescriptiveStatistics
+    original_label: str = "Muestra original"
+    comparison_label: str = "Con observación extrema"
+    title: str = "Media y mediana ante una observación extrema"
+    settings: Settings = Settings()
+
+
+def _build_typical_values_comparison_data(input_data: TypicalValuesComparisonChartInput) -> pd.DataFrame:
+    original = input_data.original_statistics.location
+    comparison = input_data.comparison_statistics.location
+    return pd.DataFrame({
+        "scenario": [
+            input_data.original_label,
+            input_data.original_label,
+            input_data.comparison_label,
+            input_data.comparison_label,
+        ],
+        "measure": ["Media", "Mediana", "Media", "Mediana"],
+        "value": [original.mean, original.median, comparison.mean, comparison.median],
+    })
+
+
+def chart_typical_values_comparison(input_data: TypicalValuesComparisonChartInput) -> alt.Chart:
+    theme = input_data.settings.chart_theme
+    data = _build_typical_values_comparison_data(input_data)
+    scenario_order = [input_data.original_label, input_data.comparison_label]
+    measure_order = ["Media", "Mediana"]
+    color = alt.Color(
+        "measure:N",
+        scale=alt.Scale(domain=measure_order, range=[theme.palette.accent, theme.palette.primary]),
+        legend=alt.Legend(title=None, orient="bottom"),
+    )
+    lines = (
+        alt
+        .Chart(data)
+        .mark_line(strokeWidth=theme.line_stroke_width)
+        .encode(
+            x=alt.X("scenario:N", sort=scenario_order, title="Muestra"),
+            y=alt.Y("value:Q", title="Minutos"),
+            color=color,
+            detail="measure:N",
+        )
+    )
+    points = (
+        alt
+        .Chart(data)
+        .mark_point(filled=True, size=theme.point_size)
+        .encode(
+            x=alt.X("scenario:N", sort=scenario_order, title="Muestra"),
+            y=alt.Y("value:Q", title="Minutos"),
+            color=color,
+            shape=alt.Shape("measure:N", sort=measure_order, legend=None),
+            tooltip=[
+                alt.Tooltip("scenario:N", title="Muestra"),
+                alt.Tooltip("measure:N", title="Medida"),
+                alt.Tooltip("value:Q", title="Minutos", format=".2f"),
+            ],
+        )
+    )
+    layered = alt.layer(lines, points).properties(title=input_data.title)
+    return apply_theme(layered, input_data.settings)
 
 
 class ObservationsOverviewInput(BaseModel):

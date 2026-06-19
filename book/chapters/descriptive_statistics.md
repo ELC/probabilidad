@@ -26,18 +26,11 @@ investigar si hubo un caso excepcional que distorsionó la mañana. Esos
 pocos números, y la forma de calcularlos, son lo que vamos a aprender
 en este capítulo.
 
-## Cómo leer este libro
-
-Este libro no está pensado como una lista de recetas. Cada capítulo sigue un ciclo parecido: primero aparece una situación concreta, después una imagen o simulación, luego la fórmula y finalmente una decisión o una frase de comunicación.
-
-Cuando veas **Antes de mirar** o **Intentá antes de ejecutar**, detenete unos segundos y hacé una predicción. Ese pequeño compromiso mental ayuda a recordar mejor el resultado, incluso si la predicción sale mal. Cuando aparezca un **Contrato del modelo**, leelo como una lista de chequeo: qué supuesto permite usar la herramienta, qué la puede romper y qué conclusión autoriza.
-
-Si querés ver el diseño completo del recorrido, tené cerca el [enfoque pedagógico](pedagogy.md). Para símbolos y términos que reaparecen entre capítulos, usá el [glosario](glossary.md).
-
 ```{code-cell} python
 :tags: [hide-input]
 import numpy as np
 import pandas as pd
+from pandera.typing import DataFrame
 
 from core import Observations, Settings
 from descriptive import (
@@ -52,9 +45,11 @@ from visualization import (
     DescriptiveSummaryChartInput,
     FrequencyChartInput,
     HistogramChartInput,
+    TypicalValuesComparisonChartInput,
     chart_descriptive_summary,
     chart_frequency_table,
     chart_histogram,
+    chart_typical_values_comparison,
 )
 from widgets import DescriptiveExplorerInput, build_descriptive_explorer
 ```
@@ -74,7 +69,7 @@ secuencia en que llegaron a la guardia.
 ```{code-cell} python
 rng_clinic = np.random.default_rng(settings.random_seed)
 raw_waiting_times = rng_clinic.normal(loc=4.0, scale=1.2, size=80).clip(min=0.0)
-waiting_times = Observations.validate(pd.DataFrame({"value": raw_waiting_times}))
+waiting_times = pd.DataFrame({"value": raw_waiting_times}).pipe(DataFrame[Observations])
 waiting_times.head()
 ```
 
@@ -157,7 +152,7 @@ medio», así que se promedian los dos centrales.)
 Saber el promedio no alcanza: necesitamos también qué tan **parecidas**
 fueron las esperas entre sí. Si todos esperaron alrededor de cuatro
 minutos, el promedio cuenta casi toda la historia. Si la mitad esperó
-dos minutos y la otra mitad ocho, el mismo promedio esconde dos
+dos minutos y la otra mitad seis, el mismo promedio esconde dos
 experiencias muy distintas.
 
 La idea es medir, en promedio, cuánto se aleja cada paciente del
@@ -195,10 +190,10 @@ summary
 La tabla de arriba contesta las tres preguntas a la vez. La **media**
 y la **mediana** dan dos formas distintas de responder cuál fue una
 espera típica; el **desvío estándar** dice qué tan parecidas fueron
-las esperas entre sí; y el **rango intercuartil** y las cotas inferior
-y superior — que aparecen un poco más abajo, cuando las definamos —
-marcan la frontera entre lo habitual y lo raro. Pasá la vista por las
-filas y fijate qué te dice cada número antes de seguir.
+las esperas entre sí. Por ahora, concentrémonos en esas filas: más
+adelante vamos a construir una regla para separar lo habitual de lo
+raro. Pasá la vista por la tabla y fijate qué te dice cada número antes
+de seguir.
 
 **Trampa común.** Un único “valor típico” no decide si la operación
 funcionó bien. Dos mañanas pueden tener la misma media y experiencias
@@ -218,31 +213,89 @@ pegados. Cuando aparecen valores muy altos (un paciente con espera anormal) la
 **media se mueve** hacia ese punto; la **mediana se queda quieta** porque sólo
 depende del orden.
 
-Lo materializamos con un boxplot que marca, además, la media muestral con una
-línea punteada: cuando hay cola, las dos referencias se separan.
+Agreguemos artificialmente una espera de 120 minutos a la misma mañana. No
+estamos cambiando los datos reales: armamos una segunda muestra para comparar
+qué pasa con cada resumen cuando aparece un valor extremo.
 
 ```{code-cell} python
-descriptive_chart_input = DescriptiveSummaryChartInput(
-    observations=waiting_times,
-    statistics=summary,
-    title="Tiempos de espera — boxplot con media muestral",
+waiting_times_with_extreme = pd.concat(
+    [waiting_times, pd.DataFrame({"value": [120.0]})], ignore_index=True
+).pipe(DataFrame[Observations])
+summary_with_extreme = summarize_observations(waiting_times_with_extreme)
+```
+
+```{code-cell} python
+typical_values_chart_input = TypicalValuesComparisonChartInput(
+    original_statistics=summary,
+    comparison_statistics=summary_with_extreme,
     settings=settings,
 )
-chart_descriptive_summary(descriptive_chart_input)
+chart_typical_values_comparison(typical_values_chart_input)
 ```
+
+La línea de la media sube con fuerza porque el valor extremo entra en la suma.
+La mediana, en cambio, apenas se mueve: al ordenar 81 valores, el centro sigue
+representando una espera habitual, no el caso excepcional.
+
+(sec-descriptive-boxplot)=
+## Cómo leer un boxplot
+
+Un **boxplot** — o diagrama de caja y bigotes — comprime la distribución en
+cinco referencias visuales. Para leerlo necesitamos primero una idea: los
+**cuartiles**. Si ordenamos los datos de menor a mayor, los cuartiles cortan
+la muestra en cuatro partes parecidas. $Q_1$ deja aproximadamente el 25% de
+las observaciones por debajo, $Q_2$ coincide con la **mediana** y $Q_3$ deja
+aproximadamente el 75% por debajo.
+
+En el gráfico, la línea dentro de la caja es la mediana: la mitad de las
+observaciones queda a la izquierda y la otra mitad a la derecha. Los bordes de
+la caja son $Q_1$ y $Q_3$, así que la caja contiene el 50% central de los
+datos. Si la caja es angosta, ese tramo central fue bastante parecido; si es
+ancha, hubo más variación entre valores habituales.
+
+Los **bigotes** se extienden desde la caja hasta los valores más extremos que
+todavía no se consideran atípicos. Los puntos que quedan afuera se dibujan
+separados: no son errores automáticamente, pero sí observaciones que conviene
+mirar antes de resumir todo con un único número.
+
+```{code-cell} python
+summary_chart_input = DescriptiveSummaryChartInput(
+    observations=waiting_times,
+    statistics=summary,
+    settings=settings,
+)
+chart_descriptive_summary(summary_chart_input)
+```
+
+Para leerlo, hacé tres preguntas. **Centro:** ¿dónde cae la línea de la
+mediana? **Dispersión:** ¿qué tan larga es la caja y qué tan lejos llegan los
+bigotes? **Asimetría y rarezas:** ¿un bigote es mucho más largo que el otro o
+aparecen puntos aislados? En el caso de la clínica, una caja concentrada cerca
+de pocos minutos cuenta una mañana regular; una caja ancha o puntos muy lejos
+señalan que algunas experiencias fueron bastante distintas.
 
 (sec-descriptive-tukey)=
 ## Detección de outliers — la regla de Tukey
 
-**Paso 1:** partimos de los cuartiles $Q_1$ y $Q_3$ que ya calculó la fórmula
-[](#eq-position) en su versión generalizada. **Paso 2:** definimos el rango intercuartil
-$\text{IQR} = Q_3 - Q_1$. **Paso 3:** una observación es **outlier** si cae
-fuera del intervalo:
+Un **outlier** — o dato atípico — es una observación tan alejada del resto
+que conviene mirarla aparte: puede ser un error de carga, un caso excepcional
+o una señal importante que no queremos esconder dentro del promedio.
+
+Para detectarlos vamos a reutilizar los cuartiles del boxplot. La distancia
+entre $Q_1$ y $Q_3$ resume el tramo central de la muestra.
+
+**Paso 1.** Ordenamos los datos y ubicamos $Q_1$ y $Q_3$.
+
+**Paso 2.** Definimos el rango intercuartil:
+
+$$ \text{IQR} = Q_3 - Q_1 $$
+
+**Paso 3.** Una observación es **outlier** si cae fuera del intervalo:
 
 $$ \bigl[Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}\bigr] $$ (eq-iqr-fence)
 
-Es la misma regla que usa la caja del boxplot: por eso ese gráfico es buen
-detector visual.
+Es la misma regla que define hasta dónde llegan los bigotes del boxplot: por
+eso ese gráfico es buen detector visual.
 
 ```{code-cell} python
 outlier_report = detect_outliers_tukey(waiting_times)
@@ -283,7 +336,7 @@ inspección. Acá no estamos midiendo en minutos: estamos contando.
 ```{code-cell} python
 rng_factory = np.random.default_rng(seed=20260202)
 raw_defect_counts = rng_factory.poisson(lam=3.5, size=60).astype(float)
-defect_counts = Observations.validate(pd.DataFrame({"value": raw_defect_counts}))
+defect_counts = pd.DataFrame({"value": raw_defect_counts}).pipe(DataFrame[Observations])
 
 defect_histogram_input = HistogramChartInput(
     observations=defect_counts,
@@ -354,7 +407,9 @@ sobre la espera típica y qué no dice sobre la regularidad del servicio.
 cambiar turnos, o pedirías también dispersión y posibles outliers?
 
 ```{code-cell} python
-exercise_sample = Observations.validate(pd.DataFrame({"value": [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]}))
+exercise_sample = pd.DataFrame({"value": [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]}).pipe(
+    DataFrame[Observations]
+)
 expected_mean = summarize_observations(exercise_sample).location.mean
 
 student_answer_mean = 5.0

@@ -46,4 +46,4 @@ def build_frequency_table(input_data: FrequencyTableInput) -> DataFrame[Frequenc
         "relative_frequency": relative_frequency.astype(float),
         "cumulative_relative_frequency": cumulative_relative_frequency.astype(float),
     })
-    return FrequencyTable.validate(raw)
+    return raw.pipe(DataFrame[FrequencyTable])

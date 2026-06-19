@@ -39,6 +39,7 @@ el oficio que sostiene buena parte de la estadística aplicada.
 :tags: [hide-input]
 import numpy as np
 import pandas as pd
+from pandera.typing import DataFrame
 
 from core import Observations, Settings
 from exercises import (
@@ -454,7 +455,9 @@ la distribución bootstrap de la media sea angosta o ancha?
 
 ```{code-cell} python
 rng_bootstrap = np.random.default_rng(settings.random_seed)
-synthetic_sample = Observations.validate(pd.DataFrame({"value": rng_bootstrap.normal(loc=12.0, scale=3.0, size=36)}))
+synthetic_sample = pd.DataFrame({
+    "value": rng_bootstrap.normal(loc=12.0, scale=3.0, size=36)
+}).pipe(DataFrame[Observations])
 bootstrap_input = BootstrapInput(
     observations=synthetic_sample,
     replicates=3_000,

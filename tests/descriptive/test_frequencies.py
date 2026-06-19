@@ -30,6 +30,6 @@ def test_build_frequency_table_with_explicit_bin_count(small_observations: DataF
 
 
 def test_build_frequency_table_rejects_empty() -> None:
-    empty = Observations.validate(pd.DataFrame({"value": pd.Series([], dtype=float)}))
+    empty = pd.DataFrame({"value": pd.Series([], dtype=float)}).pipe(DataFrame[Observations])
     with pytest.raises(ValidationError):
         FrequencyTableInput(observations=empty)

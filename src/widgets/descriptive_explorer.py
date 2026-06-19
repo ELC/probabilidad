@@ -24,7 +24,7 @@ class DescriptiveExplorerInput(BaseModel):
 def _generate_synthetic_observations(parameters: NormalParams, sample_size: int, seed: int) -> DataFrame[Observations]:
     rng = np.random.default_rng(seed)
     samples = rng.normal(loc=parameters.mean, scale=parameters.standard_deviation, size=sample_size)
-    return Observations.validate(pd.DataFrame({"value": samples.astype(float)}))
+    return pd.DataFrame({"value": samples.astype(float)}).pipe(DataFrame[Observations])
 
 
 def build_descriptive_explorer(input_data: DescriptiveExplorerInput) -> widgets.Widget:

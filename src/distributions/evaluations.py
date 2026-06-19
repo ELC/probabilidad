@@ -119,7 +119,7 @@ def evaluate_probability_mass(input_data: ProbabilityMassInput) -> ProbabilityMa
     outcomes = np.arange(lower, upper + 1, dtype=float)
     probabilities = frozen.pmf(outcomes)
     raw_table = pd.DataFrame({"outcome": outcomes, "probability": probabilities})
-    table = PMFTable.validate(raw_table)
+    table = raw_table.pipe(DataFrame[PMFTable])
     return ProbabilityMassTable(table=table, distribution_name=input_data.distribution.spanish_name)
 
 
