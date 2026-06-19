@@ -85,10 +85,12 @@ def test_chart_frequency_table(normal_observations: DataFrame[Observations], fix
     chart = chart_frequency_table(FrequencyChartInput(frequency_table=table, settings=fixed_settings))
     chart_spec = chart.to_dict()
     bars_layer = chart_spec["layer"][0]
+    ogive_layer = chart_spec["layer"][1]
     assert bars_layer["mark"]["type"] == "rect"
     assert bars_layer["encoding"]["x"]["field"] == "interval_start"
     assert bars_layer["encoding"]["x2"]["field"] == "interval_end"
     assert bars_layer["encoding"]["y2"]["field"] == "baseline"
+    assert ogive_layer["encoding"]["x"]["field"] == "midpoint"
 
 
 def test_chart_density_uses_distribution_name(fixed_settings: Settings) -> None:

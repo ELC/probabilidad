@@ -157,8 +157,9 @@ build_mean_ci_explorer(ci_explorer_input)
 
 En la práctica casi nunca conocemos $\sigma$. Lo estimamos con el desvío
 estándar muestral $s$ definido en [](#eq-std), y el pivote cambia: deja
-de ser Normal. **Paso 1.** Si
-las observaciones son Normales, vale:
+de ser Normal.
+
+**Paso 1.** Si las observaciones son Normales, vale:
 
 $$ T = \frac{\bar{X} - \mu}{s/\sqrt{n}} \sim t_{n-1} $$ (eq-t-pivot)
 
@@ -188,8 +189,11 @@ tenga incertidumbre.
 queda alrededor de ese 50%?
 
 **Paso 1:** la Binomial subyacente [](#eq-binomial-pmf) tiene varianza
-$np(1-p)$. **Paso 2:** por el TCL [](#eq-clt-bin), $\hat{p}$ es
-aproximadamente Normal. **Paso 3:** IC de Wald al $1 - \alpha$:
+$np(1-p)$.
+
+**Paso 2:** por el TCL [](#eq-clt-bin), $\hat{p}$ es aproximadamente Normal.
+
+**Paso 3:** IC de Wald al $1 - \alpha$:
 
 $$ \hat{p} \;\pm\; z_{1 - \alpha/2}\,\sqrt{\frac{\hat{p}(1 - \hat{p})}{n}} $$ (eq-ci-prop)
 

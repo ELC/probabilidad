@@ -93,7 +93,7 @@ lentos? Hacé una predicción rápida: dónde se va a concentrar el
 histograma y en qué minuto creés que la ojiva va a cruzar el 70%.
 
 ```{code-cell} python
-frequency_input = FrequencyTableInput(observations=waiting_times, bin_count=10)
+frequency_input = FrequencyTableInput(observations=waiting_times, bin_width=2.0)
 frequency_table = build_frequency_table(frequency_input)
 
 frequency_chart_input = FrequencyChartInput(
@@ -267,12 +267,76 @@ summary_chart_input = DescriptiveSummaryChartInput(
 chart_descriptive_summary(summary_chart_input)
 ```
 
+Un boxplot clásico no suele incluir la media. En este gráfico la agregamos como
+línea punteada para compararla visualmente con la mediana y reforzar cómo los
+valores extremos pueden mover el promedio.
+
 Para leerlo, hacé tres preguntas. **Centro:** ¿dónde cae la línea de la
 mediana? **Dispersión:** ¿qué tan larga es la caja y qué tan lejos llegan los
 bigotes? **Asimetría y rarezas:** ¿un bigote es mucho más largo que el otro o
 aparecen puntos aislados? En el caso de la clínica, una caja concentrada cerca
 de pocos minutos cuenta una mañana regular; una caja ancha o puntos muy lejos
 señalan que algunas experiencias fueron bastante distintas.
+
+### Preguntas para leer formas típicas
+
+Antes de abrir cada respuesta, imaginá el boxplot y traducí su forma a una
+frase sobre los datos.
+
+**Pregunta 1.** La caja está centrada, la mediana cae casi en el medio y los dos
+bigotes tienen longitudes parecidas. ¿Qué sugiere sobre la distribución?
+
+::::{admonition} Respuesta
+:class: dropdown
+
+Sugiere una distribución bastante equilibrada: no se ve una asimetría fuerte
+hacia valores chicos o grandes. Los datos habituales se reparten de manera
+parecida a ambos lados de la mediana.
+::::
+
+**Pregunta 2.** La caja tiene un bigote izquierdo muy corto y un bigote derecho
+muy largo. ¿Qué implica?
+
+::::{admonition} Respuesta
+:class: dropdown
+
+Implica datos sumamente asimétricos hacia la derecha: la mayoría de los valores
+queda concentrada en la zona baja o media, pero algunos valores grandes estiran
+la cola derecha.
+::::
+
+**Pregunta 3.** La caja es muy angosta, pero aparecen varios puntos aislados
+lejos de los bigotes. ¿Cómo conviene leerlo?
+
+::::{admonition} Respuesta
+:class: dropdown
+
+El 50% central de los datos es muy estable, pero hay observaciones atípicas que
+merecen revisión. El proceso habitual parece concentrado; las rarezas pueden
+ser errores, casos excepcionales o señales relevantes.
+::::
+
+**Pregunta 4.** Dos grupos tienen medianas parecidas, pero uno muestra una caja
+mucho más ancha. ¿Qué diferencia hay entre los grupos?
+
+::::{admonition} Respuesta
+:class: dropdown
+
+Tienen centros parecidos, pero distinta variabilidad. El grupo con caja más
+ancha tiene valores habituales más dispersos: aunque el centro sea similar, sus
+observaciones son menos consistentes.
+::::
+
+**Pregunta 5.** La mediana aparece muy cerca del borde inferior de la caja y el
+bigote superior es más largo. ¿Qué lectura harías?
+
+::::{admonition} Respuesta
+:class: dropdown
+
+La mitad central no está repartida de forma pareja: dentro de la caja hay más
+distancia hacia los valores altos que hacia los bajos. Junto con el bigote
+superior largo, eso sugiere asimetría hacia valores grandes.
+::::
 
 (sec-descriptive-tukey)=
 ## Detección de outliers — la regla de Tukey
@@ -306,9 +370,14 @@ outlier_report
 ## Posición relativa: el $z$-score
 
 El $z$-score (*standard score*) traduce una observación a la pregunta «¿a cuántos desvíos del
-promedio está?». **Paso 1:** partimos de las fórmulas [](#eq-mean) y [](#eq-std) para tener
-$\bar{x}$ y $s$. **Paso 2:** centramos restando el promedio. **Paso 3:**
-reescalamos dividiendo por $s$:
+promedio está?».
+
+**Paso 1:** partimos de las fórmulas [](#eq-mean) y [](#eq-std) para tener
+$\bar{x}$ y $s$.
+
+**Paso 2:** centramos restando el promedio.
+
+**Paso 3:** reescalamos dividiendo por $s$:
 
 $$ z_i = \frac{x_i - \bar{x}}{s} $$ (eq-zscore)
 
@@ -317,9 +386,9 @@ $z_i$ negativo, «menos que el promedio». Y la magnitud cuenta cuántos
 $s$ separan la observación del centro: $z_i = 2$ significa dos desvíos
 estándar arriba, sin importar las unidades originales.
 
-Acá $z_i$ es una medida descriptiva de posición relativa. No es un
-estadístico de prueba: ese papel aparece en inferencia como $z$-statistic
-($z_{\text{obs}}$) cuando se contrasta una hipótesis nula.
+En este capítulo usamos $z_i$ solo como resumen descriptivo: compara cada
+observación con el promedio del mismo conjunto de datos. Ayuda a ver qué
+valores están cerca del centro y cuáles quedan relativamente lejos.
 
 ```{code-cell} python
 standardized = standardize_observations(waiting_times)
@@ -329,9 +398,17 @@ standardized
 (sec-descriptive-defects)=
 ## Piezas defectuosas por turno
 
-Cambiamos de escala y de unidad. La línea de producción registra, en cada uno
-de los últimos 60 turnos, cuántas piezas resultaron defectuosas tras la
-inspección. Acá no estamos midiendo en minutos: estamos contando.
+Ahora salgamos de la sala de espera y crucemos a otro proceso cotidiano. En
+una fábrica, al final de cada turno, la supervisora revisa el parte de
+inspección: no le importa cuánto tardó cada pieza, sino cuántas salieron
+defectuosas. Un turno puede cerrar con 1 pieza defectuosa, otro con 5, otro
+con ninguna.
+
+Después de 60 turnos, la pregunta vuelve a sonar conocida: ¿cuál fue un
+conteo típico?, ¿qué tan estable fue la línea?, ¿apareció algún turno
+suficientemente raro como para revisar qué pasó? Cambiamos de escala y de
+unidad — de minutos a piezas defectuosas —, pero seguimos haciendo
+estadística descriptiva sobre una lista de observaciones.
 
 ```{code-cell} python
 rng_factory = np.random.default_rng(seed=20260202)

@@ -143,8 +143,11 @@ chart_venn_two_sets(venn_input);
 ## Probabilidad condicional
 
 Probabilidad condicional es **restringir el universo**: dentro del subconjunto
-$B$, ¿qué fracción cae también en $A$? **Paso 1:** retomamos $P(A \cap B)$ que
-ya definimos junto a [](#eq-union-prob). **Paso 2:** definimos:
+$B$, ¿qué fracción cae también en $A$?
+
+**Paso 1:** retomamos $P(A \cap B)$ que ya definimos junto a [](#eq-union-prob).
+
+**Paso 2:** definimos:
 
 $$ P(A \mid B) = \frac{P(A \cap B)}{P(B)},\quad P(B) > 0 $$ (eq-cond-prob)
 

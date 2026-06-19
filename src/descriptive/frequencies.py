@@ -14,11 +14,15 @@ class FrequencyTableInput(BaseModel):
 
     observations: DataFrame[Observations]
     bin_count: int | None = Field(default=None, ge=1)
+    bin_width: float | None = Field(default=None, gt=0.0)
 
     @model_validator(mode="after")
-    def _check_not_empty(self) -> Self:
+    def _check_inputs(self) -> Self:
         if self.observations.empty:
             msg = "observations cannot be empty"
+            raise ValueError(msg)
+        if self.bin_count is not None and self.bin_width is not None:
+            msg = "bin_count and bin_width cannot be used together"
             raise ValueError(msg)
         return self
 
@@ -27,10 +31,23 @@ def sturges_bin_count(sample_size: int) -> int:
     return max(1, math.ceil(1.0 + math.log2(sample_size)))
 
 
+def _build_equal_width_edges(values: np.ndarray, bin_width: float) -> np.ndarray:
+    interval_start = math.floor(float(values.min()) / bin_width) * bin_width
+    interval_end = math.ceil(float(values.max()) / bin_width) * bin_width
+    if math.isclose(interval_start, interval_end):
+        interval_end = interval_start + bin_width
+    edges = np.arange(interval_start, interval_end + bin_width, bin_width, dtype=float)
+    edges[-1] = interval_end
+    return edges
+
+
 def build_frequency_table(input_data: FrequencyTableInput) -> DataFrame[FrequencyTable]:
     values = input_data.observations["value"].to_numpy()
-    bin_count = input_data.bin_count if input_data.bin_count is not None else sturges_bin_count(values.size)
-    edges = np.linspace(values.min(), values.max(), bin_count + 1)
+    if input_data.bin_width is not None:
+        edges = _build_equal_width_edges(values, input_data.bin_width)
+    else:
+        bin_count = input_data.bin_count if input_data.bin_count is not None else sturges_bin_count(values.size)
+        edges = np.linspace(values.min(), values.max(), bin_count + 1)
     absolute_frequency, _ = np.histogram(values, bins=edges)
     interval_start = edges[:-1]
     interval_end = edges[1:]

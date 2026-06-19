@@ -88,7 +88,7 @@ def _build_frequency_chart(
         .Chart(ogive_data)
         .mark_line(strokeWidth=theme.line_stroke_width, point=True)
         .encode(
-            x=alt.X("interval_end:Q"),
+            x=alt.X("midpoint:Q"),
             y=alt.Y("cumulative_relative_frequency:Q"),
             color=alt.Color("series:N", scale=color_scale, legend=legend),
         )
