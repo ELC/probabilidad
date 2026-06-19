@@ -9,7 +9,7 @@ kernelspec:
 # Práctica — Tratamiento de datos
 
 Esta sección reúne ejercicios para fijar los conceptos del capítulo de
-[Tratamiento de datos](descriptive_statistics.ipynb). Cada ejercicio sigue el
+[Tratamiento de datos](descriptive_statistics.md). Cada ejercicio sigue el
 mismo ritmo: un enunciado breve, y debajo una **solución** plegada que se
 abre con un clic. La idea es que primero intentes el cálculo en papel (o a
 mano alzada) y recién después abras la solución para comparar pasos,
@@ -71,7 +71,7 @@ una duración.
 ### Derivación
 
 Por la definición del capítulo
-([](descriptive_statistics.ipynb#sec-descriptive-sample)):
+([](descriptive_statistics.md#sec-descriptive-sample)):
 
 - **Cualitativa** ↔ los valores son categorías (Sí/No, tipos de defecto).
 - **Cuantitativa discreta** ↔ los valores son números enteros que cuentan
@@ -193,13 +193,13 @@ Con la misma muestra del ejercicio anterior, calculá la **media** y el
 ### Planteo
 
 La media muestral viene de la ecuación
-[](descriptive_statistics.ipynb#eq-mean):
+[](descriptive_statistics.md#eq-mean):
 
 $$
 \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i,
 $$
 
-y el desvío muestral viene de [](descriptive_statistics.ipynb#eq-std):
+y el desvío muestral viene de [](descriptive_statistics.md#eq-std):
 
 $$
 s = \sqrt{\frac{1}{n - 1} \sum_{i=1}^{n} (x_i - \bar{x})^2}.
@@ -266,7 +266,7 @@ con factor 1,5?
 
 ### Planteo
 
-Por [](descriptive_statistics.ipynb#sec-descriptive-tukey), un valor es
+Por [](descriptive_statistics.md#sec-descriptive-tukey), un valor es
 outlier cuando cae fuera del intervalo
 
 $$
@@ -382,7 +382,7 @@ Indicá si la siguiente afirmación es **Verdadera o Falsa**:
 En una distribución asimétrica a la derecha la cola larga del lado alto
 arrastra la media hacia valores grandes, pero **no** mueve a la mediana
 con la misma intensidad — la mediana solo necesita el orden de los datos,
-no su magnitud (ver [](descriptive_statistics.ipynb#sec-descriptive-median)).
+no su magnitud (ver [](descriptive_statistics.md#sec-descriptive-median)).
 
 ### Derivación
 

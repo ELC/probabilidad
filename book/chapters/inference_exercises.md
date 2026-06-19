@@ -9,7 +9,7 @@ kernelspec:
 # Práctica — Inferencia
 
 Esta sección reúne ejercicios para fijar los conceptos del capítulo de
-[Inferencia](inference.ipynb): intervalos de confianza para la media
+[Inferencia](inference.md): intervalos de confianza para la media
 (σ conocido y desconocido), para una proporción y para la varianza;
 tests de hipótesis; y cálculo de tamaño muestral. Cada enunciado
 incluye una **solución** plegada con el paso a paso, una visualización
@@ -66,8 +66,8 @@ nominal $\mu_0 = 5{,}00$ cm queda **adentro** del intervalo.
 ### Planteo
 
 Como $\sigma$ es conocido, el pivote es el de
-[](inference.ipynb#eq-z-pivot) y el IC tiene la forma de
-[](inference.ipynb#eq-ci-mean-known):
+[](inference.md#eq-z-pivot) y el IC tiene la forma de
+[](inference.md#eq-ci-mean-known):
 
 $$
 \bar{x} \;\pm\; z_{1 - \alpha/2}\,\frac{\sigma}{\sqrt{n}}.
@@ -124,8 +124,8 @@ de referencia $\mu_0 = 12$ minutos **cae adentro**.
 ### Planteo
 
 Como $\sigma$ no se conoce, el pivote es el de Student
-[](inference.ipynb#eq-t-pivot) y el IC sigue la forma análoga a
-[](inference.ipynb#eq-ci-mean-known) reemplazando $z$ por $t_{n-1}$:
+[](inference.md#eq-t-pivot) y el IC sigue la forma análoga a
+[](inference.md#eq-ci-mean-known) reemplazando $z$ por $t_{n-1}$:
 
 $$
 \bar{x} \;\pm\; t_{n - 1,\ 1 - \alpha/2}\,\frac{s}{\sqrt{n}}.
@@ -182,7 +182,7 @@ oficialismo» es **compatible** con los datos.
 ### Planteo
 
 Por la aproximación Normal a la Binomial
-([](inference.ipynb#eq-ci-prop)),
+([](inference.md#eq-ci-prop)),
 
 $$
 \hat{p} \;\pm\; z_{1 - \alpha/2}\,\sqrt{\frac{\hat{p}(1 - \hat{p})}{n}},
@@ -234,8 +234,8 @@ $\sigma^{2}$, y decidí si la varianza objetivo $\sigma_{0}^{2} = 4$ está
 
 ### Planteo
 
-Por el pivote $\chi^{2}_{n-1}$ ([](inference.ipynb#eq-chi-pivot)), el IC
-es ([](inference.ipynb#eq-ci-var))
+Por el pivote $\chi^{2}_{n-1}$ ([](inference.md#eq-chi-pivot)), el IC
+es ([](inference.md#eq-ci-var))
 
 $$
 \left(\frac{(n - 1)\,s^{2}}{\chi^{2}_{n-1,\,1-\alpha/2}},
@@ -293,7 +293,7 @@ margen de error de $\pm 0{,}02$ cm con **99 %** de confianza?
 ### Planteo
 
 Despejando $n$ de la mitad del ancho de
-[](inference.ipynb#eq-ci-mean-known):
+[](inference.md#eq-ci-mean-known):
 
 $$
 n = \left(\frac{z_{1 - \alpha/2}\,\sigma}{E}\right)^{2}.

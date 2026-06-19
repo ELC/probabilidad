@@ -23,19 +23,20 @@ project:
     - plugins/ethicalads.mjs
 
   toc:
-    - file: chapters/descriptive_statistics.ipynb
+    - file: chapters/welcome.md
+    - file: chapters/descriptive_statistics.md
       children:
         - file: chapters/descriptive_statistics_exercises.md
-    - file: chapters/probability.ipynb
+    - file: chapters/probability.md
       children:
         - file: chapters/probability_exercises.md
-    - file: chapters/random_variables.ipynb
+    - file: chapters/random_variables.md
       children:
         - file: chapters/random_variables_exercises.md
-    - file: chapters/joint_and_sums.ipynb
+    - file: chapters/joint_and_sums.md
       children:
         - file: chapters/joint_and_sums_exercises.md
-    - file: chapters/inference.ipynb
+    - file: chapters/inference.md
       children:
         - file: chapters/inference_exercises.md
     - file: chapters/glossary.md
@@ -49,6 +50,8 @@ site:
       :::
 
   nav:
+    - title: Bienvenida
+      url: /chapters/welcome
     - title: Tratamiento de datos
       url: /chapters/descriptive-statistics
     - title: Probabilidad

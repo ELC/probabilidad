@@ -218,21 +218,6 @@ extend-exclude = ["_build"]
 "src/**/*.py" = ["D"]
 "src/**/__init__.py" = []
 "tests/**" = ["D", "PLR2004", "B017", "RUF069"]
-"book/**/*.ipynb" = [
-  "D",
-  "B018",
-  "INP001",
-  "E402",
-  "F401",
-  "F811",
-  "F841",
-  "ERA001",
-  "T201",
-  "PLR2004",
-  "RUF002",
-  "RUF003",
-]
-"book/**/*_nbqa_*" = ["D", "B018"]
 
 [tool.ruff.lint]
 extend-select = ["ALL"]

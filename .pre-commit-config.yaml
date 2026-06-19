@@ -41,51 +41,25 @@ repos:
       - id: tombi-format
       - id: tombi-lint
 
-  - repo: https://github.com/kynan/nbstripout
-    rev: 0.9.1
-    hooks:
-      - id: nbstripout
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.14
     hooks:
       - id: ruff-check
-        exclude: \.ipynb$
         args:
           - "--exit-non-zero-on-fix"
 
       - id: ruff-format
-        exclude: \.ipynb$
 
   - repo: https://github.com/pylint-dev/pylint
     rev: v4.0.5
     hooks:
       - id: pylint
-        exclude: \.ipynb$
         additional_dependencies: *hook-deps
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v2.1.0
     hooks:
       - id: mypy
-        exclude: \.ipynb$
-        additional_dependencies: *hook-deps
-
-  - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.9.1
-    hooks:
-      - id: nbqa-ruff-format
-        additional_dependencies: *hook-deps
-
-      - id: nbqa-ruff-check
-        additional_dependencies: *hook-deps
-        args:
-          - "--exit-non-zero-on-fix"
-
-      - id: nbqa-pylint
-        additional_dependencies: *hook-deps
-
-      - id: nbqa-mypy
         additional_dependencies: *hook-deps
 
   # - repo: https://github.com/JuanJFarina/pymetrica

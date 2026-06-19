@@ -9,7 +9,7 @@ kernelspec:
 # Práctica — Sumas y promedios
 
 Esta sección reúne ejercicios para fijar las ideas del capítulo de
-[Sumas y promedios](joint_and_sums.ipynb): Ley de los grandes números
+[Sumas y promedios](joint_and_sums.md): Ley de los grandes números
 (LLN), Teorema central del límite (TCL), aproximación
 Binomial → Normal, y suma de variables aleatorias independientes. Cada
 enunciado va acompañado de una **solución** plegada con el paso a paso,
@@ -69,7 +69,7 @@ independientes, ¿cuál es el **desvío estándar del promedio** $\bar{X}_n$?
 ### Planteo
 
 Por la varianza del promedio bajo el TCL
-([](joint_and_sums.ipynb#eq-clt)),
+([](joint_and_sums.md#eq-clt)),
 
 $$
 \mathrm{Var}(\bar{X}_n) = \frac{\sigma^{2}}{n},\qquad
@@ -115,7 +115,7 @@ $0{,}05$ del valor teórico al final del horizonte?
 
 ### Planteo
 
-Por la LLN ([](joint_and_sums.ipynb#eq-lln)),
+Por la LLN ([](joint_and_sums.md#eq-lln)),
 
 $$
 \bar{X}_n \xrightarrow{P} \mu = \frac{1}{\lambda} = 0{,}5
@@ -172,7 +172,7 @@ $\bar{T}_{36}$ sea **mayor a 4,5 minutos**?
 ### Planteo
 
 La Exponencial tiene $\mu = 1/\lambda = 4$ y $\sigma = 1/\lambda = 4$.
-Por el TCL ([](joint_and_sums.ipynb#eq-clt)) con $n = 36$,
+Por el TCL ([](joint_and_sums.md#eq-clt)) con $n = 36$,
 
 $$
 \bar{T}_{36} \;\dot\sim\; \mathcal{N}\!\left(4,\ \left(\frac{4}{6}\right)^{2}\right)
@@ -239,7 +239,7 @@ Aproximá $P(Y \le 12)$, donde $Y$ es la cantidad de defectuosas.
 ### Planteo
 
 $Y \sim \text{Bin}(400, 0{,}04)$ con $np = 16$ y $np(1-p) = 15{,}36$,
-así que el TCL ([](joint_and_sums.ipynb#eq-clt-bin)) recomienda
+así que el TCL ([](joint_and_sums.md#eq-clt-bin)) recomienda
 aproximar
 
 $$
@@ -344,7 +344,7 @@ Indicá si la siguiente afirmación es **Verdadera o Falsa**:
 
 ### Planteo
 
-El TCL ([](joint_and_sums.ipynb#eq-clt)) dice que **el promedio
+El TCL ([](joint_and_sums.md#eq-clt)) dice que **el promedio
 estandarizado** converge en distribución a $\mathcal{N}(0,1)$ para
 cualquier población con varianza finita, **independientemente de su
 forma**, cuando $n$ es grande. La Normalidad en la población original

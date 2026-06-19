@@ -9,7 +9,7 @@ kernelspec:
 # Práctica — Probabilidad
 
 Esta sección reúne ejercicios para fijar los conceptos del capítulo de
-[Probabilidad](probability.ipynb). Cada problema tiene un enunciado breve
+[Probabilidad](probability.md). Cada problema tiene un enunciado breve
 y una **solución** plegada que se abre con un clic, con el paso a paso
 de la fórmula, una visualización y el verificador correspondiente. Antes
 de abrir, intentá el cálculo en papel.
@@ -55,7 +55,7 @@ una muestra grande se observó:
 
 ### Planteo
 
-Por la regla aditiva ([](probability.ipynb#eq-union-prob)),
+Por la regla aditiva ([](probability.md#eq-union-prob)),
 
 $$
 P(A \cup B) = P(A) + P(B) - P(A \cap B).
@@ -131,7 +131,7 @@ Calculá $P(S \mid J)$ — la probabilidad de que un votante elegido al azar
 ### Planteo
 
 Por la definición de probabilidad condicional
-[](probability.ipynb#eq-cond-prob),
+[](probability.md#eq-cond-prob),
 
 $$
 P(S \mid J) = \frac{P(S \cap J)}{P(J)}.
@@ -184,7 +184,7 @@ azar del lote total.
 
 Las máquinas $M_1$ y $M_2$ forman una partición del espacio muestral.
 Por la regla de probabilidad total
-([](probability.ipynb#eq-total-prob)),
+([](probability.md#eq-total-prob)),
 
 $$
 P(D) = P(D \mid M_1)\,P(M_1) + P(D \mid M_2)\,P(M_2).
@@ -243,8 +243,8 @@ Si un paciente da **positivo**, ¿cuál es la probabilidad de que
 ### Planteo
 
 Queremos $P(E \mid +)$. Aplicamos Bayes
-([](probability.ipynb#eq-bayes)) con denominador armado por
-probabilidad total ([](probability.ipynb#eq-total-prob)):
+([](probability.md#eq-bayes)) con denominador armado por
+probabilidad total ([](probability.md#eq-total-prob)):
 
 $$
 P(E \mid +) = \frac{P(+ \mid E)\,P(E)}
@@ -356,7 +356,7 @@ del lote y resulta ser **defectuosa**.
 
 ### Planteo
 
-Aplicamos Bayes ([](probability.ipynb#eq-bayes)) con denominador igual al
+Aplicamos Bayes ([](probability.md#eq-bayes)) con denominador igual al
 $P(D)$ ya calculado en el Ejercicio 3:
 
 $$

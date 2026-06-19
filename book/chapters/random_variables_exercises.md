@@ -9,7 +9,7 @@ kernelspec:
 # Práctica — Variables aleatorias
 
 Esta sección reúne ejercicios para fijar los modelos del capítulo de
-[Variables aleatorias](random_variables.ipynb): Binomial, Poisson,
+[Variables aleatorias](random_variables.md): Binomial, Poisson,
 Geométrica, Normal y Exponencial. Cada enunciado lleva debajo una
 **solución** plegada con el paso a paso, una visualización y la
 verificación. Antes de abrirla, intentá el cálculo a mano.
@@ -80,7 +80,7 @@ $X \sim \text{Bin}(n = 20,\ p = 0{,}04)$.
 
 ### Derivación
 
-Por la PMF Binomial ([](random_variables.ipynb#eq-binomial-pmf)),
+Por la PMF Binomial ([](random_variables.md#eq-binomial-pmf)),
 
 $$
 P(X = 2) = \binom{20}{2}(0{,}04)^{2}(0{,}96)^{18}.
@@ -139,7 +139,7 @@ $Y$ = cantidad de pacientes en 20 minutos, $Y \sim \text{Poisson}(2)$.
 
 ### Derivación
 
-Por la PMF Poisson ([](random_variables.ipynb#eq-poisson-pmf)),
+Por la PMF Poisson ([](random_variables.md#eq-poisson-pmf)),
 
 $$
 P(Y = 0) = \frac{2^{0} e^{-2}}{0!} = e^{-2} \approx 0{,}1353.
@@ -188,7 +188,7 @@ que llegue nadie?
 ### Planteo
 
 Sea $T$ = tiempo (en horas) hasta el próximo paciente. Por la conexión
-entre Poisson y Exponencial ([](random_variables.ipynb#sec-rv-exponential)),
+entre Poisson y Exponencial ([](random_variables.md#sec-rv-exponential)),
 $T \sim \text{Exp}(\lambda = 6)$. Pasamos 15 minutos a horas:
 $t = 0{,}25$.
 
@@ -250,7 +250,7 @@ mida **entre 165 y 180** cm?
 
 ### Planteo
 
-Estandarizamos con [](random_variables.ipynb#eq-zscore-rv):
+Estandarizamos con [](random_variables.md#eq-zscore-rv):
 
 $$
 Z = \frac{X - \mu}{\sigma},\qquad \mu = 170,\ \sigma = 8.
@@ -315,7 +315,7 @@ $x_{0{,}95}$ tal que el **95 %** de las personas mide menos que $x_{0{,}95}$.
 
 ### Planteo
 
-Por la definición de cuantil ([](random_variables.ipynb#eq-quantile)),
+Por la definición de cuantil ([](random_variables.md#eq-quantile)),
 buscamos $x$ tal que $F_X(x) = 0{,}95$. Equivalentemente, en la Normal
 estándar buscamos $z_{0{,}95}$ y desestandarizamos.
 
@@ -324,7 +324,7 @@ estándar buscamos $z_{0{,}95}$ y desestandarizamos.
 **Paso 1.** $z_{0{,}95} \approx 1{,}6449$ (tabla).
 
 **Paso 2.** Desestandarizamos invirtiendo
-[](random_variables.ipynb#eq-zscore-rv):
+[](random_variables.md#eq-zscore-rv):
 
 $$
 x_{0{,}95} = \mu + z_{0{,}95}\,\sigma = 170 + 1{,}6449 \cdot 8 \approx 183{,}2.
