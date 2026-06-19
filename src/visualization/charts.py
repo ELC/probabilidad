@@ -60,7 +60,7 @@ def _build_frequency_chart(
     frequency_table: DataFrame[FrequencyTable],
     title: str,
     theme: ChartTheme,
-) -> alt.Chart:
+) -> Any:
     base = alt.Chart(frequency_table)
     bars = base.mark_bar(opacity=theme.bar_opacity, color=theme.palette.primary).encode(
         x=alt.X("midpoint:Q", title="Marca de clase"),
