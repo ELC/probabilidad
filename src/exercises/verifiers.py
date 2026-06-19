@@ -70,6 +70,61 @@ def verify_interval_contains(input_data: IntervalContainsInput) -> VerificationR
     )
 
 
+class BooleanAnswerInput(BaseModel):
+    model_config = _ARBITRARY
+
+    student_answer: bool
+    expected_answer: bool
+
+
+def verify_boolean_answer(input_data: BooleanAnswerInput) -> VerificationResult:
+    if input_data.student_answer == input_data.expected_answer:
+        label = "Verdadero" if input_data.expected_answer else "Falso"
+        return VerificationResult(passed=True, message=f"OK — la afirmación es {label}")
+    expected_label = "Verdadero" if input_data.expected_answer else "Falso"
+    student_label = "Verdadero" if input_data.student_answer else "Falso"
+    return VerificationResult(
+        passed=False,
+        message=f"Respondiste {student_label}; la respuesta esperada es {expected_label}",
+    )
+
+
+class CategoricalChoiceInput(BaseModel):
+    model_config = _ARBITRARY
+
+    student_choice: str
+    expected_choice: str
+    allowed_choices: frozenset[str]
+
+
+def verify_categorical_choice(input_data: CategoricalChoiceInput) -> VerificationResult:
+    if input_data.expected_choice not in input_data.allowed_choices:
+        return VerificationResult(
+            passed=False,
+            message=(
+                f"Configuración inválida: la respuesta esperada '{input_data.expected_choice}' "
+                f"no está entre las opciones permitidas {sorted(input_data.allowed_choices)}"
+            ),
+        )
+    if input_data.student_choice not in input_data.allowed_choices:
+        return VerificationResult(
+            passed=False,
+            message=(
+                f"'{input_data.student_choice}' no es una opción válida; "
+                f"elegí entre {sorted(input_data.allowed_choices)}"
+            ),
+        )
+    if input_data.student_choice == input_data.expected_choice:
+        return VerificationResult(passed=True, message=f"OK — '{input_data.expected_choice}'")
+    return VerificationResult(
+        passed=False,
+        message=(
+            f"Elegiste '{input_data.student_choice}'; la respuesta esperada es "
+            f"'{input_data.expected_choice}'"
+        ),
+    )
+
+
 class DistributionMatchInput(BaseModel):
     model_config = _ARBITRARY
 

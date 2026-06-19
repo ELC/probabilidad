@@ -158,12 +158,11 @@ def _build_parameter_chart(
         .mark_rule(color=theme.palette.secondary, strokeWidth=2.0)
         .encode(x="value:Q")
     )
-    chart = alt.layer(bracket, bounds_marks, point).properties(
+    return alt.layer(bracket, bounds_marks, point).properties(
         title=f"Espacio de {parameter_label} · IC tras invertir el pivote",
         width=theme.width // 2,
         height=theme.height,
     )
-    return chart
 
 
 def build_pivot_inversion_explorer(input_data: PivotInversionExplorerInput) -> widgets.Widget:

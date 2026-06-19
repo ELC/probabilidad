@@ -24,10 +24,20 @@ project:
 
   toc:
     - file: chapters/descriptive_statistics.ipynb
+      children:
+        - file: chapters/descriptive_statistics_exercises.md
     - file: chapters/probability.ipynb
+      children:
+        - file: chapters/probability_exercises.md
     - file: chapters/random_variables.ipynb
+      children:
+        - file: chapters/random_variables_exercises.md
     - file: chapters/joint_and_sums.ipynb
+      children:
+        - file: chapters/joint_and_sums_exercises.md
     - file: chapters/inference.ipynb
+      children:
+        - file: chapters/inference_exercises.md
     - file: chapters/glossary.md
     - file: chapters/pedagogy.md
 

@@ -17,14 +17,16 @@ def _find_dropdown(container: widgets.Widget) -> widgets.Dropdown:
     for child in _walk_widgets(container):
         if isinstance(child, widgets.Dropdown):
             return child
-    raise AssertionError("Dropdown not found")
+    msg = "Dropdown not found"
+    raise AssertionError(msg)
 
 
 def _find_slider(container: widgets.Widget, description: str) -> widgets.Widget:
     for child in _walk_widgets(container):
         if isinstance(child, widgets.FloatSlider | widgets.IntSlider) and child.description == description:
             return child
-    raise AssertionError(f"Slider {description!r} not found")
+    msg = f"Slider {description!r} not found"
+    raise AssertionError(msg)
 
 
 def test_pivot_inversion_explorer_returns_vbox(fixed_settings: Settings) -> None:
