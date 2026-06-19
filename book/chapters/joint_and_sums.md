@@ -104,6 +104,28 @@ Antes de entrar al teorema central del límite, vale ordenar el mapa:
 
 **Antes de seguir.** Elegí una de las tres historias y anticipá qué debería pasar cuando pasamos de una observación aislada a muchas observaciones promediadas.
 
+(sec-sums-iid)=
+## Repetir bajo las mismas reglas
+
+Cuando repetimos una medición muchas veces, no alcanza con juntar números. El
+promedio de treinta respuestas sirve para aprender sobre una proporción solo si
+cada respuesta sigue una regla comparable y no arrastra mecánicamente a la
+siguiente.
+
+La abreviatura **i.i.d.** significa **independientes e idénticamente
+distribuidas**. Independientes: observar una respuesta no cambia la probabilidad
+de la siguiente. Idénticamente distribuidas: todas comparten la misma
+distribución, por ejemplo la misma Bernoulli con probabilidad $p$ de «sí».
+
+Pensá en dos encuestas. En la primera, cada persona responde en privado. En la
+segunda, las personas escuchan la respuesta anterior antes de contestar. Las dos
+pueden producir una columna de ceros y unos, pero solo la primera se parece al
+modelo i.i.d.; en la segunda hay contagio, presión o dependencia.
+
+Esta condición será el contrato de todo el capítulo. Sin ella, los gráficos
+pueden seguir describiendo lo observado, pero las promesas de estabilidad y
+aproximación Normal ya no tienen la misma fuerza.
+
 (sec-sums-lln)=
 ## La proporción observada se estabiliza
 
@@ -185,6 +207,10 @@ La flecha es el modo formal de decir lo que el abanico mostró: con
 muestras chicas la proporción puede estar lejos del valor verdadero,
 con muestras grandes la chance de seguir lejos cae a cero.
 
+La notación $\xrightarrow{P}$ se lee **converge en probabilidad**. No promete
+que cada trayectoria se mueva de forma ordenada, sino que la probabilidad de
+quedar lejos de $\mu$ se vuelve cada vez más chica.
+
 > **Contrato del modelo.** La LLN describe promedios de muchas observaciones
 > comparables, independientes y con esperanza bien definida. Te permite confiar
 > en la estabilidad de un promedio grande, no prometer que una muestra chica va a
@@ -239,6 +265,12 @@ galton_chart = (
 apply_theme(galton_chart, settings)
 ```
 
+El puente abstracto está escondido en el tablero. Cada choque suma un paso:
+derecha puede codificarse como $1$ e izquierda como $0$. La casilla final queda
+determinada por cuántas veces la bolita fue a la derecha, es decir por una suma
+de Bernoullis con $p=0{,}5$. Por eso el histograma se parece a una Binomial
+centrada; y por eso, con muchas filas, empieza a verse como una campana.
+
 (sec-sums-clt)=
 ## El TCL formal
 
@@ -266,6 +298,33 @@ Conviene retener una sutileza: [](#eq-clt) **no** dice que las $X_i$
 tiendan a una Normal. Dice que su **media estandarizada** lo hace —
 exactamente lo que acabamos de ver con bolitas que individualmente no
 tienen nada de normal.
+
+La flecha $\xrightarrow{d}$ se lee **converge en distribución**. A diferencia
+de la LLN, no dice que el promedio se pegue a un número fijo; dice que, después
+de centrar y escalar, la **forma** de su distribución se acerca a una Normal.
+LLN responde «¿se estabiliza el promedio?». TCL responde «¿qué forma tienen
+sus errores cuando todavía fluctúa?».
+
+(sec-sums-standard-error)=
+## El error estándar del promedio
+
+La escala $\sigma/\sqrt{n}$ en [](#eq-clt) merece nombre propio: es el
+**error estándar** del promedio. Mide cuánto fluctúa $\bar X_n$ de muestra a
+muestra, no cuánto fluctúa una observación individual.
+
+Si cada espera individual tiene desvío $\sigma$, el promedio de $n$ esperas
+tiene varianza
+
+$$ \mathrm{Var}(\bar X_n) = \frac{\sigma^2}{n} $$ (eq-mean-variance)
+
+y por lo tanto desvío estándar
+
+$$ SE(\bar X_n) = \frac{\sigma}{\sqrt{n}} $$ (eq-standard-error)
+
+La raíz cuadrada importa: duplicar el tamaño de muestra no parte el error a la
+mitad. Para reducir el error estándar a la mitad, hace falta multiplicar $n$ por
+cuatro. Esa regla convierte el TCL en una decisión de costo: más datos compran
+precisión, pero con rendimientos decrecientes.
 
 > **Contrato del modelo.** El TCL es una aproximación para promedios o sumas de
 > muchas observaciones i.i.d. con varianza finita. Funciona mejor con muestras
@@ -349,6 +408,47 @@ factory_tail_probability = tail_probability_of_continuous(factory_tail_input)
 factory_tail_probability
 ```
 
+Hay un ajuste fino que conviene conocer aunque no siempre lo usemos en cuentas
+introductorias. La Binomial vive en barras enteras y la Normal en una curva
+continua. Para aproximar $P(Y \le 45)$, la frontera natural no es 45 exacto sino
+45,5: así la curva cubre toda la barra de 45. Ese desplazamiento de medio punto
+se llama **corrección por continuidad**.
+
+$$ P(Y \le 45) \approx P(N \le 45{,}5) $$ (eq-continuity-correction)
+
+Cuando $n$ es grande suele cambiar poco el resultado; cuando las barras son
+anchas o estamos cerca de una cola, puede evitar una aproximación demasiado
+tosca.
+
+(sec-sums-independent-sums)=
+## Sumar variables independientes
+
+Hasta ahora miramos promedios, pero muchos problemas operativos suman piezas
+distintas. El peso total de una caja puede ser el peso del envase más el peso
+del contenido; el tiempo total de atención puede ser admisión más consulta más
+cobro. Si las partes son independientes, las esperanzas se suman y las
+varianzas también:
+
+$$ E[X+Y] = E[X] + E[Y] $$ (eq-sum-expectation)
+
+$$ \mathrm{Var}(X+Y) = \mathrm{Var}(X) + \mathrm{Var}(Y) $$ (eq-sum-variance)
+
+La independencia importa en la segunda fórmula. Si dos tiempos se mueven juntos
+por congestión, la variabilidad total no se obtiene sumando varianzas sin más.
+
+Para Normales independientes hay una ventaja extra: la suma vuelve a ser
+Normal. Si
+
+$$ X \sim \mathcal{N}(\mu_X,\sigma_X^2), \qquad Y \sim \mathcal{N}(\mu_Y,\sigma_Y^2) $$
+
+e $X$ e $Y$ son independientes, entonces
+
+$$ X+Y \sim \mathcal{N}(\mu_X+\mu_Y,\ \sigma_X^2+\sigma_Y^2) $$ (eq-normal-sum)
+
+Esta regla es el mismo reflejo del capítulo: cuando sumamos componentes
+independientes, el centro total se suma y la incertidumbre se acumula en
+varianzas, no en desvíos estándar.
+
 ## Ejercicio 1 — Desvío del promedio
 
 Si $X_i \sim \mathcal{N}(50, 100)$ (es decir $\sigma = 10$) y tomamos
@@ -381,8 +481,10 @@ verify_numeric_answer(verify_input)
 
 ## Ejercicio 2 — Aproximar Binomial con Normal
 
-$Y \sim \text{Bin}(100, 0{,}4)$. Aproximá $P(Y \le 45)$ aplicando [](#eq-clt-bin)
-(sin corrección por continuidad para simplificar).
+$Y \sim \text{Bin}(100, 0{,}4)$. Aproximá $P(Y \le 45)$ aplicando [](#eq-clt-bin).
+Para comparar con la celda de verificación usamos la versión simple, sin
+corrección por continuidad; después podés repetir mentalmente qué cambiaría si
+usaras 45,5 como corte.
 
 **Predicción.** Antes de calcular, ubicá 45 respecto de la media $np$. ¿Está
 por debajo, cerca o por encima? Eso debería decirte si la probabilidad buscada

@@ -89,6 +89,25 @@ set_result = evaluate_set_operations(set_input)
 set_result
 ```
 
+El conjunto de todos los resultados posibles se llama **espacio muestral** y
+lo escribimos $\Omega$. En el dado, $\Omega = \{1,2,3,4,5,6\}$. Un **evento**
+es cualquier subconjunto de ese espacio: $A$ y $B$ son eventos porque agrupan
+resultados que nos importan.
+
+Como el dado es equilibrado, todos los resultados pesan lo mismo. Entonces la
+probabilidad clásica de un evento se calcula contando:
+
+$$ P(A) = \frac{|A|}{|\Omega|} $$ (eq-classical-prob)
+
+Para $A=$ «sale par», $|A|=3$ y $|\Omega|=6$, así que $P(A)=3/6=1/2$.
+El **complemento** de $A$, escrito $\bar A$, contiene todo lo que no está en
+$A$: salir impar. Como $A$ y $\bar A$ cubren todo sin solaparse,
+
+$$ P(\bar A) = 1 - P(A) $$ (eq-complement-prob)
+
+Antes de combinar eventos, conviene hacer esta lectura simple: ¿qué cuenta el
+evento, qué queda afuera y cuál es el universo de referencia?
+
 (sec-prob-additive)=
 ## La regla aditiva
 
@@ -234,6 +253,49 @@ waits_venn = VennTwoSetsInput(
 chart_venn_two_sets(waits_venn);
 ```
 
+(sec-prob-independence)=
+## Cuando saber una cosa no cambia la otra
+
+La probabilidad condicional sube de $1/2$ a $2/3$ en el dado porque saber que
+el resultado fue al menos 4 cambia el universo. Pero no toda información nueva
+cambia una chance. Si tiramos dos dados, saber que el primero salió par no
+debería modificar la probabilidad de que el segundo sea 6.
+
+Dos eventos son **independientes** cuando condicionar por uno deja igual la
+probabilidad del otro:
+
+$$ P(A \mid B) = P(A) $$
+
+Usando [](#eq-cond-prob), esa misma idea se escribe como una regla de producto:
+
+$$ P(A \cap B) = P(A)\,P(B) $$ (eq-independence)
+
+La palabra clave es «no informa». Independencia no significa que los eventos no
+puedan ocurrir juntos; significa que observar uno no cambia la chance del otro.
+En datos operativos esta condición es frágil: dos demoras consecutivas en la
+misma guardia pueden estar encadenadas, aunque dos tiradas de dados no lo estén.
+
+(sec-prob-contingency)=
+## Tablas de contingencia: contar antes de dividir
+
+Cuando los eventos salen de datos observados, una tabla $2\times2$ suele ser más
+clara que una fórmula suelta. Supongamos una inspección de 1.000 piezas:
+
+| | Alarma | Sin alarma | Total |
+| --- | ---: | ---: | ---: |
+| Defectuosa | 27 | 3 | 30 |
+| Sana | 49 | 921 | 970 |
+| Total | 76 | 924 | 1.000 |
+
+La tabla permite leer probabilidades conjuntas, marginales y condicionales sin
+mezclarlas. Por ejemplo, $27/1000$ es la probabilidad conjunta de «defectuosa y
+alarma»; $76/1000$ es la probabilidad marginal de alarma; y $27/76$ es la
+probabilidad de defecto **dentro** de las alarmas.
+
+Esa última fracción ya tiene forma bayesiana: invierte la pregunta del test.
+No pregunta «si está defectuosa, ¿da alarma?», sino «si dio alarma, ¿qué tan
+creíble es que esté defectuosa?».
+
 (sec-prob-bayes-symbolic)=
 ## Teorema de Bayes (forma simbólica)
 
@@ -253,25 +315,63 @@ inequívoca:
 bayes_theorem().formula
 ```
 
+(sec-prob-total)=
+## Probabilidad total — armar el denominador
+
+Bayes necesita el denominador $P(B)$: la probabilidad de observar la evidencia
+sin importar de qué causa vino. Si $\{A_1, \dots, A_k\}$ es una **partición**
+del universo —eventos incompatibles que cubren todo—, sumamos la contribución
+de cada parte:
+
+$$ P(B) = \sum_{i=1}^{k} P(B \mid A_i)\,P(A_i) $$ (eq-total-prob)
+
+```{code-cell} python
+total_probability_theorem(partition_size=3).formula
+```
+
+Una **partición** se ve como una franja $\Omega$ cortada en pedazos disjuntos
+$A_1, \dots, A_k$. La barra inferior anaranjada muestra cómo el evento $B$ se
+reparte dentro de cada pedazo: la suma de esos cachitos, ponderada por
+$P(A_i)$, es exactamente la fórmula [](#eq-total-prob).
+
+```{code-cell} python
+partition_input = PartitionDiagramInput(
+    partition_labels=("A_1", "A_2", "A_3"),
+    partition_weights=(0.45, 0.35, 0.20),
+    overlay_label="B se reparte sobre la partición",
+    overlay_fractions=(0.30, 0.55, 0.10),
+    title="Partición de Ω y evento B",
+    settings=settings,
+)
+chart_partition_diagram(partition_input)
+```
+
 (sec-prob-bayes-data)=
 ## Bayes con datos: prueba diagnóstica
 
-**Concreto.** En una población, $P(D) = 0{,}01$ es la prevalencia. El test
-tiene sensibilidad $P(+ \mid D) = 0{,}99$ y especificidad
-$P(- \mid \bar{D}) = 0{,}95$ (ergo $P(+ \mid \bar{D}) = 0{,}05$). Buscamos
-$P(D \mid +)$.
+En una población, $P(D) = 0{,}01$ es la **prevalencia**: la tasa base de la
+enfermedad antes de mirar el test. La **sensibilidad** es
+$P(+ \mid D)=0{,}99$: si una persona está enferma, el test casi siempre da
+positivo. La **especificidad** es $P(- \mid \bar D)=0{,}95$: si una persona no
+está enferma, el test casi siempre da negativo. El complemento de la
+especificidad, $P(+ \mid \bar D)=0{,}05$, es la tasa de falsos positivos.
+
+En vocabulario bayesiano, la prevalencia es el **prior** o creencia previa; la
+sensibilidad y la tasa de falsos positivos son **likelihoods**, probabilidades
+de observar el resultado bajo cada estado posible; y $P(D \mid +)$ es el
+**posterior**, la creencia actualizada después de ver un positivo.
 
 **Antes de calcular.** Anotá una estimación intuitiva: si el test parece tan
 bueno, ¿el positivo te deja cerca de 99%, cerca de 50% o bastante más abajo?
 No importa acertar; importa notar cuánto pesa la tasa base.
 
-**Pictórico.** Pensá en 10.000 personas. 100 enfermos: 99 dan positivo.
+Pensá en 10.000 personas. 100 enfermos: 99 dan positivo.
 9.900 sanos: 495 dan positivo. Total de positivos: $99 + 495 = 594$. La
 fracción de verdaderos enfermos dentro de los positivos es
 $99 / 594 \approx 0{,}167$.
 
-**Abstracto.** Aplicamos [](#eq-bayes) con la **probabilidad total** en el
-denominador. Para que la cuenta sea legible, la expresamos en varias líneas:
+Aplicamos [](#eq-bayes) con la **probabilidad total** en el denominador. Para
+que la cuenta sea legible, la expresamos en varias líneas:
 
 > **Contrato del modelo.** Bayes sirve cuando querés invertir una probabilidad
 > condicional: de “qué tan probable es el resultado si la causa es cierta” a
@@ -380,36 +480,6 @@ poll_response_venn = VennTwoSetsInput(
     settings=settings,
 )
 chart_venn_two_sets(poll_response_venn);
-```
-
-(sec-prob-total)=
-## Probabilidad total — la versión general
-
-Si $\{A_1, \dots, A_k\}$ es una **partición** del universo (eventos
-incompatibles que cubren todo), la probabilidad total da el denominador
-limpio que usamos en el ejemplo anterior:
-
-$$ P(B) = \sum_{i=1}^{k} P(B \mid A_i)\,P(A_i) $$ (eq-total-prob)
-
-```{code-cell} python
-total_probability_theorem(partition_size=3).formula
-```
-
-Una **partición** se ve como una franja $\Omega$ cortada en pedazos disjuntos
-$A_1, \dots, A_k$. La barra inferior anaranjada muestra cómo el evento $B$ se
-reparte dentro de cada pedazo: la suma de esos cachitos, ponderada por
-$P(A_i)$, es exactamente la fórmula [](#eq-total-prob).
-
-```{code-cell} python
-partition_input = PartitionDiagramInput(
-    partition_labels=("A_1", "A_2", "A_3"),
-    partition_weights=(0.45, 0.35, 0.20),
-    overlay_label="B se reparte sobre la partición",
-    overlay_fractions=(0.30, 0.55, 0.10),
-    title="Partición de Ω y evento B",
-    settings=settings,
-)
-chart_partition_diagram(partition_input)
 ```
 
 ## Chequeo guiado — Encuesta, probabilidad total y Bayes

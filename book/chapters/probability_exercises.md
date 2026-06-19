@@ -61,7 +61,8 @@ $$
 P(A \cup B) = P(A) + P(B) - P(A \cap B).
 $$
 
-El complemento $\overline{A \cup B}$ se calcula como $1 - P(A \cup B)$.
+El complemento $\overline{A \cup B}$ se calcula como $1 - P(A \cup B)$
+por la regla de [](probability.md#eq-complement-prob).
 
 ### Derivación
 
@@ -315,7 +316,8 @@ Calculá $P(S)$ marginal y compará con $P(S \mid J)$.
 ### Planteo
 
 $S$ y $J$ son independientes si $P(S \mid J) = P(S)$ (o
-equivalentemente $P(S \cap J) = P(S)\,P(J)$, ver glosario).
+equivalentemente $P(S \cap J) = P(S)\,P(J)$, ver
+[](probability.md#sec-prob-independence)).
 
 ### Derivación
 

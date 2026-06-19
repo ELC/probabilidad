@@ -11,7 +11,7 @@ kernelspec:
 Esta sección reúne ejercicios para fijar los conceptos del capítulo de
 [Inferencia](inference.md): intervalos de confianza para la media
 (σ conocido y desconocido), para una proporción y para la varianza;
-tests de hipótesis; y cálculo de tamaño muestral. Cada enunciado
+tests de hipótesis, conexión IC-test y cálculo de tamaño muestral. Cada enunciado
 incluye una **solución** plegada con el paso a paso, una visualización
 y la verificación correspondiente.
 
@@ -349,7 +349,8 @@ con nivel de significancia $\alpha = 0{,}05$. ¿**Se rechaza $H_0$**?
 ### Planteo
 
 Por el pivote $T = (\bar{X} - \mu_0)/(s/\sqrt{n}) \sim t_{n - 1}$
-bajo $H_0$, calculamos el $p$-valor a dos colas y comparamos con
+bajo $H_0$, calculamos el $p$-valor a dos colas
+([](inference.md#sec-inf-test)) y comparamos con
 $\alpha$.
 
 ### Derivación
@@ -360,7 +361,8 @@ $p$-valor a dos colas es $\approx 2 \cdot 0{,}1034 = 0{,}207$, muy por
 encima de $0{,}05$.
 
 **Conclusión:** $p \gg \alpha$ → **no rechazamos $H_0$**. Coincide
-con el resultado del IC del Ejercicio 2: el valor $12$ caía adentro.
+con la conexión IC-test de [](inference.md#sec-inf-test): el valor $12$
+caía adentro del intervalo del Ejercicio 2.
 
 ### Verificación
 

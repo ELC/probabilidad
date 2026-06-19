@@ -335,7 +335,7 @@ $$
 \text{CV} = \frac{s}{\bar{x}}
 $$
 
-(ver [glosario](glossary.md)) es adimensional, así que sirve para
+(ver [](descriptive_statistics.md#sec-descriptive-cv)) es adimensional, así que sirve para
 comparar dispersión entre muestras con medias muy distintas. Cuanto
 mayor el CV, mayor la variabilidad relativa.
 
@@ -380,7 +380,8 @@ Indicá si la siguiente afirmación es **Verdadera o Falsa**:
 
 ### Planteo
 
-En una distribución asimétrica a la derecha la cola larga del lado alto
+En una distribución asimétrica a la derecha (ver
+[](descriptive_statistics.md#sec-descriptive-shape)) la cola larga del lado alto
 arrastra la media hacia valores grandes, pero **no** mueve a la mediana
 con la misma intensidad — la mediana solo necesita el orden de los datos,
 no su magnitud (ver [](descriptive_statistics.md#sec-descriptive-median)).

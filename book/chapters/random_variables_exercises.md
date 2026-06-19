@@ -9,8 +9,8 @@ kernelspec:
 # Práctica — Variables aleatorias
 
 Esta sección reúne ejercicios para fijar los modelos del capítulo de
-[Variables aleatorias](random_variables.md): Binomial, Poisson,
-Geométrica, Normal y Exponencial. Cada enunciado lleva debajo una
+[Variables aleatorias](random_variables.md): Bernoulli, Binomial, Geométrica,
+Normal, Exponencial y Poisson. Cada enunciado lleva debajo una
 **solución** plegada con el paso a paso, una visualización y la
 verificación. Antes de abrirla, intentá el cálculo a mano.
 
@@ -362,7 +362,7 @@ probabilidad $p = 0{,}30$ de obtener respuesta. ¿Cuál es la
 Sea $G$ = número del intento en el que se obtiene la primera respuesta.
 Entonces $G \sim \text{Geom}(p = 0{,}30)$, en la convención «número de
 intentos hasta el primer éxito» (soporte $\{1, 2, 3, \dots\}$). Su PMF
-es
+es la de [](random_variables.md#eq-geometric-pmf):
 
 $$
 P(G = k) = (1 - p)^{k - 1}\,p,\qquad k = 1, 2, \dots

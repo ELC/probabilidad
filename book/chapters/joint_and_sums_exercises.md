@@ -68,8 +68,8 @@ independientes, ¿cuál es el **desvío estándar del promedio** $\bar{X}_n$?
 
 ### Planteo
 
-Por la varianza del promedio bajo el TCL
-([](joint_and_sums.md#eq-clt)),
+Por la varianza del promedio y el error estándar
+([](joint_and_sums.md#eq-mean-variance), [](joint_and_sums.md#eq-standard-error)),
 
 $$
 \mathrm{Var}(\bar{X}_n) = \frac{\sigma^{2}}{n},\qquad
@@ -291,7 +291,8 @@ probabilidad de que el **peso total** $W = X + Y$ supere los $10{,}5$ kg?
 
 ### Planteo
 
-La suma de Normales independientes es Normal con
+La suma de Normales independientes es Normal (ver
+[](joint_and_sums.md#sec-sums-independent-sums)) con
 
 $$
 E[W] = E[X] + E[Y],\qquad \mathrm{Var}(W) = \mathrm{Var}(X) + \mathrm{Var}(Y).

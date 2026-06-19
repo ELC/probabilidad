@@ -42,6 +42,14 @@ import pandas as pd
 from pandera.typing import DataFrame
 
 from core import Observations, Settings
+from core import ChiSquareParams, NormalParams, StudentTParams
+from distributions import (
+    DensityGridInput,
+    evaluate_density_grid,
+    make_chi_square,
+    make_normal,
+    make_student_t,
+)
 from exercises import (
     IntervalContainsInput,
     NumericAnswerInput,
@@ -68,7 +76,9 @@ from inference.hypothesis_tests import Alternative
 from sampling import BootstrapInput, bootstrap_mean
 from visualization import (
     BootstrapDistributionChartInput,
+    DensityChartInput,
     chart_bootstrap_distribution,
+    chart_density,
 )
 from widgets import (
     MeanCIExplorerInput,
@@ -159,12 +169,43 @@ En la práctica casi nunca conocemos $\sigma$. Lo estimamos con el desvío
 estándar muestral $s$ definido en [](#eq-std), y el pivote cambia: deja
 de ser Normal.
 
+La incertidumbre extra se ve mejor con una muestra chica. Si medimos pocas
+esperas, $s$ también fluctúa de muestra a muestra; por eso la referencia debe
+tener colas más pesadas que la Normal. La distribución $t$ de Student cumple ese
+papel: se parece a una campana centrada en cero, pero deja más probabilidad en
+valores extremos.
+
+```{code-cell} python
+standard_normal = make_normal(NormalParams())
+student_reference = make_student_t(StudentTParams(degrees_of_freedom=11))
+
+normal_density = evaluate_density_grid(DensityGridInput(distribution=standard_normal, settings=settings))
+student_density = evaluate_density_grid(DensityGridInput(distribution=student_reference, settings=settings))
+
+normal_chart_input = DensityChartInput(
+    density_grid=normal_density,
+    title="Normal estándar",
+    settings=settings,
+)
+student_chart_input = DensityChartInput(
+    density_grid=student_density,
+    title="t de Student (11 g.l.)",
+    settings=settings,
+)
+chart_density(normal_chart_input) | chart_density(student_chart_input)
+```
+
 **Paso 1.** Si las observaciones son Normales, vale:
 
 $$ T = \frac{\bar{X} - \mu}{s/\sqrt{n}} \sim t_{n-1} $$ (eq-t-pivot)
 
 **Paso 2.** Reemplazamos $z_{1 - \alpha/2}$ por $t_{n-1,\,1 - \alpha/2}$ en
 [](#eq-ci-mean-known). Para $n$ grande la $t$ converge a la Normal y los dos IC coinciden.
+
+El subíndice $n-1$ son los **grados de libertad**. La muestra tiene $n$
+desvíos respecto de $\bar{x}$, pero esos desvíos deben sumar cero: una vez
+conocidos $n-1$, el último queda forzado. Esa libertad perdida es el precio de
+estimar $\sigma$ con $s$.
 
 ```{code-cell} python
 clinic_unknown_input = MeanUnknownVarianceInput(
@@ -197,6 +238,13 @@ $np(1-p)$.
 
 $$ \hat{p} \;\pm\; z_{1 - \alpha/2}\,\sqrt{\frac{\hat{p}(1 - \hat{p})}{n}} $$ (eq-ci-prop)
 
+Este intervalo se llama **Wald**. Es rápido y funciona razonablemente cuando
+$n$ es grande y $\hat p$ no queda demasiado cerca de 0 o 1. Si una encuesta
+observa 3 éxitos en 100 casos, la aproximación Normal alrededor de $\hat p$ se
+vuelve torpe: puede producir límites imposibles o demasiado optimistas. En esos
+bordes conviene usar alternativas como Wilson; acá conservamos Wald porque
+alcanza para mostrar el puente entre Binomial, TCL e intervalos.
+
 ```{code-cell} python
 poll_input = ProportionInput(
     successes=200,
@@ -223,6 +271,23 @@ con demoras largas. Para Lucía, el segundo es más difícil de planificar.
 Antes de escribir la fórmula, anticipá algo: ¿esperás un intervalo
 simétrico alrededor de $s^2$ o uno deformado por la posibilidad de colas
 largas?
+
+La referencia que reemplaza a la Normal es la $\chi^2$. A diferencia de la $t$,
+no está centrada en cero ni es simétrica: vive en valores positivos y se estira
+hacia la derecha, justo lo que esperamos de una cantidad basada en cuadrados.
+
+```{code-cell} python
+chi_square_reference = make_chi_square(ChiSquareParams(degrees_of_freedom=35))
+chi_square_density = evaluate_density_grid(
+    DensityGridInput(distribution=chi_square_reference, settings=settings)
+)
+chi_square_chart_input = DensityChartInput(
+    density_grid=chi_square_density,
+    title="Referencia chi-cuadrado (35 g.l.)",
+    settings=settings,
+)
+chart_density(chi_square_chart_input)
+```
 
 El resultado clave es que, para $X_i$ Normales con varianza
 $\sigma^2$, la cantidad escalada
@@ -383,6 +448,12 @@ estadística contra el valor de control? y ¿la diferencia importa en la prácti
 
 $$ H_0: \mu = 11 \qquad H_1: \mu \neq 11 \qquad \alpha = 0{,}05 $$
 
+Antes de calcular, fijamos la dirección de la alternativa. Si cualquier cambio
+respecto de 11 minutos importa, usamos un test **bilateral**: reparte la región
+rara entre las dos colas. Si solo preocupa que la espera aumente, usamos un test
+**unilateral**: concentra la región rara en la cola derecha. Elegir la dirección
+después de mirar los datos rompe el acuerdo del test.
+
 **Paso 1.** Estadístico de prueba (mismo pivote [](#eq-t-pivot)):
 
 $$ T = \frac{\bar{X} - \mu_0}{s/\sqrt{n}} $$ (eq-t-test)
@@ -392,23 +463,25 @@ referencia es la distribución $t$. El nombre **$z$-statistic** se reserva
 para contrastes cuyo estadístico sigue la Normal estándar bajo $H_0$.
 
 **Paso 2.** Calculamos el $p$-valor en la $t_{n-1}$ y rechazamos si es
-menor a $\alpha$.
+menor a $\alpha$. El $p$-valor es un área de cola: mide qué tan raro sería ver
+un estadístico tan extremo como el observado, o más, si $H_0$ fuera correcto.
+En un test bilateral el área aparece en las dos colas; en uno unilateral aparece
+solo en la dirección definida por $H_1$.
 
 **En una frase.** Un test pregunta si los datos serían raros si el valor de
 control fuera cierto; no mide por sí solo cuánto cuesta el desvío ni qué acción
 conviene tomar.
 
-La alternativa también debe seguir la pregunta de ingeniería. Si cualquier
-cambio respecto de 11 minutos importa, usamos un test bilateral. Si el riesgo
-operativo solo aparece cuando el tiempo medio **aumenta**, la alternativa
-natural es unilateral: $H_1: \mu > 11$. Cambiar la dirección después de mirar
-los datos rompe el acuerdo del test.
+Dos errores acompañan siempre esta decisión:
 
-Dos errores acompañan siempre esta decisión. Un **error tipo I** es actuar como
-si el proceso se hubiera salido de control cuando en realidad el valor de
-control seguía vigente. Un **error tipo II** es no actuar cuando el proceso sí
-cambió. En ingeniería, elegir $\alpha$ es elegir qué error pesa más en la
-situación concreta.
+| Realidad del proceso | Decisión del test | Nombre del error |
+| --- | --- | --- |
+| $H_0$ era cierta | Rechazamos $H_0$ | Tipo I: falsa alarma |
+| $H_0$ era falsa | No rechazamos $H_0$ | Tipo II: no detectar el cambio |
+
+En ingeniería, elegir $\alpha$ es elegir cuánto peso le damos al error tipo I.
+Un $\alpha$ más chico exige evidencia más extrema para actuar, pero puede hacer
+más fácil pasar por alto cambios reales.
 
 > **Contrato del modelo.** Un test de hipótesis sirve para medir si los datos
 > serían raros bajo un valor de control. Necesita que el estadístico de prueba
@@ -435,6 +508,12 @@ sí** $\mu_0$ no cae dentro del IC al nivel $1 - \alpha$ construido sobre la
 misma muestra (ecuaciones [](#eq-ci-mean-known) y [](#eq-t-pivot)). Es el
 mismo objeto visto desde dos ángulos.
 
+Visualmente, imaginá el IC como una regla apoyada sobre la recta de valores
+posibles para $\mu$. Si el valor de control cae dentro de la regla, los datos
+son compatibles con ese valor al nivel elegido. Si queda afuera, el mismo
+desplazamiento que lo excluye del intervalo empuja el estadístico hacia la cola
+de rechazo.
+
 **Trampa común.** Un $p$-valor chico no mide el tamaño del problema ni la
 probabilidad de que $H_0$ sea cierta. Mide cuán raro sería ver un resultado tan
 extremo, o más, si el valor de control fuera correcto.
@@ -450,6 +529,13 @@ aparecen al recombinar esos datos muchas veces. El IC sale de los percentiles.
 
 **Antes de mirar.** Si la muestra original tiene mucha dispersión, ¿esperás que
 la distribución bootstrap de la media sea angosta o ancha?
+
+El procedimiento es mecánico:
+
+1. Tomar una muestra bootstrap del mismo tamaño que la original, con reemplazo.
+2. Calcular su media.
+3. Repetir miles de veces.
+4. Usar los percentiles 2,5 y 97,5 de esas medias como intervalo al 95%.
 
 > **Contrato del modelo.** El bootstrap usa la muestra observada como sustituto
 > de la población. Es útil cuando no querés imponer una forma paramétrica, pero
@@ -509,6 +595,11 @@ clinic_sample_size
 
 **Para una proporción.** Despejando $n$ de [](#eq-ci-prop) con $\hat{p} = 0{,}5$
 (peor caso, varianza máxima):
+
+El peor caso no es una superstición: la varianza de una Bernoulli es
+$p(1-p)$, y esa parábola alcanza su máximo en $p=0{,}5$. Si no sabemos de
+antemano dónde estará la proporción, diseñar con 0,5 produce el tamaño muestral
+más conservador.
 
 $$ n \ge \left(\frac{z_{1 - \alpha/2}}{E}\right)^2 \hat{p}(1 - \hat{p}) $$ (eq-n-prop)
 

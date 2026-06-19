@@ -38,6 +38,7 @@ enteros.
 from core import (
     BinomialParams,
     ExponentialParams,
+    GeometricParams,
     NormalParams,
     PoissonParams,
     Settings,
@@ -53,6 +54,7 @@ from distributions import (
     evaluate_probability_mass,
     make_binomial,
     make_exponential,
+    make_geometric,
     make_normal,
     make_poisson,
     quantile_of_continuous,
@@ -82,6 +84,62 @@ from widgets import (
 :tags: [remove-cell]
 settings = Settings()
 ```
+
+(sec-rv-distribution)=
+## De eventos sueltos a distribuciones
+
+Una **variable aleatoria** traduce resultados posibles a números. La respuesta
+de una persona puede codificarse como $1$ si dice «sí» y $0$ si dice «no»; el
+conteo de defectos de un turno puede ser $0,1,2,\dots$; una espera puede tomar
+cualquier valor real no negativo.
+
+La **distribución** de esa variable dice cómo se reparte la probabilidad sobre
+esos números. Si la variable es discreta, usamos una PMF (*probability mass
+function*): cada barra tiene una probabilidad concreta, como $P(X=k)$. Si la
+variable es continua, usamos una PDF o densidad: la curva no da probabilidades
+puntuales, sino áreas sobre intervalos.
+
+Hay una tercera mirada que aparece todo el tiempo: la CDF o función de
+distribución acumulada,
+
+$$ F_X(x) = P(X \le x) $$ (eq-cdf)
+
+La CDF responde «¿qué proporción queda hasta acá?», igual que una ojiva pero en
+lenguaje probabilístico. Su complemento,
+
+$$ S_X(x) = P(X > x) = 1 - F_X(x) $$ (eq-survival)
+
+se llama **función de supervivencia** o cola derecha. En esperas, $S_X(5)$
+pregunta qué chance queda de superar cinco minutos.
+
+(sec-rv-bernoulli)=
+## Una respuesta sí/no: Bernoulli
+
+Antes de contar muchos defectos o muchas respuestas afirmativas, miremos una
+sola observación. Una persona de la encuesta dice «sí» con probabilidad $p$ y
+«no» con probabilidad $1-p$. Si codificamos «sí» como $1$ y «no» como $0$, la
+variable $X$ sigue una **Bernoulli**:
+
+$$ P(X=1)=p,\qquad P(X=0)=1-p $$ (eq-bernoulli-pmf)
+
+```{code-cell} python
+single_response = make_binomial(BinomialParams(trials=1, success_probability=0.55))
+single_response_mass = evaluate_probability_mass(
+    ProbabilityMassInput(distribution=single_response, lower_outcome=0, upper_outcome=1)
+)
+
+single_response_chart_input = ProbabilityMassChartInput(
+    probability_mass=single_response_mass,
+    title="Una respuesta de encuesta — Bernoulli(0.55)",
+    settings=settings,
+)
+chart_probability_mass(single_response_chart_input)
+```
+
+La Bernoulli es el ladrillo básico: suma muchas Bernoullis independientes con
+la misma probabilidad $p$ y aparece una Binomial. Esa frase será importante más
+adelante, cuando el teorema central del límite explique por qué muchos ladrillos
+pequeños terminan pareciendo una campana.
 
 (sec-rv-binomial)=
 ## Contar defectos con una Binomial
@@ -184,6 +242,44 @@ factory_moments_numeric = compute_numeric_moments(factory_moments_input)
 factory_moments_numeric
 ```
 
+La barra más alta de una PMF se llama **moda**: es el valor individual más
+probable. La esperanza, en cambio, es un promedio de largo plazo. En una
+distribución simétrica pueden estar cerca; en distribuciones asimétricas o
+discretas no tienen por qué coincidir. En la fábrica esperamos $2{,}5$
+defectos, aunque ningún turno pueda tener medio defecto.
+
+(sec-rv-geometric)=
+## Esperar hasta el primer éxito: Geométrica
+
+La Binomial fija de antemano la cantidad de intentos y pregunta cuántos éxitos
+aparecen. Otra pregunta común invierte el reloj: si cada llamada tiene
+probabilidad $p$ de lograr una respuesta válida, ¿cuántas llamadas hacen falta
+hasta conseguir la primera?
+
+Esa variable sigue una **Geométrica**. Si $G$ cuenta el número de intento en el
+que aparece el primer éxito,
+
+$$ P(G=k) = (1-p)^{k-1}p,\quad k=1,2,\dots $$ (eq-geometric-pmf)
+
+```{code-cell} python
+call_distribution = make_geometric(GeometricParams(success_probability=0.20))
+call_mass = evaluate_probability_mass(
+    ProbabilityMassInput(distribution=call_distribution, lower_outcome=1, upper_outcome=15)
+)
+
+call_chart_input = ProbabilityMassChartInput(
+    probability_mass=call_mass,
+    title="Llamadas hasta la primera respuesta — Geométrica(0.20)",
+    settings=settings,
+)
+chart_probability_mass(call_chart_input)
+```
+
+Antes de mirar la fórmula, la forma ya dice bastante: el primer intento es el
+más probable, pero la cola derecha recuerda que a veces se encadenan varios
+fracasos. La Geométrica es a intentos discretos lo que la Exponencial será a
+tiempos continuos de espera.
+
 (sec-rv-normal)=
 ## Alturas con la Normal
 
@@ -273,6 +369,15 @@ $\sigma = 8$.
 > es aproximadamente simétrica alrededor de un centro y los extremos se vuelven
 > raros de forma gradual. No la uses por costumbre: colas muy pesadas, límites
 > naturales duros o asimetrías fuertes piden revisar el modelo antes de calcular.
+
+Los dos parámetros de la Normal se leen directamente como momentos:
+$E[X]=\mu$ y $\mathrm{Var}(X)=\sigma^2$. Para las alturas del ejemplo, el centro
+teórico es 170 cm y la varianza es $8^2=64$.
+
+```{code-cell} python
+heights_moments = compute_numeric_moments(MomentsInput(distribution=heights_distribution))
+heights_moments
+```
 
 (sec-rv-standardize)=
 ## Estandarización: borrar la escala
@@ -401,7 +506,7 @@ constante adelante hace que el área total dé uno, y el factor
 $e^{-\lambda t}$ explica la cola exponencial.
 
 La integral de [](#eq-exp-pdf) tiene forma cerrada y da la regla
-compacta $P(T > t) = e^{-\lambda t}$. Para $t = 5$:
+compacta de supervivencia $S_T(t)=P(T > t) = e^{-\lambda t}$. Para $t = 5$:
 
 $$ \begin{aligned}
 P(T > 5) &= e^{-0{,}25 \cdot 5} \\[4pt]
@@ -410,6 +515,15 @@ P(T > 5) &= e^{-0{,}25 \cdot 5} \\[4pt]
 \end{aligned} $$
 
 Que es exactamente el número que la simulación nos arrojó.
+
+La esperanza y la varianza también quedan determinadas por la tasa:
+
+$$ E[T] = \frac{1}{\lambda}, \qquad \mathrm{Var}(T) = \frac{1}{\lambda^2} $$ (eq-exp-moments)
+
+```{code-cell} python
+clinic_moments = compute_numeric_moments(MomentsInput(distribution=clinic_distribution))
+clinic_moments
+```
 
 > **Contrato del modelo.** La Exponencial modela tiempos de espera entre eventos
 > cuando la tasa se mantiene estable y el tiempo restante no depende de cuánto
@@ -438,7 +552,9 @@ build_continuous_distribution_explorer(continuous_explorer_input)
 
 Una encuesta toma una tanda de $n = 30$ personas. Si la verdadera proporción
 de «sí» en la población es $p = 0{,}55$, la cantidad $Y$ de respuestas «sí»
-en la tanda sigue $Y \sim \text{Bin}(30, 0{,}55)$. Reusamos [](#eq-binomial-pmf):
+en la tanda sigue $Y \sim \text{Bin}(30, 0{,}55)$. Es la suma de 30 respuestas
+Bernoulli como la de [](#eq-bernoulli-pmf), una por persona. Reusamos
+[](#eq-binomial-pmf):
 
 ```{code-cell} python
 poll_distribution = make_binomial(BinomialParams(trials=30, success_probability=0.55))
@@ -515,10 +631,51 @@ uno. Como ejercicio mental, evaluar [](#eq-poisson-pmf) con
 $\lambda = 4$ y $k = 3$ devuelve la altura exacta de la barra más
 alta del gráfico.
 
+En una Poisson, el parámetro $\lambda$ hace doble trabajo:
+
+$$ E[K] = \lambda, \qquad \mathrm{Var}(K) = \lambda $$ (eq-poisson-moments)
+
+```{code-cell} python
+poisson_moments_symbolic = compute_poisson_moments(PoissonParams(rate=4.0))
+poisson_moments_symbolic
+```
+
+(sec-rv-binomial-poisson)=
+### Cuando la Binomial se vuelve Poisson
+
+La similitud con la Binomial no es casual. Si tomamos una Binomial con $n$ muy
+grande y $p$ muy chico, manteniendo $\lambda = np$ fijo, las barras se acercan a
+las de una Poisson:
+
+$$ \text{Bin}(n,p) \approx \text{Poisson}(\lambda) \quad\text{cuando } n\text{ es grande},\ p\text{ chico},\ \lambda=np $$ (eq-binomial-poisson)
+
+Pensá en una fábrica con miles de piezas y una chance mínima de defecto por
+pieza. Contar cada intento como Bernoulli sería correcto, pero incómodo. La
+Poisson conserva lo esencial —la tasa promedio de eventos— y simplifica el
+modelo.
+
 > **Contrato del modelo.** La Poisson aplica cuando contás eventos raros en una
 > ventana fija y una tasa promedio razonablemente estable. Es potente para
 > defectos, llegadas o fallas, pero se debilita si los eventos aparecen en
 > racimos, si la tasa cambia por hora o si hay un máximo físico muy cercano.
+
+(sec-rv-poisson-exponential)=
+## Conteos y esperas: dos caras de la misma tasa
+
+La misma tasa $\lambda$ puede mirar un proceso desde dos ángulos. En una ventana
+de longitud $t$, la Poisson cuenta cuántos eventos aparecen:
+
+$$ N(t) \sim \text{Poisson}(\lambda t) $$ (eq-poisson-window)
+
+Entre dos eventos consecutivos, la Exponencial mide cuánto tiempo esperamos:
+
+$$ T \sim \text{Exp}(\lambda) $$
+
+Si llegan 6 pacientes por hora, en 20 minutos esperamos
+$\lambda t = 6 \cdot (20/60) = 2$ llegadas. La pregunta «¿cuántos llegan en 20
+minutos?» usa Poisson(2); la pregunta «¿cuánto falta hasta el próximo?» usa una
+Exponencial con tasa 6 por hora. Elegir una u otra no cambia el fenómeno: cambia
+la pregunta.
 
 ## Exploración interactiva — discretas
 
