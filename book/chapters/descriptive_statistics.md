@@ -64,6 +64,42 @@ from widgets import DescriptiveExplorerInput, build_descriptive_explorer
 settings = Settings()
 ```
 
+(sec-descriptive-foundations)=
+## Estadística en ingeniería: procesos, variabilidad y riesgo
+
+En ingeniería casi nunca observamos procesos completamente quietos. Una aplicación
+puede responder en 80 ms una vez y en 140 ms la siguiente; una pieza puede salir
+apenas más larga que otra; una red puede fallar por causas distintas según el día. Esa
+variabilidad genera incertidumbre: antes de medir, no sabemos con exactitud qué valor
+tomará la característica de interés en la próxima unidad o ejecución.
+
+Un **proceso** es una secuencia de etapas que transforma una **entrada** en una
+**salida**. En el camino actúan factores que cambian: materiales, personas,
+temperatura, memoria disponible, demanda, red, configuración, mantenimiento. La
+estadística aporta herramientas para plantear el problema, recolectar datos,
+organizarlos, resumirlos y decidir con riesgo controlado.
+
+Antes de calcular cualquier resumen hay que formular el problema con precisión:
+
+- **Población.** Es el conjunto de unidades sobre el que queremos concluir o decidir.
+  Puede ser finita, con tamaño $N$, o infinita/indeterminada cuando representa todas
+  las ejecuciones posibles de un proceso estable.
+- **Unidad elemental** o **unidad de análisis.** Es cada elemento de esa población:
+  un paciente, una falla, un backup, una pieza o una ejecución de una aplicación.
+- **Variable.** Es la característica que observamos en cada unidad. Se simboliza con
+  mayúscula, por ejemplo $X$: tiempo de espera. Un valor observado se escribe en
+  minúscula, por ejemplo $x = 4{,}2$ minutos.
+- **Parámetro.** Es una medida que resume a la población: media poblacional $\mu$,
+  desvío estándar poblacional $\sigma$, varianza poblacional $\sigma^2$ o proporción
+  poblacional $\pi$.
+- **Estadístico.** Es una medida calculada sobre una muestra: media muestral
+  $\bar{x}$, desvío estándar muestral $s$ o proporción muestral.
+
+La misma colección física puede definir poblaciones distintas según el objetivo. Si
+Lucía decide sobre la mañana que acaba de terminar, la población puede ser esa
+mañana. Si decide turnos para todo el mes, la población son las esperas de todos los
+días y horarios relevantes del servicio.
+
 (sec-descriptive-sample)=
 ## Una muestra de tiempos de espera
 
@@ -77,6 +113,101 @@ raw_waiting_times = rng_clinic.normal(loc=4.0, scale=1.2, size=80).clip(min=0.0)
 waiting_times = pd.DataFrame({"value": raw_waiting_times}).pipe(DataFrame[Observations])
 waiting_times.head()
 ```
+
+(sec-descriptive-variable-types)=
+## Antes de agrupar: qué tipo de variable tenemos
+
+Las herramientas cambian según el tipo de variable. No se resume igual la zona donde
+ocurrió una falla que el número de defectos de un turno o el espacio ocupado por un
+backup.
+
+| Tipo de variable | Qué valores puede tomar | Ejemplos | Presentación usual |
+|---|---|---|---|
+| **Cualitativa** o **atributo** | Categorías o niveles | zona de falla, estado de máquina, tipo de ficha | tabla de frecuencias, barras, sectores, Pareto |
+| **Cuantitativa discreta** | Valores contables, finitos o numerables | número de fallas, llamadas por intervalo, piezas defectuosas | tabla por valores exactos, gráfico de bastones |
+| **Cuantitativa continua** | Intervalos de números reales | tiempo, longitud, capacidad real, temperatura | tallo-hoja, intervalos de clase, histograma |
+
+### Atributos: clases, porcentajes y Pareto
+
+Cuando la variable es cualitativa, cada categoría define una **clase**. La tabla
+cuenta cuántas unidades caen en cada clase y qué proporción representan:
+
+$$ f_k = \frac{n_k}{n}, \qquad \sum_k n_k = n, \qquad \sum_k f_k = 1 $$ (eq-relative-frequency)
+
+Por ejemplo, si una red tuvo 105 fallas, una tabla por zona podría leerse así:
+
+| Zona | Frecuencia absoluta $n_k$ | Frecuencia relativa $f_k$ |
+|---|---:|---:|
+| Norte | 18 | 0,171 |
+| Oeste | 11 | 0,105 |
+| Centro | 13 | 0,124 |
+| Sur | 34 | 0,324 |
+| Suroeste | 29 | 0,276 |
+| Total | 105 | 1,000 |
+
+La frecuencia relativa suele expresarse como porcentaje: decir $f_k = 0{,}324$ es
+decir que el 32,4% de las fallas ocurrieron en zona sur. Para variables
+cualitativas son habituales el **gráfico de sectores** o circular, el **gráfico de
+barras** y el **diagrama de Pareto**.
+
+El Pareto es un gráfico de barras ordenado de mayor a menor frecuencia. En control
+de calidad suele agregarse una línea de porcentaje acumulado para detectar si unas
+pocas categorías explican la mayor parte de los problemas: la idea práctica es que
+muchos defectos pueden concentrarse en pocas causas.
+
+### Variables discretas: valores exactos y acumulados
+
+Si la variable cuantitativa es discreta, la tabla se arma por cada valor observado
+$x_k$. Además de $n_k$ y $f_k$, aparecen dos columnas acumuladas:
+
+$$ N_k = \sum_{r \le k} n_r, \qquad F_k = \sum_{r \le k} f_r $$ (eq-cumulative-frequency)
+
+$N_k$ cuenta cuántas observaciones tienen valores menores o iguales que $x_k$;
+$F_k$ da la proporción acumulada. Si $F_k = 0{,}52$ para $x_k = 88$, interpretamos
+que el 52% de los días la terminal se usó 88 veces o menos. El gráfico natural para
+estos datos es el **gráfico de bastones**: un segmento vertical para cada valor
+posible, con altura proporcional a su frecuencia.
+
+### Variables continuas: intervalos, tallo-hoja e histogramas
+
+En variables continuas casi nunca conviene contar cada valor exacto. Primero se
+puede usar un **diagrama de tallo y hoja**, que conserva los datos individuales pero
+los ordena visualmente: en 117, por ejemplo, el tallo puede ser 11 y la hoja 7. Es
+útil en conjuntos pequeños o medianos porque muestra la forma sin destruir del todo
+la lista original.
+
+Para una tabla de frecuencias continua se particiona el rango observado en
+**intervalos de clase**. Conviene que tengan amplitud similar y que cada dato caiga
+en uno y sólo un intervalo; por eso se usan intervalos semiabiertos, como
+$(79, 91]$. El **punto medio** de una clase representa al intervalo cuando hacemos
+cálculos con datos agrupados.
+
+Elegir la cantidad de intervalos es parte del análisis. Demasiados intervalos dejan
+muchas frecuencias pequeñas o nulas; demasiado pocos condensan tanto que ocultan
+la forma. Como regla práctica, suelen usarse entre 5 y 20 clases, ajustando según la
+cantidad de datos y el objetivo.
+
+En un histograma, la base de cada barra es la amplitud del intervalo y el área de la
+barra debe ser proporcional a la frecuencia. Si todas las amplitudes son iguales, la
+altura también queda proporcional a la frecuencia; si no lo son, hay que ajustar las
+alturas. Al pasar de datos originales a intervalos se pierde información, pero se gana
+legibilidad. En muestras pequeñas, cambiar el ancho de clase puede cambiar bastante
+la apariencia del histograma.
+
+También se puede sumar un **polígono de frecuencias**, uniendo los puntos medios
+superiores de las barras, y un **polígono de frecuencias acumuladas**, que une las
+frecuencias acumuladas. La ojiva que usamos más abajo es una versión de ese gráfico
+acumulado.
+
+### Cuando el tiempo importa
+
+Si las observaciones se registran en el orden en que ocurren, el tiempo puede ser una
+fuente central de variabilidad. Una **gráfica de serie de tiempo** pone el valor
+observado en el eje vertical y el tiempo en el eje horizontal. Antes de colapsar datos
+en una tabla de frecuencias, conviene mirar si aparecen tendencias, ciclos o cambios
+de régimen. Si hay un patrón temporal fuerte, analizar frecuencias como si todos los
+datos hubieran ocurrido bajo las mismas condiciones puede llevar a conclusiones
+engañosas.
 
 (sec-descriptive-frequency)=
 ## Agrupar la lista antes de resumir
@@ -151,6 +282,28 @@ tiempo del paciente número $i$. El subíndice $i$ recorre los valores
 $1, 2, \dots, n$ — así que la fórmula dice exactamente lo mismo que
 «sumalos a todos y dividí por la cantidad».
 
+Si los datos ya están agrupados en $r$ clases, usamos el valor de la clase $x_k$
+— el valor exacto en datos discretos o el punto medio del intervalo en datos
+continuos — y su frecuencia:
+
+$$ \bar{x} = \frac{1}{n}\sum_{k=1}^{r} x_k n_k = \sum_{k=1}^{r} x_k f_k $$ (eq-grouped-mean)
+
+Si el conjunto observado es toda la población, el promedio es un parámetro y se
+escribe $\mu$. La media no tiene por qué coincidir con un valor observado: puede
+dar 88,44 usos por día aunque ningún día haya tenido exactamente 88,44 usos. Como
+usa toda la información, también es sensible a valores extremos. Por eso sirve para
+comparar distribuciones sólo cuando sus formas son razonablemente semejantes.
+
+### El valor más frecuente: la moda
+
+Otra medida de posición es la **moda**, escrita $\hat{x}$: el valor o categoría con
+mayor frecuencia. En una muestra de esperas puede ser el minuto que más se repite;
+en una variable cualitativa puede ser la zona con más fallas.
+
+La moda tiene tres detalles importantes. Algunas muestras no tienen moda clara;
+otras tienen dos modas y se llaman **bimodales**; y es la única medida de tendencia
+central que puede calcularse para cualquier tipo de variable, incluso cualitativa.
+
 ### Otra espera típica: la mediana
 
 El promedio tiene un punto débil. Si entre los 80 pacientes hubo uno
@@ -168,6 +321,11 @@ $$ \tilde{x} = \begin{cases}
 
 (Si la cantidad de observaciones es par no hay un único «valor del
 medio», así que se promedian los dos centrales.)
+
+Formalmente, la mediana es el mínimo valor que acumula al menos el 50% de las
+observaciones ordenadas. Por eso, cuando tenemos una tabla de frecuencias, puede
+leerse mirando la primera fila cuya frecuencia relativa acumulada alcanza o supera
+0,50.
 
 ### Qué tan parecidas son las esperas: el desvío estándar
 
@@ -199,11 +357,21 @@ muestral**:
 
 $$ s^2 = \frac{\text{SS}}{n - 1} $$ (eq-sample-variance)
 
+Con datos agrupados, la misma idea usa la frecuencia de cada clase:
+
+$$ s^2 = \frac{1}{n - 1}\sum_{k=1}^{r} n_k(x_k - \bar{x})^2 $$ (eq-grouped-variance)
+
 El divisor $n-1$ aparece porque usamos los mismos datos para estimar
 $\bar{x}$: una vez fijado el promedio, el último desvío ya queda determinado
 por los anteriores. No es un detalle cosmético; evita que la dispersión
 muestral quede sistemáticamente demasiado chica cuando usamos la muestra para
 hablar de un proceso más amplio.
+
+Si los datos corresponden a toda la población, usamos la media poblacional $\mu$,
+el tamaño poblacional $N$ y el denominador $N$:
+
+$$ \sigma^2 = \frac{1}{N}\sum_{i=1}^{N}(x_i - \mu)^2, \qquad
+\sigma = \sqrt{\sigma^2} $$ (eq-population-variance)
 
 Para volver a las unidades originales (minutos, no minutos al cuadrado),
 tomamos raíz cuadrada. Lo que sale es el **desvío estándar muestral**, que
@@ -221,6 +389,17 @@ el rango muestral es $R = \max_i x_i - \min_i x_i$. Resume la amplitud total
 observada: cuánto separa al caso más bajo del caso más alto. A diferencia de
 $s$, que usa todas las observaciones, $R$ depende sólo de los dos extremos; por
 eso crece mucho cuando aparece un valor atípico.
+
+El **rango intercuartil** o **recorrido intercuartílico** resume la variación del
+50% central:
+
+$$ \text{IQR} = Q_3 - Q_1 $$ (eq-iqr)
+
+Como usa cuartiles, no cambia demasiado por un único valor extremo. Si las medidas
+de dispersión son altas decimos que el conjunto es heterogéneo o muy variable. La
+varianza queda en unidades al cuadrado y por eso se usa mucho para propiedades
+matemáticas; el desvío estándar vuelve a la unidad original y suele ser más fácil de
+interpretar en contexto.
 
 ```{code-cell} python
 summary = summarize_observations(waiting_times)
@@ -294,6 +473,16 @@ observaciones por debajo. Los **cuartiles** son tres percentiles especiales:
 $Q_1$ deja cerca del 25%, $Q_2$ coincide con la mediana y $Q_3$ deja cerca del
 75%.
 
+Más formalmente, los cuartiles y percentiles son mínimos valores que acumulan al
+menos cierto porcentaje de observaciones ordenadas. Así, $Q_1$ acumula al menos
+25%, $Q_2$ acumula al menos 50% y $Q_3$ acumula al menos 75%. El segundo cuartil
+coincide con la mediana y con el percentil 50:
+
+$$ Q_2 = \tilde{x} = P_{50} $$ (eq-second-quartile)
+
+Con una tabla de frecuencias acumuladas, se buscan de la misma manera que la
+mediana: la primera fila cuya acumulada alcanza el porcentaje pedido.
+
 ```{code-cell} python
 position_summary = pd.DataFrame({
     "corte": ["mínimo", "Q1", "mediana / Q2", "Q3", "máximo"],
@@ -318,6 +507,12 @@ mañana fue compacta; si queda lejos, el tramo alto de esperas se estiró.
 Un **boxplot** — o diagrama de caja y bigotes — comprime la distribución en
 cinco referencias visuales: mínimo no atípico, $Q_1$, mediana, $Q_3$ y máximo
 no atípico. Es la tabla de posiciones convertida en dibujo.
+
+En una versión introductoria también se dibujan los bigotes hasta el mínimo y el
+máximo observados. En esa lectura, la longitud total del diagrama es el rango y la
+longitud de la caja es el rango intercuartil. La versión que usamos en el gráfico es
+la variante de Tukey: los bigotes llegan sólo hasta valores no atípicos y los puntos
+externos se muestran aparte.
 
 En el gráfico, la línea dentro de la caja es la mediana: la mitad de las
 observaciones queda a la izquierda y la otra mitad a la derecha. Los bordes de
@@ -544,10 +739,32 @@ $$ \bigl[Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}\bigr] $$ (eq-iqr-fenc
 Es la misma regla que define hasta dónde llegan los bigotes del boxplot: por
 eso ese gráfico es buen detector visual.
 
+Cuando aparece un valor atípico, antes de descartarlo conviene preguntar de dónde
+salió. En la práctica suele deberse a una de tres causas: se registró mal, proviene de
+una población distinta, o está bien medido pero representa un suceso poco común.
+
 ```{code-cell} python
 outlier_report = detect_outliers_tukey(waiting_times)
 outlier_report
 ```
+
+(sec-descriptive-empirical-rule)=
+## Regla empírica: media más desvíos
+
+Cuando una distribución es aproximadamente simétrica y campanular, como una forma
+Normal, el desvío estándar se interpreta junto con la media usando la **regla
+empírica**:
+
+$$
+\bar{x} \pm s \approx 68\%, \qquad
+\bar{x} \pm 2s \approx 95\%, \qquad
+\bar{x} \pm 3s \approx \text{casi todos los datos}
+$$ (eq-empirical-rule)
+
+La regla es descriptiva y depende de la forma. Si la distribución no es simétrica y
+campanular, esos porcentajes pueden cambiar mucho. También evita una confusión
+común: $\bar{x} \pm s$ no es el rango de variación; en muchas formas cubre sólo una
+parte central de los datos.
 
 (sec-descriptive-zscore)=
 ## Posición relativa: el $z$-score
@@ -568,6 +785,11 @@ Un $z_i$ positivo dice «este paciente esperó más que el promedio»; un
 $z_i$ negativo, «menos que el promedio». Y la magnitud cuenta cuántos
 $s$ separan la observación del centro: $z_i = 2$ significa dos desvíos
 estándar arriba, sin importar las unidades originales.
+
+La regla empírica sugiere un criterio simple para valores muy extremos: si
+$|z_i| > 3$, la observación está a más de tres desvíos de la media y merece revisión.
+No es una sentencia automática de error; en algunos procesos un valor así puede ser
+real y relevante.
 
 En este capítulo usamos $z_i$ solo como resumen descriptivo: compara cada
 observación con el promedio del mismo conjunto de datos. Ayuda a ver qué
@@ -628,8 +850,11 @@ relativa** de dos procesos usamos el **coeficiente de variación**:
 $$ CV = \frac{s}{\bar{x}} $$ (eq-coefficient-variation)
 
 El cociente no tiene unidades: mide qué tan grande es el desvío típico en
-relación con la media del mismo proceso. Antes de mirar la tabla, apostá: ¿la
-clínica o la fábrica parece más irregular respecto de su propio centro?
+relación con la media del mismo proceso. Muchas veces se informa como porcentaje,
+$100 \cdot CV$. Sirve para comparar distribuciones con unidades distintas y también
+distribuciones con la misma unidad pero promedios muy diferentes. Antes de mirar la
+tabla, apostá: ¿la clínica o la fábrica parece más irregular respecto de su propio
+centro?
 
 ```{code-cell} python
 cv_comparison = pd.DataFrame({
@@ -672,11 +897,30 @@ build_descriptive_explorer(explorer_input)
 
 Un resumen descriptivo puede ser exacto y aun así engañar. Si las 80 esperas de la clínica fueron tomadas durante varias mañanas típicas, con pacientes habituales y sin cambios de proceso, la muestra habla bastante bien del servicio. Si todas salieron de un lunes después de un feriado, de una semana con un sistema caído o de la franja más congestionada, el promedio y el desvío describen esa situación especial, no necesariamente la clínica.
 
+Si observamos todas las unidades de la población hacemos un **censo** o estudio
+exhaustivo. En ese caso el análisis descriptivo alcanza para responder sobre esa
+población finita porque tenemos todos los datos y podemos calcular los parámetros de
+interés. Pero muchas veces un censo no es posible: la población puede ser infinita,
+los ensayos pueden ser destructivos o costosos, o el proceso puede tardar demasiado.
+
+Cuando observamos sólo un subconjunto hacemos un **estudio por muestreo**. La
+**muestra** tiene tamaño $n$ y produce estadísticos, no parámetros. Para extender sus
+conclusiones a la población necesitamos análisis inferencial: intervalos de confianza,
+pruebas de hipótesis y herramientas apoyadas en probabilidad.
+
 Tres palabras conviene tener presentes desde ahora:
 
 - **Representatividad.** La muestra debe parecerse al proceso sobre el que queremos decidir.
 - **Sesgo.** Un patrón de recolección puede empujar todos los datos en una misma dirección.
 - **Independencia.** Una observación no debería arrastrar mecánicamente a la siguiente; si una demora inicial retrasa a todos los pacientes posteriores, las esperas quedan encadenadas.
+
+Una muestra **aleatoria** o **probabilística** da a cada unidad de la población una
+chance conocida de ser seleccionada. Esa condición es la que permite controlar el
+riesgo al generalizar. Una muestra **por conveniencia** incorpora unidades porque son
+fáciles de conseguir, porque responden voluntariamente o porque están a mano; puede
+ser útil como exploración, pero puede quedar sesgada si no reproduce la variabilidad
+de la población. Además del método de selección, importa el tamaño de la muestra:
+ambos influyen en la calidad de las conclusiones.
 
 > **Contrato del dato.** Antes de confiar en cualquier modelo, preguntá cómo nació la muestra. ¿Cubre horarios y días relevantes? ¿Evita elegir solo casos fáciles de medir? ¿Hubo cambios de política, demanda o personal durante la medición? Una muestra sesgada puede producir gráficos prolijos y fórmulas correctas apuntando a una conclusión equivocada.
 
