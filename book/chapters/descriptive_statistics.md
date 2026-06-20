@@ -8,7 +8,7 @@ kernelspec:
 Imaginate sentado en la recepción de una clínica durante toda una
 mañana. Cada vez que un paciente entra al consultorio, anotás los
 minutos que estuvo esperando: 4, 6, 3, 2, 12, 5, 4, 7, 5… Al final
-del turno tenés ochenta números garabateados en una hoja.
+del turno tenés ochenta números anotados rápidamente en una hoja.
 
 Si alguien te pregunta «¿cuánto se espera, en general?», recitar la
 lista entera no sirve. La persona se aburre antes del tercer paciente
@@ -18,7 +18,7 @@ día tranquilo o uno raro?», directamente no sabés por dónde empezar.
 Para contestar hay que apretar la lista en unos pocos gráficos y unos pocos números que
 respondan cosas concretas: cuál fue una espera **típica**, qué tan
 **parecidas** fueron las esperas entre sí (¿todos esperaron parecido?,
-¿unos poquísimo y otros muchísimo?) y si hubo alguna **fuera de lo
+¿algunos muy poco y otros mucho?) y si hubo alguna **fuera de lo
 común** que valga la pena mirar aparte. Lucía, la responsable de
 operaciones, tiene una decisión concreta antes del cierre del día:
 mantener el esquema de turnos, sumar una persona en la franja crítica o
@@ -30,6 +30,9 @@ en este capítulo.
 > recomendación concreta: mantener el esquema de turnos, reforzar una franja o
 > investigar un caso excepcional. El riesgo no es calcular mal una media; es
 > resumir una mañana irregular con un número que esconda justo lo que importa.
+> Al final del capítulo vas a poder decidir qué resumen conviene mirar primero,
+> qué forma del gráfico cambia la historia y cuándo una muestra no alcanza para
+> hablar de todo el servicio.
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -126,6 +129,11 @@ backup.
 | **Cualitativa** o **atributo** | Categorías o niveles | zona de falla, estado de máquina, tipo de ficha | tabla de frecuencias, barras, sectores, Pareto |
 | **Cuantitativa discreta** | Valores contables, finitos o numerables | número de fallas, llamadas por intervalo, piezas defectuosas | tabla por valores exactos, gráfico de bastones |
 | **Cuantitativa continua** | Intervalos de números reales | tiempo, longitud, capacidad real, temperatura | tallo-hoja, intervalos de clase, histograma |
+
+**Punto de control.** Antes de elegir un gráfico, formulá la variable en una
+frase: “en cada unidad voy a observar...”. Si la respuesta es una categoría,
+contás clases; si es un conteo, respetás valores enteros; si es una medición,
+pensás en intervalos.
 
 ### Atributos: clases, porcentajes y Pareto
 
@@ -327,6 +335,11 @@ observaciones ordenadas. Por eso, cuando tenemos una tabla de frecuencias, puede
 leerse mirando la primera fila cuya frecuencia relativa acumulada alcanza o supera
 0,50.
 
+**No confundas.** La media pregunta por el equilibrio numérico de todos los
+valores; la mediana pregunta por la posición que parte la muestra; la moda
+pregunta qué valor o categoría aparece más. Las tres pueden coincidir, pero no
+cuentan la misma historia.
+
 ### Qué tan parecidas son las esperas: el desvío estándar
 
 Saber el promedio no alcanza: necesitamos también qué tan **parecidas**
@@ -345,7 +358,7 @@ $$ \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i $$
 
 **Paso 2.** Para cada paciente miramos cuánto se desvió del promedio
 ($x_i - \bar{x}$). Algunas diferencias son positivas (esperaron más),
-otras negativas (esperaron menos), y si las sumáramos así nomás los
+otras negativas (esperaron menos), y si las sumáramos directamente los
 signos se cancelarían. Para que eso no pase, las elevamos al cuadrado
 antes de sumarlas. A esa suma la llamamos **suma de cuadrados** y la
 escribimos $\text{SS}$ (por *sum of squares*):
@@ -795,6 +808,11 @@ En este capítulo usamos $z_i$ solo como resumen descriptivo: compara cada
 observación con el promedio del mismo conjunto de datos. Ayuda a ver qué
 valores están cerca del centro y cuáles quedan relativamente lejos.
 
+**No confundas.** Este $z_i$ es una posición relativa dentro de una muestra. Un
+$z$-statistic de inferencia se calcula bajo una hipótesis y sirve para medir
+sorpresa frente a un valor de control. Comparten la idea de estandarizar, pero
+responden preguntas distintas.
+
 ```{code-cell} python
 standardized = standardize_observations(waiting_times)
 standardized
@@ -853,7 +871,7 @@ El cociente no tiene unidades: mide qué tan grande es el desvío típico en
 relación con la media del mismo proceso. Muchas veces se informa como porcentaje,
 $100 \cdot CV$. Sirve para comparar distribuciones con unidades distintas y también
 distribuciones con la misma unidad pero promedios muy diferentes. Antes de mirar la
-tabla, apostá: ¿la clínica o la fábrica parece más irregular respecto de su propio
+tabla, anticipá: ¿la clínica o la fábrica parece más irregular respecto de su propio
 centro?
 
 ```{code-cell} python
@@ -923,6 +941,10 @@ de la población. Además del método de selección, importa el tamaño de la mu
 ambos influyen en la calidad de las conclusiones.
 
 > **Contrato del dato.** Antes de confiar en cualquier modelo, preguntá cómo nació la muestra. ¿Cubre horarios y días relevantes? ¿Evita elegir solo casos fáciles de medir? ¿Hubo cambios de política, demanda o personal durante la medición? Una muestra sesgada puede producir gráficos prolijos y fórmulas correctas apuntando a una conclusión equivocada.
+
+**Lectura operativa.** Si el objetivo es describir la mañana observada, alcanza
+con resumir esos datos. Si el objetivo es rediseñar turnos para el mes, la
+pregunta cambia: la muestra debe representar el proceso que se quiere mejorar.
 
 Imaginá dos planes de medición. El primero registra ochenta pacientes el lunes
 después de un feriado; el segundo registra veinte pacientes por semana durante

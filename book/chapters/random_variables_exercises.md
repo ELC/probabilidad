@@ -14,6 +14,10 @@ Normal, Exponencial y Poisson. Cada enunciado lleva debajo una
 **solución** plegada con el paso a paso, una visualización y la
 verificación. Antes de abrirla, intentá el cálculo a mano.
 
+Antes de abrir cada solución, nombrá primero la familia de distribución y la
+pregunta que responde: valor puntual, cola, intervalo, cuantil, espera o ajuste.
+Esa clasificación evita aplicar fórmulas por reflejo.
+
 ```{code-cell} python
 :tags: [hide-input]
 import numpy as np
@@ -68,6 +72,9 @@ settings = Settings()
 En una línea de producción el 4 % de las piezas salen defectuosas. Se
 inspeccionan 20 piezas elegidas al azar. ¿Cuál es la probabilidad de
 que **exactamente 2** resulten defectuosas?
+
+**Antes de abrir.** “Exactamente 2” pide una probabilidad puntual: verificá si
+la situación cumple número fijo de intentos, misma $p$ e independencia.
 
 :::{admonition} Solución
 :class: dropdown
@@ -128,6 +135,9 @@ A una guardia llegan en promedio **6 pacientes por hora**, siguiendo un
 proceso de Poisson. ¿Cuál es la probabilidad de que en **20 minutos**
 no llegue **nadie**?
 
+**Antes de abrir.** Convertí mentalmente 20 minutos a fracción de hora y
+anticipá si el promedio esperado en ese período será menor, igual o mayor que 6.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -181,6 +191,9 @@ El tiempo entre llegadas a la guardia, en el escenario del Ejercicio 2,
 se modela como **Exponencial** con tasa $\lambda = 6$ pacientes por
 hora. ¿Cuál es la probabilidad de que **pasen más de 15 minutos** sin
 que llegue nadie?
+
+**Antes de abrir.** Decidí si estás contando llegadas en una ventana o midiendo
+el tiempo hasta la próxima llegada. Esa elección separa Poisson de Exponencial.
 
 :::{admonition} Solución
 :class: dropdown
@@ -244,6 +257,9 @@ verify_numeric_answer(
 Las alturas de adultos en una población se modelan como $X \sim \mathcal{N}(170, 8^{2})$
 (en cm). ¿Cuál es la probabilidad de que una persona elegida al azar
 mida **entre 165 y 180** cm?
+
+**Antes de abrir.** La palabra “entre” pide área bajo la curva. Ubicá primero
+los dos cortes respecto de la media.
 
 :::{admonition} Solución
 :class: dropdown
@@ -310,6 +326,9 @@ verify_numeric_answer(
 Con la misma distribución de alturas del Ejercicio 4, encontrá el valor
 $x_{0{,}95}$ tal que el **95 %** de las personas mide menos que $x_{0{,}95}$.
 
+**Antes de abrir.** Esta vez conocés la probabilidad y buscás el valor: invertí
+la CDF antes de desestandarizar.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -353,6 +372,9 @@ verify_numeric_answer(
 Un encuestador llama a número aleatorios; cada llamada tiene
 probabilidad $p = 0{,}30$ de obtener respuesta. ¿Cuál es la
 **probabilidad de que la primera respuesta llegue en el tercer intento**?
+
+**Antes de abrir.** Separá los dos primeros fracasos del éxito final; esa es la
+historia multiplicativa de la Geométrica.
 
 :::{admonition} Solución
 :class: dropdown
@@ -410,6 +432,9 @@ Generá $n = 1000$ muestras desde una Poisson con $\lambda = 4$ usando el
 generador del `Settings`. ¿La muestra se comporta como una
 $\text{Poisson}(4)$? Verificalo con un test de bondad de ajuste.
 
+**Antes de abrir.** Anticipá qué significaría un $p$-valor grande: no prueba que
+la Poisson sea verdadera, indica consistencia con el modelo propuesto.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -443,6 +468,9 @@ Indicá si la siguiente afirmación es **Verdadera o Falsa**:
 
 > «Si $X$ es discreta, entonces $E[X]$ siempre coincide con el valor
 > $k$ que maximiza $P(X = k)$ (es decir, con la **moda**).»
+
+**Antes de abrir.** Buscá un contraejemplo mental: una esperanza puede no ser
+un valor posible, mientras la moda siempre vive en el soporte.
 
 :::{admonition} Solución
 :class: dropdown

@@ -39,6 +39,9 @@ el oficio que sostiene buena parte de la estadística aplicada.
 > informe: necesita decidir si actúa, mide más o comunica incertidumbre. La
 > inferencia será útil solo si separa evidencia, supuesto y recomendación sin
 > convertir una muestra limitada en certeza.
+> Al final del capítulo vas a poder construir rangos plausibles, leer tests sin
+> exagerar sus conclusiones y escribir una recomendación que distinga evidencia,
+> impacto operativo y duda residual.
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -174,6 +177,11 @@ produjo cubre a $\mu$ en el 95% de repeticiones comparables.
 
 **Idea para retener.** La confianza vive en el procedimiento que genera
 intervalos, no en una probabilidad subjetiva sobre un intervalo ya observado.
+
+**No confundas.** Un intervalo de confianza frecuentista no es una probabilidad
+posterior sobre $\mu$. Si querés decir “hay 95% de probabilidad de que el
+parámetro esté en este rango”, necesitás un marco bayesiano con una distribución
+previa. En este capítulo, el 95% pertenece al procedimiento repetido.
 
 ```{code-cell} python
 ci_explorer_input = MeanCIExplorerInput(settings=settings)
@@ -449,6 +457,11 @@ asimétrico.
 conozco la distribución de esta cantidad”, y esa es la palanca para despejar un
 intervalo.
 
+**Punto de control.** Cuando aparezca un IC nuevo, preguntá tres cosas antes de
+memorizar la receta: cuál es el estimador, cuál es el pivote y qué supuesto hace
+conocida su distribución. Si podés responder eso, la fórmula deja de ser una
+plantilla suelta.
+
 **Antes de mirar.** En el explorador de abajo, antes de mover los controles
 anticipá: si subo $1-\alpha$ del 80% al 99%, ¿qué pasa con los cuantiles
 $a, b$ y, en consecuencia, con el ancho del IC? ¿Y si cambio de Normal a
@@ -563,6 +576,11 @@ extremo, o más, si el valor de control fuera correcto.
 **Idea para retener.** El $p$-valor mide sorpresa bajo una hipótesis, no tamaño
 del efecto ni probabilidad de que la hipótesis sea verdadera.
 
+**No confundas.** Significancia estadística y decisión de ingeniería se cruzan,
+pero no son lo mismo. Un efecto pequeño puede ser estadísticamente claro y aun
+así irrelevante para operar; un efecto grande puede ser importante aunque la
+muestra todavía no alcance para demostrarlo con bajo riesgo de error.
+
 (sec-inf-bootstrap)=
 ## Bootstrap sin supuestos paramétricos
 
@@ -628,6 +646,10 @@ Para la clínica con $\sigma = 3$, $E = 1$ y 95%: $n \ge (1{,}96 \cdot 3)^2 \app
 > mismo nivel de confianza que se comunicará después. Si la variabilidad real es
 > mayor o la muestra no representa al proceso, el margen de error prometido queda
 > demasiado optimista.
+
+**Lectura operativa.** El tamaño muestral no es una meta moral de “más datos
+siempre mejor”. Es una negociación explícita entre precisión, costo, plazo y
+riesgo de comunicar una conclusión demasiado ajustada.
 
 ```{code-cell} python
 clinic_sample_size_input = SampleSizeForMeanInput(
@@ -785,7 +807,9 @@ Una formulación cuidadosa podría decir: “Con los datos disponibles, la esper
 
 Una formulación demasiado fuerte sería: “Quedó demostrado que el sistema está mal y hay que contratar más personal”. El problema no es la decisión, sino la certeza excesiva: borra el margen de error, los supuestos de muestreo y la posibilidad de que el proceso haya cambiado solo durante la semana observada.
 
-**Comunicación.** Un buen memo estadístico no suena tibio: suena honesto. Dice qué muestran los datos, qué supuesto sostiene esa lectura y qué incertidumbre queda viva.
+**Comunicación.** Un buen memo estadístico no evita tomar posición: toma una
+posición honesta. Dice qué muestran los datos, qué supuesto sostiene esa lectura
+y qué incertidumbre queda viva.
 
 ## Cierre del recorrido
 

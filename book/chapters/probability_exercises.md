@@ -14,6 +14,10 @@ y una **solución** plegada que se abre con un clic, con el paso a paso
 de la fórmula, una visualización y el verificador correspondiente. Antes
 de abrir, intentá el cálculo en papel.
 
+En cada ejercicio, antes de desplegar la solución, identificá el universo de
+referencia y la herramienta: unión, condicional, probabilidad total, Bayes o
+independencia. Esa elección vale tanto como la cuenta.
+
 ```{code-cell} python
 :tags: [hide-input]
 import math
@@ -49,6 +53,9 @@ una muestra grande se observó:
 
 ¿Cuál es $P(A \cup B)$? ¿Cuál es la probabilidad de que un paciente
 **no haga ninguna** de las dos cosas?
+
+**Antes de abrir.** Anticipá si la unión debe ser menor que $P(A)+P(B)$ y qué
+papel juega el solapamiento.
 
 :::{admonition} Solución
 :class: dropdown
@@ -126,6 +133,9 @@ etario:
 Calculá $P(S \mid J)$ — la probabilidad de que un votante elegido al azar
 **apoye**, sabiendo que es **joven**.
 
+**Antes de abrir.** Subrayá el grupo de referencia: la palabra “sabiendo” te
+dice cuál es el denominador.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -177,6 +187,9 @@ el 60 % de las piezas y produce un 2 % de defectuosas; $M_2$ fabrica el
 azar del lote total.
 
 ¿Cuál es la probabilidad de que **sea defectuosa** ($D$)?
+
+**Antes de abrir.** Decidí si estás calculando una probabilidad dentro de una
+máquina o el promedio ponderado de todo el lote.
 
 :::{admonition} Solución
 :class: dropdown
@@ -237,6 +250,9 @@ especificidad $P(- \mid \bar{E}) = 0{,}95$.
 
 Si un paciente da **positivo**, ¿cuál es la probabilidad de que
 **realmente esté enfermo**?
+
+**Antes de abrir.** Hacé una predicción cualitativa: ¿el resultado debería
+quedar cerca de la sensibilidad o mucho más bajo por la prevalencia?
 
 :::{admonition} Solución
 :class: dropdown
@@ -310,6 +326,9 @@ Calculá $P(S)$ marginal y compará con $P(S \mid J)$.
 
 ¿Los eventos $S$ y $J$ son **independientes**?
 
+**Antes de abrir.** Compará mentalmente “apoyar en toda la muestra” con
+“apoyar dentro de jóvenes”. Si cambian, hay información.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -352,6 +371,9 @@ Volvé al [Ejercicio 3](#ejercicio-3-probabilidad-total). Se elige una pieza
 del lote y resulta ser **defectuosa**.
 
 ¿Cuál es la probabilidad de que la haya fabricado la **máquina $M_2$**?
+
+**Antes de abrir.** Esta pregunta invierte la dirección: de defecto dado
+máquina pasás a máquina dado defecto. Eso es una señal de Bayes.
 
 :::{admonition} Solución
 :class: dropdown

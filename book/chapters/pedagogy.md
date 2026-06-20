@@ -4,6 +4,25 @@ Esta sección explica **cómo está construido** el libro. No usa ningún concep
 nuevo; es una guía para entender por qué cada capítulo recorre las secciones en
 el mismo orden y por qué algunos escenarios reaparecen una y otra vez.
 
+## Tono del libro
+
+El tono busca estar cerca del lector sin perder precisión. Hablamos en segunda
+persona, usamos escenas concretas y dejamos que las decisiones de ingeniería
+empujen las fórmulas, pero evitamos convertir el material en charla casual. La
+voz esperada es: clara, humana, profesional y exigente con los supuestos.
+
+Una buena frase del libro debería cumplir tres condiciones:
+
+- **Ubica una pregunta.** El lector sabe qué problema intenta resolver.
+- **Conserva el matiz.** No cambia incertidumbre por certezas cómodas.
+- **Suena natural.** Puede leerse en voz alta sin parecer una lista de recetas.
+
+Cuando una expresión coloquial distrae del concepto, conviene suavizarla. Por
+ejemplo: «equivocarse sin costo real» comunica mejor que una frase demasiado
+casual; «anotados rápidamente» sostiene la escena sin regionalizarla demasiado;
+«tomar posición con honestidad» evita sonar evasivo sin prometer más de lo que
+los datos permiten.
+
 ## Concreto, pictórico, abstracto (CPA)
 
 El libro adapta la progresión **CPA — Concrete, Pictorial, Abstract** que se
@@ -138,12 +157,44 @@ Ese ciclo aprovecha tres ideas robustas de aprendizaje: la **generación**
 conceptos previos en un contexto nuevo) y la **retroalimentación inmediata**
 (comparar la predicción con una verificación o un gráfico). Los ejercicios, por
 eso, no buscan recolectar tareas: buscan que el lector practique, se equivoque
-barato y ajuste su modelo mental.
+sin costo real y ajuste su modelo mental.
 
 Las verificaciones numéricas se complementan con interpretación y decisión. Un
 resultado estadístico no queda cerrado hasta que el lector puede decir qué
 significa en la historia, qué supuesto sostiene la conclusión y cómo lo
 comunicaría sin convertir incertidumbre en certeza.
+
+## Cierres de sección
+
+Las secciones densas no deberían terminar apenas aparece la fórmula. Cuando un
+concepto introduce una herramienta importante, el cierre ideal deja cuatro
+piezas visibles:
+
+- **Qué responde.** La pregunta concreta que esa herramienta permite contestar.
+- **Cuándo usarlo.** El tipo de situación donde la herramienta tiene sentido.
+- **Qué puede salir mal.** El supuesto, sesgo o confusión que puede romper la
+  interpretación.
+- **Cómo comunicarlo.** Una frase breve que traduzca el número a una decisión o
+  advertencia.
+
+No hace falta escribir esos cuatro rótulos en todas partes. La regla editorial
+es que el lector no salga de una sección importante con sólo una cuenta: debe
+salir con una pregunta, una condición de uso y una interpretación defendible.
+
+## Recuperación y repetición espaciada
+
+La recuperación activa aparece en tres escalas. Al inicio de cada capítulo, unas
+preguntas cortas traen ideas previas antes de usarlas. Dentro de una sección,
+las pausas **Antes de mirar** o **Intentá antes de ejecutar** obligan a generar
+una predicción. Al final, las **Ideas para retener** y los mapas de confusión
+separan conceptos cercanos para que el lector pueda recordarlos fuera del
+contexto original.
+
+La repetición no busca copiar definiciones: vuelve sobre la misma idea desde una
+decisión nueva. Media y dispersión reaparecen cuando hablamos de error estándar;
+Bayes vuelve al discutir evidencia; la representatividad vuelve en inferencia y
+bootstrap. Esa vuelta espaciada ayuda a consolidar conexiones sin convertir el
+libro en una lista de repasos.
 
 ## Cómo recorrer cada capítulo
 

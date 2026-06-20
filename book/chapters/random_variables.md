@@ -11,7 +11,7 @@ un test que da positivo o negativo, una cara del dado. Pero ningún
 paciente espera exactamente «uno» o «dos» minutos — espera $3{,}71$,
 espera $2{,}089$, espera lo que mida el cronómetro. Y si preguntamos
 «¿qué tan probable es que el próximo espere exactamente $4{,}2$
-minutos?», la respuesta es un cero incómodo: cada valor puntual de una
+minutos?», la respuesta técnica es cero: cada valor puntual de una
 espera real tiene probabilidad cero, y sin embargo claramente algunos
 minutos son más esperables que otros.
 
@@ -38,6 +38,9 @@ enteros.
 > prometer tiempos, estimar riesgos o definir umbrales de alerta. Elegir mal la
 > distribución puede hacer que una decisión parezca precisa cuando solo estaba
 > apoyada en un modelo conveniente.
+> Al final del capítulo vas a poder elegir entre modelos discretos y continuos,
+> leer probabilidades como barras o áreas, y explicar qué resumen del modelo
+> sirve para una decisión sin confundir valor esperado con resultado más probable.
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -121,6 +124,11 @@ pregunta qué chance queda de superar cinco minutos.
 **Idea para retener.** En una discreta sumás barras; en una continua medís
 áreas. La CDF traduce ambas historias a “cuánto queda acumulado hasta acá”.
 
+**No confundas.** Una PMF asigna probabilidad a valores puntuales; una PDF
+asigna densidad y necesita intervalos para producir probabilidades; una CDF
+acumula lo que queda a la izquierda de un corte. Si la pregunta dice
+“exactamente”, “entre” o “hasta”, ya te está señalando qué objeto mirar.
+
 (sec-rv-bernoulli)=
 ## Una respuesta sí/no: Bernoulli
 
@@ -193,8 +201,8 @@ Tres lecturas saltan de la imagen. La barra más alta se para en $k = 2$
 o $k = 3$ defectos: ese es el resultado más probable de un turno
 típico. Cero defectos sigue siendo raro pero no imposible. Y a partir
 de unos siete u ocho defectos las barras se vuelven prácticamente
-invisibles — encontrar más de diez es algo que esperaríamos casi
-nunca. El gráfico adelanta lo que el promedio teórico va a confirmar:
+invisibles — encontrar más de diez sería un turno excepcional. El gráfico
+adelanta lo que el promedio teórico va a confirmar:
 $50 \cdot 0{,}05 = 2{,}5$ defectos esperados por turno.
 
 Pongamos un número más a esa intuición: ¿qué probabilidad hay de
@@ -206,8 +214,8 @@ factory_at_most_five
 ```
 
 Casi $97\,\%$ de los turnos tienen cinco o menos defectos. La cola
-derecha de la distribución pesa muy poco — la fábrica tendría que
-tener un mal día muy raro para llegar a diez.
+derecha de la distribución pesa muy poco: llegar a diez defectos sería
+un turno excepcional.
 
 ### El motor detrás del gráfico
 
@@ -256,6 +264,10 @@ probable. La esperanza, en cambio, es un promedio de largo plazo. En una
 distribución simétrica pueden estar cerca; en distribuciones asimétricas o
 discretas no tienen por qué coincidir. En la fábrica esperamos $2{,}5$
 defectos, aunque ningún turno pueda tener medio defecto.
+
+**Punto de control.** Si tenés que planificar capacidad, preguntá por la
+esperanza; si tenés que anticipar el caso individual más común, mirá la moda; si
+tenés que fijar un umbral de alerta, mirá una cola o un cuantil.
 
 (sec-rv-geometric)=
 ## Esperar hasta el primer éxito: Geométrica
@@ -587,7 +599,7 @@ chart_probability_mass(poll_chart_input)
 
 Cambiamos un poco la situación de la fábrica. En lugar de inspeccionar
 $n = 50$ piezas con $p = 0{,}05$, imaginá que durante un turno entero
-pasan miles de piezas y el porcentaje de defectos es chiquito. Lo que
+pasan miles de piezas y el porcentaje de defectos es bajo. Lo que
 nos interesa contar ya no son cuáles de las 50 inspecciones fallan,
 sino **cuántos defectos en total aparecen en el turno**. Lo único que
 vamos a fijar es el **promedio** esperado: digamos $\lambda = 4$
@@ -618,7 +630,7 @@ chart_probability_mass(poisson_chart_input)
 ```
 
 El pico está en $k = 3$ y $k = 4$ defectos, justo donde el promedio
-$\lambda = 4$ nos hizo apuntar. La forma se parece muchísimo a la de
+$\lambda = 4$ nos hizo mirar. La forma se parece mucho a la de
 la Binomial que vimos al principio del capítulo — y no es
 coincidencia. Si tomamos una Binomial con $n$ muy grande y $p$ muy
 chico, manteniendo $\lambda = np$ fijo, las dos distribuciones se
@@ -637,8 +649,8 @@ El factor $\lambda^{k}/k!$ pondera cuán probable es ver exactamente
 $k$ eventos cuando el promedio es $\lambda$, y $e^{-\lambda}$ es la
 constante de normalización que asegura que las probabilidades sumen
 uno. Como ejercicio mental, evaluar [](#eq-poisson-pmf) con
-$\lambda = 4$ y $k = 3$ devuelve la altura exacta de la barra más
-alta del gráfico.
+$\lambda = 4$ y $k = 3$ devuelve la altura exacta de una de las barras
+más altas del gráfico.
 
 En una Poisson, el parámetro $\lambda$ hace doble trabajo:
 
@@ -659,7 +671,7 @@ las de una Poisson:
 $$ \text{Bin}(n,p) \approx \text{Poisson}(\lambda) \quad\text{cuando } n\text{ es grande},\ p\text{ chico},\ \lambda=np $$ (eq-binomial-poisson)
 
 Pensá en una fábrica con miles de piezas y una chance mínima de defecto por
-pieza. Contar cada intento como Bernoulli sería correcto, pero incómodo. La
+pieza. Contar cada intento como Bernoulli sería correcto, pero poco práctico. La
 Poisson conserva lo esencial —la tasa promedio de eventos— y simplifica el
 modelo.
 
@@ -685,6 +697,11 @@ $\lambda t = 6 \cdot (20/60) = 2$ llegadas. La pregunta «¿cuántos llegan en 2
 minutos?» usa Poisson(2); la pregunta «¿cuánto falta hasta el próximo?» usa una
 Exponencial con tasa 6 por hora. Elegir una u otra no cambia el fenómeno: cambia
 la pregunta.
+
+**Lectura operativa.** Poisson sirve para dimensionar carga en una ventana fija:
+cuántas llegadas, fallas o defectos esperamos. Exponencial sirve para hablar del
+tiempo hasta el próximo evento. La tasa puede ser la misma; la decisión que
+querés tomar no.
 
 ## Exploración interactiva — discretas
 

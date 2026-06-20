@@ -12,6 +12,12 @@ encuesta — y va sumando herramientas hasta poder responder preguntas
 útiles sobre esa situación. La idea no es coleccionar fórmulas, sino
 aprender a **pensar con datos** cuando hay incertidumbre de por medio.
 
+La promesa del recorrido es práctica: al terminar, deberías poder mirar una
+muestra, elegir un modelo razonable, medir la incertidumbre y comunicar una
+decisión sin esconder los supuestos. La trampa que vamos a evitar es igual de
+importante: usar una fórmula correcta para contar una historia más fuerte que la
+evidencia disponible.
+
 ## Cómo está organizado
 
 El recorrido se divide en cinco unidades. Cada una tiene un capítulo de
@@ -113,6 +119,11 @@ mental ayuda a recordar mejor el resultado, incluso si la predicción
 sale mal. Cuando aparezca un **Contrato del modelo**, leelo como una
 lista de chequeo: qué supuesto permite usar la herramienta, qué la
 puede romper y qué conclusión autoriza.
+
+Cuando aparezca un bloque **No confundas** o una comparación en el
+[glosario](glossary.md), leelo como una pausa de estudio: no agrega una fórmula
+nueva, separa ideas que suelen mezclarse cuando el cálculo empieza a parecer
+automático.
 
 Los capítulos son **cuadernos ejecutables**: podés correrlos en
 Binder, Colab o en tu propia máquina. Cambiar parámetros y volver a

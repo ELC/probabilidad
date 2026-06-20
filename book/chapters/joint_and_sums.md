@@ -45,6 +45,9 @@ Las tres preguntas comparten respuesta y caen, finalmente, sobre el
 > una observación”, sino cuántas observaciones alcanzan para confiar en un
 > promedio, una proporción o un total. Más datos compran estabilidad, pero con
 > costo y rendimientos decrecientes.
+> Al final del capítulo vas a poder separar dos ideas que suelen mezclarse:
+> cuándo un promedio se estabiliza y qué forma tienen sus errores mientras
+> todavía fluctúa.
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -164,8 +167,8 @@ chart_lln_running_mean(lln_chart_input)
 ```
 
 Una sola simulación podría haber bajado en lugar de subir, o haber pasado
-más tiempo lejos de $0{,}55$. Para ver que la convergencia no depende de la
-suerte de un único experimento, repetimos el mismo procedimiento muchas
+más tiempo lejos de $0{,}55$. Para ver que la convergencia no depende de una
+realización particular, repetimos el mismo procedimiento muchas
 veces en paralelo: cada trayectoria es una encuesta distinta hecha en una
 ciudad imaginaria diferente, con sus propios «sí» y «no» en otro orden.
 
@@ -190,7 +193,7 @@ El abanico es ancho al principio: con pocas respuestas, la proporción
 observada en cada encuesta puede caer casi en cualquier lado. A medida
 que $n$ crece, las treinta líneas se aprietan contra el valor teórico
 $0{,}55$ y el ancho de la franja tiende a cero. Esa contracción
-simultánea no depende de la suerte de un experimento: ocurre en las
+simultánea no depende de una trayectoria aislada: ocurre en las
 treinta encuestas a la vez.
 
 ### El nombre de lo que vimos
@@ -338,6 +341,12 @@ mitad. Para reducir el error estándar a la mitad, hace falta multiplicar $n$ po
 cuatro. Esa regla convierte el TCL en una decisión de costo: más datos compran
 precisión, pero con rendimientos decrecientes.
 
+**No confundas.** El desvío estándar $\sigma$ mide variabilidad entre
+observaciones individuales. El error estándar $\sigma/\sqrt{n}$ mide
+variabilidad entre promedios muestrales. Medir más no vuelve idénticos a los
+pacientes, piezas o respuestas; vuelve más estable el promedio que calculamos
+con ellos.
+
 > **Contrato del modelo.** El TCL es una aproximación para promedios o sumas de
 > muchas observaciones i.i.d. con varianza finita. Funciona mejor con muestras
 > grandes y distribuciones no demasiado extremas. Si hay dependencia fuerte,
@@ -431,6 +440,12 @@ $$ P(Y \le 45) \approx P(N \le 45{,}5) $$ (eq-continuity-correction)
 Cuando $n$ es grande suele cambiar poco el resultado; cuando las barras son
 anchas o estamos cerca de una cola, puede evitar una aproximación demasiado
 tosca.
+
+**Lectura operativa.** La aproximación Normal no reemplaza a la Binomial por
+preferencia estética; la reemplaza cuando el conteo grande permite estimar
+colas y umbrales sin recorrer muchas barras discretas. Antes de usarla, revisá
+si $np$ y $n(1-p)$ son suficientemente grandes para que la aproximación cuente
+la historia correcta.
 
 (sec-sums-independent-sums)=
 ## Sumar variables independientes

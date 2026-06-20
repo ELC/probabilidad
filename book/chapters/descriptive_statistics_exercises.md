@@ -15,6 +15,11 @@ abre con un clic. La idea es que primero intentes el cálculo en papel (o a
 mano alzada) y recién después abras la solución para comparar pasos,
 visualizar el resultado y correr la verificación.
 
+Antes de abrir cada solución, hacé tres pausas rápidas: clasificá qué
+herramienta corresponde, anticipá la dirección del resultado y prepará una
+frase de interpretación. El objetivo no es sólo acertar el número, sino saber
+qué historia permite contar.
+
 ```{code-cell} python
 :tags: [hide-input]
 import numpy as np
@@ -58,6 +63,9 @@ de estudio es ese tiempo. Clasificala:
 
 - ¿Es **cualitativa** o **cuantitativa**?
 - Si es cuantitativa, ¿es **discreta** o **continua**?
+
+**Antes de abrir.** Decidí si estás clasificando una categoría, un conteo o una
+medición. Después escribí una frase que justifique la elección.
 
 :::{admonition} Solución
 :class: dropdown
@@ -116,6 +124,9 @@ $$
 
 Construí una tabla de frecuencias con 5 intervalos. ¿Cuál es la
 **frecuencia relativa** de la clase que contiene a 7 minutos?
+
+**Antes de abrir.** Anticipá en qué zona debería caer 7 minutos: baja, central
+o alta. Esa predicción ayuda a detectar si elegiste mal el intervalo.
 
 :::{admonition} Solución
 :class: dropdown
@@ -187,6 +198,9 @@ verify_numeric_answer(
 
 Con la misma muestra del ejercicio anterior, calculá la **media** y el
 **desvío estándar muestral** (divisor $n - 1$).
+
+**Antes de abrir.** Estimá si la media debería quedar cerca de 6, 7 u 8 minutos
+y si la dispersión parece chica o grande respecto de ese centro.
 
 :::{admonition} Solución
 :class: dropdown
@@ -262,6 +276,10 @@ un paciente esperó **18 minutos** porque hubo una emergencia
 simultánea. ¿Ese valor cuenta como **outlier** según la regla de Tukey
 con factor 1,5?
 
+**Antes de abrir.** Decidí si 18 minutos parece parte de la misma mañana o una
+señal que conviene revisar aparte. La regla de Tukey pondrá número a esa
+intuición.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -324,6 +342,9 @@ $\bar{x}_B = 45$ minutos y $s_B = 6$ minutos.
 
 ¿En qué turno la variabilidad relativa es **mayor**?
 
+**Antes de abrir.** No compares sólo los desvíos absolutos: preguntate qué tan
+grande es cada desvío respecto de su propia media.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -374,6 +395,9 @@ los valores bajos y la cola se estira hacia valores altos.
 Indicá si la siguiente afirmación es **Verdadera o Falsa**:
 
 > «En este histograma, la **media** es menor que la **mediana**.»
+
+**Antes de abrir.** Dibujá mentalmente la cola derecha y preguntate hacia dónde
+arrastra a la media.
 
 :::{admonition} Solución
 :class: dropdown

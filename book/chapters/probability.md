@@ -34,6 +34,9 @@ situaciones concretas; después les pondremos nombre y fórmula.
 > sala todavía en movimiento. Necesita estimar qué puede pasar con el próximo
 > paciente, cuánto cambia la información nueva y cuándo una señal merece
 > modificar una acción operativa.
+> Al final del capítulo vas a poder combinar eventos sin contar dos veces,
+> condicionar sin cambiar de universo por accidente y usar Bayes para convertir
+> evidencia imperfecta en una actualización defendible, no en certeza.
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -319,6 +322,12 @@ inequívoca:
 ```{code-cell} python
 bayes_theorem().formula
 ```
+
+**No confundas.** Probabilidad condicional calcula una chance dentro de un
+universo restringido. Bayes usa dos condicionales y una tasa base para invertir
+la dirección de la pregunta. Si ya tenés el grupo de referencia correcto, usás
+condicional; si querés pasar de evidencia observada a causa plausible, necesitás
+Bayes.
 
 (sec-prob-total)=
 ## Probabilidad total — armar el denominador

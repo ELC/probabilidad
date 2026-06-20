@@ -15,6 +15,10 @@ Binomial → Normal, y suma de variables aleatorias independientes. Cada
 enunciado va acompañado de una **solución** plegada con el paso a paso,
 una visualización y la verificación.
 
+Antes de abrir cada solución, preguntate si estás usando estabilidad del
+promedio, forma aproximada de errores o suma de componentes independientes. En
+este capítulo, elegir entre LLN y TCL es parte central del ejercicio.
+
 ```{code-cell} python
 :tags: [hide-input]
 import math
@@ -63,6 +67,9 @@ Una balanza mide con error aleatorio de media $\mu = 0$ y desvío
 $\sigma = 0{,}5$ gramos. Si se promedian $n = 25$ pesadas
 independientes, ¿cuál es el **desvío estándar del promedio** $\bar{X}_n$?
 
+**Antes de abrir.** Compará una medición individual con un promedio de 25: el
+resultado debe ser menor que $\sigma$, no igual.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -109,6 +116,9 @@ Simulá la **media acumulada** de una Exponencial con tasa $\lambda = 2$ a
 lo largo de $n = 2000$ observaciones y compará el valor final con la
 media teórica $1/\lambda = 0{,}5$. ¿La media acumulada cae a menos de
 $0{,}05$ del valor teórico al final del horizonte?
+
+**Antes de abrir.** Esta es una pregunta de estabilidad: anticipá que la LLN
+habla del promedio acumulado, no de cada observación individual.
 
 :::{admonition} Solución
 :class: dropdown
@@ -165,6 +175,9 @@ $T_i \sim \text{Exp}(\lambda = 0{,}25)$ minutos $^{-1}$ (es decir,
 media de 4 minutos). Para $n = 36$ pacientes independientes, ¿cuál es
 **aproximadamente** la probabilidad de que el **tiempo medio**
 $\bar{T}_{36}$ sea **mayor a 4,5 minutos**?
+
+**Antes de abrir.** Esta es una pregunta sobre la distribución del promedio:
+ubicá 4,5 respecto de la media 4 usando el error estándar.
 
 :::{admonition} Solución
 :class: dropdown
@@ -233,6 +246,9 @@ En la línea de producción del [ejercicio 1 de probabilidad](probability_exerci
 seguimos con $p = 0{,}04$ defectuosas. Se inspeccionan $n = 400$ piezas.
 Aproximá $P(Y \le 12)$, donde $Y$ es la cantidad de defectuosas.
 
+**Antes de abrir.** Calculá mentalmente $np$ y preguntate si 12 queda por
+debajo o por encima del centro esperado.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -285,6 +301,9 @@ Una caja con productos tiene dos pesos sumados: el contenedor pesa
 $X \sim \mathcal{N}(2{,}0;\ 0{,}10^{2})$ kg y el contenido pesa
 $Y \sim \mathcal{N}(8{,}0;\ 0{,}40^{2})$ kg, independientes. ¿Cuál es la
 probabilidad de que el **peso total** $W = X + Y$ supere los $10{,}5$ kg?
+
+**Antes de abrir.** Sumá centros, pero recordá que las dispersiones se combinan
+con varianzas, no sumando desvíos estándar.
 
 :::{admonition} Solución
 :class: dropdown
@@ -339,6 +358,9 @@ Indicá si la siguiente afirmación es **Verdadera o Falsa**:
 
 > «Para poder usar la aproximación del TCL al promedio
 > $\bar{X}_n$ es necesario que la población **original** sea Normal.»
+
+**Antes de abrir.** Recordá el tablero de Galton y la Exponencial: el TCL habla
+del promedio estandarizado, no de la forma original de cada observación.
 
 :::{admonition} Solución
 :class: dropdown

@@ -15,6 +15,11 @@ tests de hipótesis, conexión IC-test y cálculo de tamaño muestral. Cada enun
 incluye una **solución** plegada con el paso a paso, una visualización
 y la verificación correspondiente.
 
+Antes de abrir cada solución, separá tres capas: qué procedimiento corresponde,
+qué supuesto lo sostiene y qué frase de comunicación sería honesta después de
+calcular. En inferencia, el número sin interpretación suele ser la parte menos
+importante.
+
 ```{code-cell} python
 :tags: [hide-input]
 import math
@@ -59,6 +64,9 @@ con $\sigma = 0{,}10$ cm conocido del proceso histórico. En una muestra
 de $n = 25$ piezas se obtuvo $\bar{x} = 5{,}04$ cm. Construí un
 intervalo de **95 %** de confianza para $\mu$ y decidí si el valor
 nominal $\mu_0 = 5{,}00$ cm queda **adentro** del intervalo.
+
+**Antes de abrir.** Estimá el margen de error y preguntate si el valor nominal
+queda apenas fuera, claramente fuera o dentro del rango plausible.
 
 :::{admonition} Solución
 :class: dropdown
@@ -118,6 +126,9 @@ muestra de $n = 12$ pacientes se observó $\bar{x} = 13{,}2$ minutos y
 $s = 3{,}1$ minutos. Construí un IC del **95 %** y mostrá si el valor
 de referencia $\mu_0 = 12$ minutos **cae adentro**.
 
+**Antes de abrir.** Como $\sigma$ es desconocido y $n$ es chico, anticipá por
+qué la referencia $t$ debería dar un intervalo más prudente que la Normal.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -176,6 +187,9 @@ al partido oficialista. Construí un IC del **95 %** para la proporción
 real de apoyo $p$, y decidí si la afirmación «más del 50 % apoya al
 oficialismo» es **compatible** con los datos.
 
+**Antes de abrir.** Calculá mentalmente $\hat p$ y anticipá si el 50% debería
+quedar dentro o fuera del intervalo.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -228,6 +242,9 @@ unidades. Una muestra de $n = 16$ unidades arrojó varianza muestral
 $s^{2} = 6{,}25\ \mathrm{g}^{2}$. Construí un IC del **95 %** para
 $\sigma^{2}$, y decidí si la varianza objetivo $\sigma_{0}^{2} = 4$ está
 **dentro**.
+
+**Antes de abrir.** La varianza no puede ser negativa y el pivote es
+asimétrico: no esperes un intervalo centrado de forma simple en $s^2$.
 
 :::{admonition} Solución
 :class: dropdown
@@ -287,6 +304,9 @@ Volvé al escenario del [Ejercicio 1](#ejercicio-1-ic-para-la-media-con-conocido
 con $\sigma = 0{,}10$ cm. ¿Cuántas piezas hay que medir para obtener un
 margen de error de $\pm 0{,}02$ cm con **99 %** de confianza?
 
+**Antes de abrir.** Pedir más confianza y menor margen empuja $n$ hacia arriba:
+anticipá si el resultado será parecido a 25 o bastante mayor.
+
 :::{admonition} Solución
 :class: dropdown
 
@@ -342,6 +362,9 @@ H_0: \mu = 12,\qquad H_1: \mu \ne 12,
 $$
 
 con nivel de significancia $\alpha = 0{,}05$. ¿**Se rechaza $H_0$**?
+
+**Antes de abrir.** Separá compatibilidad estadística de impacto operativo: no
+rechazar $H_0$ no prueba que el proceso esté perfecto.
 
 :::{admonition} Solución
 :class: dropdown

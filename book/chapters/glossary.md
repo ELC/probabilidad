@@ -5,6 +5,19 @@ columna **Aparece en** apunta a la subsección donde el concepto se introduce
 por primera vez (cuando hay una ecuación numerada que lo define, también se
 indica).
 
+## Conceptos que suelen confundirse
+
+| Par | Diferencia clave | Regla de decisión |
+| --- | --- | --- |
+| Media vs mediana | La media equilibra magnitudes; la mediana parte posiciones ordenadas. | Si hay extremos fuertes, mirá ambas antes de hablar de “valor típico”. |
+| Desvío estándar vs error estándar | El desvío mide variación entre observaciones; el error estándar mide variación entre estimadores muestrales. | Si preguntás por individuos, usá desvío; si preguntás por promedios de muestras, usá error estándar. |
+| PMF vs PDF vs CDF | La PMF da probabilidades puntuales; la PDF da densidades; la CDF acumula hasta un corte. | “Exactamente” sugiere PMF, “entre” sugiere área bajo PDF, “hasta” sugiere CDF. |
+| Probabilidad condicional vs Bayes | La condicional restringe el universo; Bayes invierte el sentido de una condicional usando tasa base. | Si cambiás de “resultado dado causa” a “causa dado resultado”, necesitás Bayes. |
+| LLN vs TCL | La LLN habla de estabilidad del promedio; el TCL habla de la forma de sus fluctuaciones. | Para justificar que el promedio se acerca a $\mu$, LLN; para aproximar probabilidades de promedios, TCL. |
+| IC vs probabilidad posterior | El IC frecuentista cubre por procedimiento repetido; la posterior asigna probabilidad al parámetro bajo un modelo bayesiano. | No digas “95% de probabilidad de que $\mu$ esté dentro” salvo que estés usando un modelo bayesiano. |
+| $p$-valor vs tamaño del efecto | El $p$-valor mide sorpresa bajo $H_0$; el tamaño del efecto mide magnitud práctica. | Una señal puede ser estadísticamente clara y operativamente pequeña, o al revés. |
+| Significancia estadística vs decisión de ingeniería | La significancia controla una regla de evidencia; la decisión también pesa costo, riesgo y acción disponible. | Después del test, todavía falta decidir si actuar, medir más o comunicar incertidumbre. |
+
 ## Símbolos
 
 | Símbolo | Nombre | Aparece en |
