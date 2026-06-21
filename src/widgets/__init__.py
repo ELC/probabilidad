@@ -4,7 +4,12 @@ from widgets.continuous_explorer import (
     ContinuousDistributionExplorerInput,
     build_continuous_distribution_explorer,
 )
-from widgets.descriptive_explorer import DescriptiveExplorerInput, build_descriptive_explorer
+from widgets.descriptive_explorer import (
+    DescriptiveExplorerInput,
+    IntervalWidthExplorerInput,
+    build_descriptive_explorer,
+    build_interval_width_explorer,
+)
 from widgets.discrete_explorer import (
     DiscreteDistributionExplorerInput,
     build_discrete_distribution_explorer,
@@ -22,6 +27,7 @@ __all__ = [
     "ContinuousDistributionExplorerInput",
     "DescriptiveExplorerInput",
     "DiscreteDistributionExplorerInput",
+    "IntervalWidthExplorerInput",
     "LLNExplorerInput",
     "MeanCIExplorerInput",
     "PivotInversionExplorerInput",
@@ -30,6 +36,7 @@ __all__ = [
     "build_continuous_distribution_explorer",
     "build_descriptive_explorer",
     "build_discrete_distribution_explorer",
+    "build_interval_width_explorer",
     "build_lln_explorer",
     "build_mean_ci_explorer",
     "build_pivot_inversion_explorer",

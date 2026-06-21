@@ -1,11 +1,21 @@
 import ipywidgets as widgets
+import pandas as pd
+import pytest
+from pandera.typing import DataFrame
 
-from core import Settings
-from widgets import DescriptiveExplorerInput, build_descriptive_explorer
+from core import Observations, Settings
+from widgets import (
+    DescriptiveExplorerInput,
+    IntervalWidthExplorerInput,
+    build_descriptive_explorer,
+    build_interval_width_explorer,
+)
 
 
 def _find_slider(container: widgets.Widget, description_prefix: str) -> widgets.Widget:
     for child in container.children:
+        if getattr(child, "description", "").startswith(description_prefix):
+            return child
         if isinstance(child, (widgets.HBox, widgets.VBox)):
             for grandchild in child.children:
                 if getattr(grandchild, "description", "").startswith(description_prefix):
@@ -22,3 +32,36 @@ def test_descriptive_explorer_reacts_to_slider_change(fixed_settings: Settings) 
     container = build_descriptive_explorer(DescriptiveExplorerInput(settings=fixed_settings))
     mean_slider = _find_slider(container, "μ")
     mean_slider.value += 1.0
+
+
+def test_interval_width_explorer_yields_vbox_with_hstacked_outputs(fixed_settings: Settings) -> None:
+    observations = pd.DataFrame({"value": [2.0, 2.5, 3.0, 4.0, 4.5, 5.0]}).pipe(DataFrame[Observations])
+    container = build_interval_width_explorer(
+        IntervalWidthExplorerInput(observations=observations, settings=fixed_settings)
+    )
+    assert isinstance(container, widgets.VBox)
+    assert isinstance(container.children[0], widgets.FloatSlider)
+    assert isinstance(container.children[1], widgets.HBox)
+    assert len(container.children[1].children) == 2
+    assert container.children[1].layout.width == "100%"
+    assert container.children[1].children[0].layout.width == "50%"
+
+
+def test_interval_width_explorer_reacts_to_slider_change(fixed_settings: Settings) -> None:
+    observations = pd.DataFrame({"value": [2.0, 2.5, 3.0, 4.0, 4.5, 5.0]}).pipe(DataFrame[Observations])
+    container = build_interval_width_explorer(
+        IntervalWidthExplorerInput(observations=observations, settings=fixed_settings)
+    )
+    width_slider = _find_slider(container, "ancho")
+    width_slider.value += 0.25
+
+
+def test_interval_width_explorer_rejects_invalid_initial_width(fixed_settings: Settings) -> None:
+    observations = pd.DataFrame({"value": [2.0, 2.5, 3.0]}).pipe(DataFrame[Observations])
+    with pytest.raises(ValueError, match="initial_width"):
+        IntervalWidthExplorerInput(
+            observations=observations,
+            settings=fixed_settings,
+            initial_width=4.0,
+            maximum_width=3.0,
+        )

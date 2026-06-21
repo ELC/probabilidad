@@ -69,7 +69,12 @@ from visualization import (
     chart_stem_leaf,
     chart_typical_values_comparison,
 )
-from widgets import DescriptiveExplorerInput, build_descriptive_explorer
+from widgets import (
+    DescriptiveExplorerInput,
+    IntervalWidthExplorerInput,
+    build_descriptive_explorer,
+    build_interval_width_explorer,
+)
 ```
 
 ```{code-cell} python
@@ -410,6 +415,23 @@ El **polígono de frecuencias acumuladas** une las frecuencias acumuladas. Cuand
 esos puntos se ubican en los límites superiores de los intervalos, esa línea es la
 **ojiva**: permite leer qué proporción quedó por debajo de un corte dado, como
 cinco minutos de espera.
+
+El siguiente control mantiene fijos los mismos 80 tiempos y sólo cambia el ancho
+del intervalo. Mirá primero cómo se mueve el histograma de la izquierda: algunas
+barras suben, bajan o desaparecen según dónde caigan los cortes. Después mirá la
+curva acumulada de la derecha. Aunque también cambia, suele variar menos y conserva
+mejor la lectura operativa: qué proporción de pacientes quedó por debajo de cada
+tiempo de espera.
+
+```{code-cell} python
+:tags: [hide-input, remove-input]
+build_interval_width_explorer(
+    IntervalWidthExplorerInput(
+        observations=clinic_sample.waiting_times,
+        settings=settings,
+    )
+)
+```
 
 En la clínica, si agrupamos los 80 tiempos de espera en intervalos de un minuto,
 podríamos obtener una tabla como esta:

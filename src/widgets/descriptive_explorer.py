@@ -1,16 +1,19 @@
-from typing import Any
+from typing import Any, Self
 
 import ipywidgets as widgets
 import numpy as np
 import pandas as pd
 from IPython.display import display
 from pandera.typing import DataFrame
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from core import NormalParams, Observations, Settings
 from descriptive import FrequencyTableInput, build_frequency_table, summarize_observations
 from visualization import (
+    FrequencyPolygonChartInput,
     ObservationsOverviewInput,
+    chart_cumulative_frequency_polygon,
+    chart_histogram_with_frequency_polygon,
     chart_observations_overview,
 )
 
@@ -19,6 +22,27 @@ class DescriptiveExplorerInput(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
     settings: Settings = Settings()
+
+
+class IntervalWidthExplorerInput(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
+
+    observations: DataFrame[Observations]
+    settings: Settings = Settings()
+    minimum_width: float = Field(default=0.5, gt=0.0)
+    maximum_width: float = Field(default=3.0, gt=0.0)
+    step: float = Field(default=0.25, gt=0.0)
+    initial_width: float = Field(default=1.0, gt=0.0)
+
+    @model_validator(mode="after")
+    def _validate_widths(self) -> Self:
+        if self.minimum_width >= self.maximum_width:
+            msg = "minimum_width must be less than maximum_width"
+            raise ValueError(msg)
+        if not self.minimum_width <= self.initial_width <= self.maximum_width:
+            msg = "initial_width must be inside the slider range"
+            raise ValueError(msg)
+        return self
 
 
 def _generate_synthetic_observations(parameters: NormalParams, sample_size: int, seed: int) -> DataFrame[Observations]:
@@ -63,4 +87,52 @@ def build_descriptive_explorer(input_data: DescriptiveExplorerInput) -> widgets.
         widgets.HBox([mean_slider, deviation_slider]),
         widgets.HBox([sample_slider, bin_slider]),
         output,
+    ])
+
+
+def build_interval_width_explorer(input_data: IntervalWidthExplorerInput) -> widgets.Widget:
+    width_slider = widgets.FloatSlider(
+        min=input_data.minimum_width,
+        max=input_data.maximum_width,
+        step=input_data.step,
+        value=input_data.initial_width,
+        description="ancho",
+        readout_format=".2f",
+    )
+    left_output = widgets.Output(layout=widgets.Layout(width="50%"))
+    right_output = widgets.Output(layout=widgets.Layout(width="50%"))
+
+    def render(_change: Any | None = None) -> None:
+        frequency_table = build_frequency_table(
+            FrequencyTableInput(
+                observations=input_data.observations,
+                bin_width=width_slider.value,
+            )
+        )
+        frequency_chart = chart_histogram_with_frequency_polygon(
+            FrequencyPolygonChartInput(
+                frequency_table=frequency_table,
+                title="Frecuencia por intervalo",
+                settings=input_data.settings,
+            )
+        )
+        cumulative_chart = chart_cumulative_frequency_polygon(
+            FrequencyPolygonChartInput(
+                frequency_table=frequency_table,
+                title="Frecuencia acumulada",
+                settings=input_data.settings,
+            )
+        )
+        with left_output:
+            left_output.clear_output(wait=True)
+            display(frequency_chart)
+        with right_output:
+            right_output.clear_output(wait=True)
+            display(cumulative_chart)
+
+    width_slider.observe(render, names="value")
+    render()
+    return widgets.VBox([
+        width_slider,
+        widgets.HBox([left_output, right_output], layout=widgets.Layout(width="100%")),
     ])
