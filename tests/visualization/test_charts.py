@@ -11,6 +11,7 @@ from core import (
     NormalParams,
     Observations,
     Settings,
+    TabularData,
 )
 from descriptive import (
     CategoricalFrequencyTableInput,
@@ -168,7 +169,9 @@ def test_chart_categorical_bars_preserves_table_order_and_uses_container_width(f
 
 
 def test_chart_categorical_bars_from_data_counts_source_column(fixed_settings: Settings) -> None:
-    data = pd.DataFrame({"area": ["Laboratorio", "Guardia", "Guardia", "Clínica médica"]})
+    data = pd.DataFrame({"area": ["Laboratorio", "Guardia", "Guardia", "Clínica médica"]}).pipe(
+        DataFrame[TabularData]
+    )
     chart = chart_categorical_bars_from_data(
         CategoricalBarFromDataChartInput(
             data=data,
@@ -205,7 +208,7 @@ def test_chart_pareto_uses_relative_frequencies_and_container_width(fixed_settin
 def test_chart_pareto_from_data_excludes_categories(fixed_settings: Settings) -> None:
     data = pd.DataFrame({
         "delay_reason": ["Ninguna", "Autorización", "Autorización", "Admisión", "Ninguna", "Admisión", "Admisión"]
-    })
+    }).pipe(DataFrame[TabularData])
     chart = chart_pareto_from_data(
         ParetoFromDataChartInput(
             data=data,
@@ -244,7 +247,7 @@ def test_chart_discrete_sticks_renders_stems_and_points(fixed_settings: Settings
 
 
 def test_chart_discrete_sticks_from_data_counts_exact_values(fixed_settings: Settings) -> None:
-    data = pd.DataFrame({"people_ahead": [2, 0, 2, 1, 2]})
+    data = pd.DataFrame({"people_ahead": [2, 0, 2, 1, 2]}).pipe(DataFrame[TabularData])
     chart = chart_discrete_sticks_from_data(
         DiscreteStickFromDataChartInput(
             data=data,

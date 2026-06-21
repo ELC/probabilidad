@@ -1,5 +1,8 @@
+from typing import cast
+
 import numpy as np
 import pandas as pd
+from numpy.typing import NDArray
 from pandera.typing import DataFrame
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -64,8 +67,8 @@ class ClinicSample(BaseModel):
     people_ahead_values: tuple[int, ...]
 
 
-def _probabilities(weights: np.ndarray) -> np.ndarray:
-    return weights / weights.sum()
+def _probabilities(weights: NDArray[np.int_]) -> NDArray[np.float64]:
+    return cast("NDArray[np.float64]", weights / weights.sum())
 
 
 def _categorical_display_table(

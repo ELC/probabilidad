@@ -35,7 +35,7 @@ en este capítulo.
 > hablar de todo el servicio.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [remove-cell, hide-input]
 import numpy as np
 import pandas as pd
 from pandera.typing import DataFrame
@@ -72,7 +72,7 @@ from widgets import DescriptiveExplorerInput, build_descriptive_explorer
 ```
 
 ```{code-cell} python
-:tags: [remove-cell]
+:tags: [remove-cell, hide-input]
 settings = Settings()
 ```
 
@@ -146,6 +146,7 @@ enfermera de turno fue anotando paciente a paciente, ordenados en la
 secuencia en que llegaron a la guardia.
 
 ```{code-cell} python
+:tags: [hide-input]
 clinic_sample = generate_clinic_sample(ClinicSampleInput(settings=settings, sample_size=80))
 clinic_sample.clinic_display_table.head()
 ```
@@ -213,6 +214,7 @@ observada en esa clase y $f_k$ es su proporción sobre el total.
 En la clínica, una tabla por área de atención podría leerse así:
 
 ```{code-cell} python
+:tags: [hide-input]
 clinic_sample.area_display_table
 ```
 
@@ -224,6 +226,7 @@ usados, hay estudios y guías de visualización que recomiendan evitarlos cuando
 objetivo es comparar magnitudes con precisión [@few2007visual].
 
 ```{code-cell} python
+:tags: [hide-input]
 chart_categorical_bars_from_data(
     CategoricalBarFromDataChartInput(
         data=clinic_sample.clinic_data,
@@ -248,10 +251,12 @@ de demora identificable. Así empieza por las causas más frecuentes, no por las
 raras:
 
 ```{code-cell} python
+:tags: [hide-input]
 clinic_sample.delay_reason_display_table
 ```
 
 ```{code-cell} python
+:tags: [hide-input]
 chart_pareto_from_data(
     ParetoFromDataChartInput(
         data=clinic_sample.clinic_data,
@@ -292,6 +297,7 @@ $F_k$ da la proporción acumulada. En la clínica, si registramos cuántas perso
 tenía cada paciente por delante al llegar, una parte de la tabla podría verse así:
 
 ```{code-cell} python
+:tags: [hide-input]
 clinic_sample.people_ahead_display_table
 ```
 
@@ -302,6 +308,7 @@ de bastones**: una barra angosta para cada valor posible, con altura proporciona
 a su frecuencia.
 
 ```{code-cell} python
+:tags: [hide-input]
 chart_discrete_sticks_from_data(
     DiscreteStickFromDataChartInput(
         data=clinic_sample.clinic_data,
@@ -335,6 +342,7 @@ puede ser 4 y la hoja 7. Es útil en conjuntos pequeños o medianos porque muest
 la forma sin destruir del todo la lista original.
 
 ```{code-cell} python
+:tags: [hide-input]
 chart_stem_leaf(
     StemLeafChartInput(
         observations=clinic_sample.waiting_times,
@@ -371,6 +379,7 @@ predicción rápida: dónde se va a concentrar el histograma y en qué minuto cr
 que la ojiva va a cruzar el 70%.
 
 ```{code-cell} python
+:tags: [hide-input]
 chart_histogram_with_frequency_polygon(
     FrequencyPolygonChartInput(
         frequency_table=clinic_sample.frequency_table,
@@ -386,6 +395,7 @@ mejor la forma general, especialmente si queremos comparar centros, colas o
 asimetrías.
 
 ```{code-cell} python
+:tags: [hide-input]
 chart_cumulative_frequency_polygon(
     FrequencyPolygonChartInput(
         frequency_table=clinic_sample.frequency_table,
@@ -404,6 +414,7 @@ En la clínica, si agrupamos los 80 tiempos de espera en intervalos de dos minut
 podríamos obtener una tabla como esta:
 
 ```{code-cell} python
+:tags: [hide-input]
 clinic_sample.frequency_display_table
 ```
 
@@ -505,9 +516,8 @@ aritmética; elegir y calcular otras medias queda fuera de alcance.
 ### El valor más frecuente: la moda
 
 Otra medida de posición es la **moda**, escrita $\hat{x}$: el valor o categoría con
-mayor frecuencia. En una muestra de esperas puede ser el minuto que más se repite;
-en una encuesta puede ser la respuesta más elegida; en la fábrica puede ser la causa
-de defecto más frecuente.
+mayor frecuencia. En la clínica puede ser el minuto de espera que más se repite, el
+área de atención más frecuente o el motivo de demora que aparece más veces.
 
 La moda tiene tres detalles importantes. Algunas muestras no tienen moda clara;
 otras tienen dos modas y se llaman **bimodales**; y es la única medida de tendencia
@@ -539,7 +549,10 @@ leerse mirando la primera fila cuya frecuencia relativa acumulada alcanza o supe
 **No confundas.** La media pregunta por el equilibrio numérico de todos los
 valores; la mediana pregunta por la posición que parte la muestra; la moda
 pregunta qué valor o categoría aparece más. Las tres pueden coincidir, pero no
-cuentan la misma historia.
+cuentan la misma historia. De hecho, cuando no coinciden, esa diferencia aporta
+información importante sobre la simetría de los datos: si la media queda bastante
+separada de la mediana, suele haber una cola o valores extremos tirando del
+equilibrio numérico.
 
 ### Qué tan parecidas son las esperas: el desvío estándar
 
@@ -616,6 +629,7 @@ matemáticas; el desvío estándar vuelve a la unidad original y suele ser más 
 interpretar en contexto.
 
 ```{code-cell} python
+:tags: [hide-input]
 summary = summarize_observations(clinic_sample.waiting_times)
 summary
 ```
@@ -655,6 +669,7 @@ estamos cambiando los datos reales: armamos una segunda muestra para comparar
 qué pasa con cada resumen cuando aparece un valor extremo.
 
 ```{code-cell} python
+:tags: [hide-input]
 waiting_times_with_extreme = pd.concat(
     [clinic_sample.waiting_times, pd.DataFrame({"value": [120.0]})], ignore_index=True
 ).pipe(DataFrame[Observations])
@@ -662,6 +677,7 @@ summary_with_extreme = summarize_observations(waiting_times_with_extreme)
 ```
 
 ```{code-cell} python
+:tags: [hide-input]
 typical_values_chart_input = TypicalValuesComparisonChartInput(
     original_statistics=summary,
     comparison_statistics=summary_with_extreme,
@@ -698,6 +714,7 @@ Con una tabla de frecuencias acumuladas, se buscan de la misma manera que la
 mediana: la primera fila cuya acumulada alcanza el porcentaje pedido.
 
 ```{code-cell} python
+:tags: [hide-input]
 position_summary = pd.DataFrame({
     "corte": ["mínimo", "Q1", "mediana / Q2", "Q3", "máximo"],
     "minutos": [
@@ -742,6 +759,7 @@ separados: no son errores automáticamente, pero sí observaciones que conviene
 mirar antes de resumir todo con un único número.
 
 ```{code-cell} python
+:tags: [hide-input]
 summary_chart_input = DescriptiveSummaryChartInput(
     observations=clinic_sample.waiting_times,
     statistics=summary,
@@ -967,6 +985,7 @@ salió. En la práctica suele deberse a una de tres causas: se registró mal, pr
 una población distinta, o está bien medido pero representa un suceso poco común.
 
 ```{code-cell} python
+:tags: [hide-input]
 outlier_report = detect_outliers_tukey(clinic_sample.waiting_times)
 outlier_report
 ```
@@ -995,6 +1014,7 @@ campanular, los intervalos $\bar{x} \pm ks$ deberían cubrir aproximadamente 68%
 95% y casi todas las observaciones para $k = 1, 2, 3$.
 
 ```{code-cell} python
+:tags: [hide-input]
 piece_lengths = pd.DataFrame({
     "value": [
         85.0,
@@ -1094,6 +1114,7 @@ sorpresa frente a un valor de control. Comparten la idea de estandarizar, pero
 responden preguntas distintas.
 
 ```{code-cell} python
+:tags: [hide-input]
 standardized = standardize_observations(clinic_sample.waiting_times)
 standardized
 ```
@@ -1114,6 +1135,7 @@ unidad — de minutos a piezas defectuosas —, pero seguimos haciendo
 estadística descriptiva sobre una lista de observaciones.
 
 ```{code-cell} python
+:tags: [hide-input]
 rng_factory = np.random.default_rng(seed=20260202)
 raw_defect_counts = rng_factory.poisson(lam=3.5, size=60).astype(float)
 defect_counts = pd.DataFrame({"value": raw_defect_counts}).pipe(DataFrame[Observations])
@@ -1128,6 +1150,7 @@ chart_histogram(defect_histogram_input)
 ```
 
 ```{code-cell} python
+:tags: [hide-input]
 defect_summary = summarize_observations(defect_counts)
 defect_summary
 ```
@@ -1155,6 +1178,7 @@ tabla, anticipá: ¿la clínica o la fábrica parece más irregular respecto de 
 centro?
 
 ```{code-cell} python
+:tags: [hide-input]
 cv_comparison = pd.DataFrame({
     "muestra": ["Clínica: minutos", "Fábrica: defectos"],
     "media": [summary.location.mean, defect_summary.location.mean],
@@ -1186,6 +1210,7 @@ le dirías a la responsable de operaciones: cambió la espera típica o cambió 
 regularidad del servicio?
 
 ```{code-cell} python
+:tags: [hide-input]
 explorer_input = DescriptiveExplorerInput(settings=settings)
 build_descriptive_explorer(explorer_input)
 ```
@@ -1263,6 +1288,7 @@ sobre la espera típica y qué no dice sobre la regularidad del servicio.
 cambiar turnos, o pedirías también dispersión y posibles outliers?
 
 ```{code-cell} python
+:tags: [hide-input]
 exercise_sample = pd.DataFrame({"value": [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]}).pipe(
     DataFrame[Observations]
 )
@@ -1288,6 +1314,7 @@ a 2 minutos te parece mucha o poca dispersión para una media de 5?
 **Pista mínima.** Los valores 2 y 9 son los que más empujan la dispersión.
 
 ```{code-cell} python
+:tags: [hide-input]
 expected_std = summarize_observations(exercise_sample).dispersion.sample_standard_deviation
 
 student_answer_std = 2.138
