@@ -132,9 +132,13 @@ def style_display_table(table: pd.DataFrame) -> Styler:
     first_column_styles = [
         ("min-width", first_column_min_width),
         ("white-space", "nowrap"),
-        ("text-align", "right !important"),
+        ("text-align", "center !important"),
     ]
     table_styles = [
+        {"selector": "th", "props": [("text-align", "center !important")]},
+        {"selector": "td", "props": [("text-align", "center !important")]},
+        {"selector": "th > div", "props": [("text-align", "center !important")]},
+        {"selector": ".MathJax", "props": [("margin", "0 auto !important")]},
         {"selector": "th.col0", "props": first_column_styles},
         {"selector": "td.col0", "props": first_column_styles},
     ]

@@ -16,7 +16,6 @@ from visualization.theme import apply_theme
 _MINIMUM_SAMPLE_SIZE_FOR_STANDARD_DEVIATION = 2
 _DOMAIN_PADDING_RATIO = 0.05
 _RANDOM_DOMAIN_DEVIATIONS = 4.0
-_FUTURE_OBSERVATION_PADDING = 20
 
 
 class SummaryEvolutionExplorerInput(BaseModel):
@@ -95,23 +94,16 @@ def _random_value_bounds(input_data: SummaryEvolutionExplorerInput) -> tuple[flo
     return random_low, random_high
 
 
-def _fixed_histogram_domain(
+def _fixed_evolution_domain(
     input_data: SummaryEvolutionExplorerInput,
-    initial_values: np.ndarray,
+    measures: tuple[_MeasureSpec, ...],
 ) -> tuple[float, float]:
     random_low, random_high = _random_value_bounds(input_data)
-    return _padded_domain(
-        min(float(initial_values.min()), random_low),
-        max(float(initial_values.max()), random_high),
+    reference_values = np.append(
+        input_data.observations["value"].to_numpy(dtype=float),
+        [input_data.manual_value, random_low, random_high],
     )
-
-
-def _fixed_n_domain(input_data: SummaryEvolutionExplorerInput) -> tuple[int, int]:
-    return (1, len(input_data.observations) + input_data.random_batch_size + _FUTURE_OBSERVATION_PADDING)
-
-
-def _evolution_domain(values: np.ndarray, measures: tuple[_MeasureSpec, ...]) -> tuple[float, float]:
-    history = _history(values, measures)
+    history = _history(reference_values, measures)
     return _padded_domain(float(history["value"].min()), float(history["value"].max()))
 
 
@@ -120,12 +112,9 @@ def _summary_chart(
     measures: tuple[_MeasureSpec, ...],
     title: str,
     settings: Settings,
-    histogram_domain: tuple[float, float],
     evolution_domain: tuple[float, float],
-    n_domain: tuple[int, int],
 ) -> alt.Chart:
     theme = settings.chart_theme
-    chart_width = theme.width
     observations = pd.DataFrame({"value": values})
     history = _history(values, measures)
     histogram = (
@@ -136,13 +125,12 @@ def _summary_chart(
             x=alt.X(
                 "value:Q",
                 bin=alt.Bin(maxbins=20),
-                scale=alt.Scale(domain=list(histogram_domain)),
                 title="Minutos de espera",
             ),
             y=alt.Y("count()", title="Frecuencia"),
             tooltip=[alt.Tooltip("count()", title="Frecuencia")],
         )
-        .properties(title="Distribución actual", width=chart_width, height=180)
+        .properties(title="Distribución actual", width="container", height=180)
     )
     color = alt.Color("measure:N", legend=alt.Legend(title=None, orient="bottom"))
     evolution = (
@@ -152,7 +140,6 @@ def _summary_chart(
         .encode(
             x=alt.X(
                 "n:Q",
-                scale=alt.Scale(domain=list(n_domain)),
                 title="Cantidad de valores incorporados",
             ),
             y=alt.Y(
@@ -168,7 +155,7 @@ def _summary_chart(
                 alt.Tooltip("value:Q", title="Valor", format=".2f"),
             ],
         )
-        .properties(title=title, width=chart_width, height=220)
+        .properties(title=title, width="container", height=220)
     )
     chart = alt.vconcat(histogram, evolution, spacing=10).resolve_scale(x="independent")
     return apply_theme(chart, settings, set_size=False)
@@ -181,30 +168,24 @@ def _build_summary_evolution_explorer(
 ) -> widgets.Widget:
     initial_values = list(input_data.observations["value"].astype(float))
     values = list(initial_values)
-    initial_values_array = np.array(initial_values, dtype=float)
-    histogram_domain = _fixed_histogram_domain(input_data, initial_values_array)
-    n_domain = _fixed_n_domain(input_data)
+    evolution_domain = _fixed_evolution_domain(input_data, measures)
     rng = np.random.default_rng(input_data.settings.random_seed)
-    chart_width = input_data.settings.chart_theme.width
     controls_layout = widgets.Layout(width="100%")
     value_input = widgets.FloatText(value=input_data.manual_value, description="valor")
     add_value_button = widgets.Button(description="Agregar valor")
     add_random_button = widgets.Button(description="Agregar aleatorio")
     add_random_batch_button = widgets.Button(description=f"Agregar {input_data.random_batch_size}")
     reset_button = widgets.Button(description="Reiniciar")
-    output = widgets.Output(layout=widgets.Layout(width="100%", min_width=f"{chart_width}px"))
+    output = widgets.Output(layout=widgets.Layout(width="100%"))
 
     def render() -> None:
         current_values = np.array(values, dtype=float)
-        evolution_domain = _evolution_domain(current_values, measures)
         chart = _summary_chart(
             current_values,
             measures,
             title,
             input_data.settings,
-            histogram_domain,
             evolution_domain,
-            n_domain,
         )
         with output:
             output.clear_output(wait=True)

@@ -61,12 +61,13 @@ def test_style_display_table_aligns_columns_and_formats_floats(
     rendered = style_display_table(table).to_html()
 
     assert "#T_" in rendered
+    assert "th > div" in rendered
+    assert ".MathJax" in rendered
     assert "th.col0" in rendered
-    assert "text-align: right !important" in rendered
+    assert "text-align: center !important" in rendered
     assert expected_min_width in rendered
     for column_index in range(1, numeric_column_count + 1):
         assert f"th.col{column_index}" in rendered
         assert f"td.col{column_index}" in rendered
-    assert "text-align: center !important" in rendered
     if table_attr == "frequency_display_table":
         assert f"{table['$x_k$'].iloc[0]:.2f}" in rendered

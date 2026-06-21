@@ -888,10 +888,40 @@ build_location_evolution_explorer(
 )
 ```
 
-La línea de la media puede subir con fuerza porque el valor extremo entra en la
-suma. La mediana, en cambio, suele moverse menos porque depende del orden. La
-moda puede quedarse quieta si el valor nuevo no cambia qué valor redondeado se
-repite más.
+Usá los controles anteriores como un laboratorio pequeño. Antes de presionar cada
+botón, anticipá qué curva debería moverse y después compará tu predicción con el
+gráfico:
+
+- Si agregás una espera extrema alta, por ejemplo 20 minutos, la **media** puede
+  desplazarse hacia arriba porque ese valor entra directamente en la suma. Ese
+  efecto puede compensarse con un valor igual de extremo en sentido contrario:
+  si la muestra tuviera esperas alrededor de 4 minutos, una espera de 20 empuja
+  la media hacia arriba y una espera de 0 empuja en dirección opuesta.
+- Si agregás una espera exactamente igual a la media muestral actual, la
+  **media** no cambia: sumar un valor igual al equilibrio anterior mantiene el
+  mismo equilibrio. En la clínica, si el promedio actual fuera 4,3 minutos y
+  entra otro paciente con 4,3 minutos de espera, la media queda igual.
+- La **mediana** puede moverse, pero lo hace saltando de un valor ordenado a
+  otro. Por eso sus saltos suelen ser pequeños; sólo serían grandes si hubiera
+  huecos grandes entre valores consecutivos. Se mueve hacia el lado donde se
+  agregan más observaciones, extremas o no. Si entran varias esperas altas, la
+  posición central se desplaza hacia arriba; si luego entran esperas bajas, ese
+  efecto puede compensarse.
+- El **desvío estándar** disminuye cuando agregás datos cerca de la media
+  muestral: si la mañana venía con esperas alrededor de 4 minutos y agregás más
+  pacientes cerca de 4, la nube se vuelve más compacta respecto de su centro.
+- El **desvío estándar** crece mucho con datos extremos. Una espera de 20
+  minutos agrega una distancia grande al promedio; para compensar ese efecto no
+  alcanza con un único valor simétrico, porque ambos extremos suman distancia:
+  hace falta incorporar muchos más datos cerca del comportamiento habitual.
+- El **rango** es monótonamente creciente: no puede achicarse al agregar datos,
+  porque depende sólo del mínimo y del máximo. Aumenta tanto con una espera
+  extremadamente alta como con una espera extremadamente baja.
+- El **IQR** puede disminuir cuando agregás muchos valores muy cercanos a la
+  media muestral, porque el 50% central se concentra más. En cambio, tiende a
+  permanecer estable cuando agregás valores parecidos a toda la muestra original:
+  si los nuevos pacientes reproducen la misma mezcla de esperas bajas, medias y
+  altas, los cuartiles cambian poco.
 
 ## Exploración interactiva
 

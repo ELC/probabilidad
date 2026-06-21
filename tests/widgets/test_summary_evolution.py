@@ -20,7 +20,7 @@ from widgets import (
 )
 from widgets.summary_evolution import (
     _MEAN,
-    _fixed_histogram_domain,
+    _fixed_evolution_domain,
     _summary_chart,
 )
 
@@ -93,35 +93,34 @@ def test_summary_evolution_rejects_empty_observations(fixed_settings: Settings) 
         SummaryEvolutionExplorerInput(observations=observations, settings=fixed_settings)
 
 
-def test_summary_evolution_histogram_domain_uses_initial_observations_only(fixed_settings: Settings) -> None:
+def test_summary_evolution_uses_fixed_evolution_y_domain(fixed_settings: Settings) -> None:
     observations = _observations()
     input_data = SummaryEvolutionExplorerInput(
         observations=observations,
         settings=fixed_settings,
         manual_value=20.0,
     )
-    initial_values = observations["value"].to_numpy(dtype=float)
-    histogram_domain = _fixed_histogram_domain(input_data, initial_values)
+    evolution_domain = _fixed_evolution_domain(input_data, (_MEAN,))
+    mean_after_extreme = pd.Series([2.0, 3.0, 4.0, 5.0, 6.0, 20.0]).mean()
 
-    assert histogram_domain[1] < 20.0
-    assert histogram_domain == _fixed_histogram_domain(input_data, initial_values)
+    assert evolution_domain[1] >= mean_after_extreme
+    assert evolution_domain == _fixed_evolution_domain(input_data, (_MEAN,))
 
 
-def test_summary_chart_uses_fixed_width(fixed_settings: Settings) -> None:
+def test_summary_chart_uses_container_width_and_dynamic_x_domain(fixed_settings: Settings) -> None:
     observations = _observations()
     values = observations["value"].to_numpy(dtype=float)
-    input_data = SummaryEvolutionExplorerInput(observations=observations, settings=fixed_settings)
-    histogram_domain = _fixed_histogram_domain(input_data, values)
+    input_data = SummaryEvolutionExplorerInput(observations=observations, settings=fixed_settings, manual_value=20.0)
     chart = _summary_chart(
         values,
         (_MEAN,),
         "Evolución de la media",
         fixed_settings,
-        histogram_domain,
-        (2.0, 6.0),
-        (1, 20),
+        _fixed_evolution_domain(input_data, (_MEAN,)),
     )
 
     chart_spec = chart.to_dict()
-    assert chart_spec["vconcat"][0]["width"] == fixed_settings.chart_theme.width
-    assert chart_spec["vconcat"][1]["width"] == fixed_settings.chart_theme.width
+    assert chart_spec["vconcat"][0]["width"] == "container"
+    assert chart_spec["vconcat"][1]["width"] == "container"
+    assert "scale" not in chart_spec["vconcat"][0]["encoding"]["x"]
+    assert "scale" not in chart_spec["vconcat"][1]["encoding"]["x"]
