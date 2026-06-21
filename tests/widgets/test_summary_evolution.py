@@ -107,7 +107,7 @@ def test_summary_evolution_uses_fixed_evolution_y_domain(fixed_settings: Setting
     assert evolution_domain == _fixed_evolution_domain(input_data, (_MEAN,))
 
 
-def test_summary_chart_uses_container_width_and_dynamic_x_domain(fixed_settings: Settings) -> None:
+def test_summary_chart_uses_theme_width_and_dynamic_x_domain(fixed_settings: Settings) -> None:
     observations = _observations()
     values = observations["value"].to_numpy(dtype=float)
     input_data = SummaryEvolutionExplorerInput(observations=observations, settings=fixed_settings, manual_value=20.0)
@@ -120,7 +120,8 @@ def test_summary_chart_uses_container_width_and_dynamic_x_domain(fixed_settings:
     )
 
     chart_spec = chart.to_dict()
-    assert chart_spec["vconcat"][0]["width"] == "container"
-    assert chart_spec["vconcat"][1]["width"] == "container"
+    expected_width = fixed_settings.chart_theme.width
+    assert chart_spec["vconcat"][0]["width"] == expected_width
+    assert chart_spec["vconcat"][1]["width"] == expected_width
     assert "scale" not in chart_spec["vconcat"][0]["encoding"]["x"]
     assert "scale" not in chart_spec["vconcat"][1]["encoding"]["x"]

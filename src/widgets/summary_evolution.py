@@ -130,7 +130,7 @@ def _summary_chart(
             y=alt.Y("count()", title="Frecuencia"),
             tooltip=[alt.Tooltip("count()", title="Frecuencia")],
         )
-        .properties(title="Distribución actual", width="container", height=180)
+        .properties(title="Distribución actual", width=theme.width, height=180)
     )
     color = alt.Color("measure:N", legend=alt.Legend(title=None, orient="bottom"))
     evolution = (
@@ -155,7 +155,7 @@ def _summary_chart(
                 alt.Tooltip("value:Q", title="Valor", format=".2f"),
             ],
         )
-        .properties(title=title, width="container", height=220)
+        .properties(title=title, width=theme.width, height=220)
     )
     chart = alt.vconcat(histogram, evolution, spacing=10).resolve_scale(x="independent")
     return apply_theme(chart, settings, set_size=False)
