@@ -253,6 +253,9 @@ line-ending = "auto"
 [tool.pylint.main]
 extension-pkg-allow-list = ["mypy"]
 
+[tool.pylint.design]
+max-module-lines = 300
+
 [tool.pylint.typecheck]
 contextmanager-decorators = ["contextlib.contextmanager"]
 ignore-none = true
