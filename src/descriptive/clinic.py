@@ -118,23 +118,33 @@ def _clinic_display_table(clinic_data: DataFrame[TabularData]) -> DataFrame[Tabu
     }).pipe(DataFrame[TabularData])
 
 
+def _first_column_min_width(table: pd.DataFrame) -> str:
+    longest_label = int(table.iloc[:, 0].astype(str).str.len().max())
+    return f"{max(280, longest_label * 10 + 24)}px"
+
+
 def style_display_table(table: pd.DataFrame) -> Styler:
     float_columns = list(table.select_dtypes(include=[float]).columns)
     styler = table.style.hide(axis="index")
     if float_columns:
         styler = styler.format("{:.2f}", subset=float_columns)
-    return styler.set_table_styles([
-        {"selector": "th", "props": [("text-align", "center !important")]},
-        {"selector": "td", "props": [("text-align", "center !important")]},
-        {
-            "selector": "th.col0",
-            "props": [("min-width", "240px"), ("white-space", "nowrap")],
-        },
-        {
-            "selector": "td.col0",
-            "props": [("min-width", "240px"), ("white-space", "nowrap")],
-        },
-    ])
+    first_column_min_width = _first_column_min_width(table)
+    first_column_styles = [
+        ("min-width", first_column_min_width),
+        ("white-space", "nowrap"),
+        ("text-align", "right !important"),
+    ]
+    table_styles = [
+        {"selector": "th.col0", "props": first_column_styles},
+        {"selector": "td.col0", "props": first_column_styles},
+    ]
+    for column_index in range(1, table.shape[1]):
+        centered = [("text-align", "center !important")]
+        table_styles.extend([
+            {"selector": f"th.col{column_index}", "props": centered},
+            {"selector": f"td.col{column_index}", "props": centered},
+        ])
+    return styler.set_table_styles(table_styles)
 
 
 def generate_clinic_sample(input_data: ClinicSampleInput) -> ClinicSample:

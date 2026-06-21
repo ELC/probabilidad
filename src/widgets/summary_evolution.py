@@ -89,23 +89,30 @@ def _padded_domain(minimum: float, maximum: float) -> tuple[float, float]:
     return minimum - padding, maximum + padding
 
 
-def _reference_values(input_data: SummaryEvolutionExplorerInput) -> np.ndarray:
-    observations = input_data.observations["value"].to_numpy(dtype=float)
+def _random_value_bounds(input_data: SummaryEvolutionExplorerInput) -> tuple[float, float]:
     random_low = max(0.0, input_data.random_mean - _RANDOM_DOMAIN_DEVIATIONS * input_data.random_standard_deviation)
     random_high = input_data.random_mean + _RANDOM_DOMAIN_DEVIATIONS * input_data.random_standard_deviation
-    return np.append(observations, [input_data.manual_value, random_low, random_high])
+    return random_low, random_high
 
 
-def _fixed_domains(
+def _fixed_histogram_domain(
     input_data: SummaryEvolutionExplorerInput,
-    measures: tuple[_MeasureSpec, ...],
-) -> tuple[tuple[float, float], tuple[float, float], tuple[int, int]]:
-    reference_values = _reference_values(input_data)
-    histogram_domain = _padded_domain(float(reference_values.min()), float(reference_values.max()))
-    history_data = _history(reference_values, measures)
-    evolution_domain = _padded_domain(float(history_data["value"].min()), float(history_data["value"].max()))
-    n_domain = (1, len(input_data.observations) + input_data.random_batch_size + _FUTURE_OBSERVATION_PADDING)
-    return histogram_domain, evolution_domain, n_domain
+    initial_values: np.ndarray,
+) -> tuple[float, float]:
+    random_low, random_high = _random_value_bounds(input_data)
+    return _padded_domain(
+        min(float(initial_values.min()), random_low),
+        max(float(initial_values.max()), random_high),
+    )
+
+
+def _fixed_n_domain(input_data: SummaryEvolutionExplorerInput) -> tuple[int, int]:
+    return (1, len(input_data.observations) + input_data.random_batch_size + _FUTURE_OBSERVATION_PADDING)
+
+
+def _evolution_domain(values: np.ndarray, measures: tuple[_MeasureSpec, ...]) -> tuple[float, float]:
+    history = _history(values, measures)
+    return _padded_domain(float(history["value"].min()), float(history["value"].max()))
 
 
 def _summary_chart(
@@ -118,6 +125,7 @@ def _summary_chart(
     n_domain: tuple[int, int],
 ) -> alt.Chart:
     theme = settings.chart_theme
+    chart_width = theme.width
     observations = pd.DataFrame({"value": values})
     history = _history(values, measures)
     histogram = (
@@ -134,7 +142,7 @@ def _summary_chart(
             y=alt.Y("count()", title="Frecuencia"),
             tooltip=[alt.Tooltip("count()", title="Frecuencia")],
         )
-        .properties(title="Distribución actual", width="container", height=180)
+        .properties(title="Distribución actual", width=chart_width, height=180)
     )
     color = alt.Color("measure:N", legend=alt.Legend(title=None, orient="bottom"))
     evolution = (
@@ -160,7 +168,7 @@ def _summary_chart(
                 alt.Tooltip("value:Q", title="Valor", format=".2f"),
             ],
         )
-        .properties(title=title, width="container", height=220)
+        .properties(title=title, width=chart_width, height=220)
     )
     chart = alt.vconcat(histogram, evolution, spacing=10).resolve_scale(x="independent")
     return apply_theme(chart, settings, set_size=False)
@@ -171,19 +179,26 @@ def _build_summary_evolution_explorer(
     measures: tuple[_MeasureSpec, ...],
     title: str,
 ) -> widgets.Widget:
-    values = list(input_data.observations["value"].astype(float))
-    histogram_domain, evolution_domain, n_domain = _fixed_domains(input_data, measures)
+    initial_values = list(input_data.observations["value"].astype(float))
+    values = list(initial_values)
+    initial_values_array = np.array(initial_values, dtype=float)
+    histogram_domain = _fixed_histogram_domain(input_data, initial_values_array)
+    n_domain = _fixed_n_domain(input_data)
     rng = np.random.default_rng(input_data.settings.random_seed)
+    chart_width = input_data.settings.chart_theme.width
     controls_layout = widgets.Layout(width="100%")
     value_input = widgets.FloatText(value=input_data.manual_value, description="valor")
     add_value_button = widgets.Button(description="Agregar valor")
     add_random_button = widgets.Button(description="Agregar aleatorio")
     add_random_batch_button = widgets.Button(description=f"Agregar {input_data.random_batch_size}")
-    output = widgets.Output(layout=widgets.Layout(width="100%"))
+    reset_button = widgets.Button(description="Reiniciar")
+    output = widgets.Output(layout=widgets.Layout(width="100%", min_width=f"{chart_width}px"))
 
     def render() -> None:
+        current_values = np.array(values, dtype=float)
+        evolution_domain = _evolution_domain(current_values, measures)
         chart = _summary_chart(
-            np.array(values, dtype=float),
+            current_values,
             measures,
             title,
             input_data.settings,
@@ -211,14 +226,28 @@ def _build_summary_evolution_explorer(
         values.extend(next_random_value() for _ in range(input_data.random_batch_size))
         render()
 
+    def reset(_change: Any | None = None) -> None:
+        nonlocal rng
+        values.clear()
+        values.extend(initial_values)
+        rng = np.random.default_rng(input_data.settings.random_seed)
+        render()
+
     add_value_button.on_click(add_value)
     add_random_button.on_click(add_random)
     add_random_batch_button.on_click(add_random_batch)
+    reset_button.on_click(reset)
     render()
     return widgets.VBox(
         [
             widgets.HBox(
-                [value_input, add_value_button, add_random_button, add_random_batch_button],
+                [
+                    value_input,
+                    add_value_button,
+                    add_random_button,
+                    add_random_batch_button,
+                    reset_button,
+                ],
                 layout=controls_layout,
             ),
             output,

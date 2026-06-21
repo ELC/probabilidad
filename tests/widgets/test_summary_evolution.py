@@ -16,6 +16,11 @@ from widgets import (
     build_range_evolution_explorer,
     build_standard_deviation_evolution_explorer,
 )
+from widgets.summary_evolution import (
+    _MEAN,
+    _fixed_histogram_domain,
+    _summary_chart,
+)
 
 
 def _observations() -> DataFrame[Observations]:
@@ -55,6 +60,7 @@ def test_summary_evolution_builders_return_vbox(
     assert container.layout.width == "100%"
     assert container.children[0].layout.width == "100%"
     assert container.children[1].layout.width == "100%"
+    assert _button(container, "Reiniciar") is not None
 
 
 def test_summary_evolution_add_value_button_rerenders(fixed_settings: Settings) -> None:
@@ -68,7 +74,51 @@ def test_summary_evolution_add_value_button_rerenders(fixed_settings: Settings) 
     assert isinstance(container, widgets.VBox)
 
 
+def test_summary_evolution_reset_button_rerenders(fixed_settings: Settings) -> None:
+    container = build_mean_evolution_explorer(
+        SummaryEvolutionExplorerInput(observations=_observations(), settings=fixed_settings)
+    )
+    _button(container, "Agregar valor").click()
+    _button(container, "Reiniciar").click()
+
+    assert isinstance(container, widgets.VBox)
+
+
 def test_summary_evolution_rejects_empty_observations(fixed_settings: Settings) -> None:
     observations = pd.DataFrame({"value": []}).pipe(DataFrame[Observations])
     with pytest.raises(ValueError, match="observations"):
         SummaryEvolutionExplorerInput(observations=observations, settings=fixed_settings)
+
+
+def test_summary_evolution_histogram_domain_uses_initial_observations_only(fixed_settings: Settings) -> None:
+    observations = _observations()
+    input_data = SummaryEvolutionExplorerInput(
+        observations=observations,
+        settings=fixed_settings,
+        manual_value=20.0,
+    )
+    initial_values = observations["value"].to_numpy(dtype=float)
+    histogram_domain = _fixed_histogram_domain(input_data, initial_values)
+
+    assert histogram_domain[1] < 20.0
+    assert histogram_domain == _fixed_histogram_domain(input_data, initial_values)
+
+
+def test_summary_chart_uses_fixed_width(fixed_settings: Settings) -> None:
+    observations = _observations()
+    values = observations["value"].to_numpy(dtype=float)
+    input_data = SummaryEvolutionExplorerInput(observations=observations, settings=fixed_settings)
+    histogram_domain = _fixed_histogram_domain(input_data, values)
+    chart = _summary_chart(
+        values,
+        (_MEAN,),
+        "Evolución de la media",
+        fixed_settings,
+        histogram_domain,
+        (2.0, 6.0),
+        (1, 20),
+    )
+
+    chart_spec = chart.to_dict()
+    assert chart_spec["vconcat"][0]["width"] == fixed_settings.chart_theme.width
+    assert chart_spec["vconcat"][1]["width"] == fixed_settings.chart_theme.width

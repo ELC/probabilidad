@@ -1,3 +1,5 @@
+import pytest
+
 from core import Settings
 from descriptive import ClinicSampleInput, generate_clinic_sample, style_display_table
 
@@ -38,11 +40,33 @@ def test_generate_clinic_sample_is_reproducible() -> None:
     assert first.frequency_table.equals(second.frequency_table)
 
 
-def test_style_display_table_centers_headers_and_formats_floats() -> None:
+@pytest.mark.parametrize(
+    ("table_attr", "numeric_column_count"),
+    [
+        pytest.param("area_display_table", 2, id="area"),
+        pytest.param("delay_reason_display_table", 3, id="delay_reason"),
+        pytest.param("people_ahead_display_table", 4, id="people_ahead"),
+        pytest.param("frequency_display_table", 5, id="frequency"),
+    ],
+)
+def test_style_display_table_aligns_columns_and_formats_floats(
+    table_attr: str,
+    numeric_column_count: int,
+) -> None:
     sample = generate_clinic_sample(ClinicSampleInput(settings=Settings(), sample_size=80))
+    table = getattr(sample, table_attr)
+    longest_label = int(table.iloc[:, 0].astype(str).str.len().max())
+    expected_min_width = f"min-width: {max(280, longest_label * 10 + 24)}px"
 
-    rendered = style_display_table(sample.frequency_display_table).to_html()
+    rendered = style_display_table(table).to_html()
 
+    assert "#T_" in rendered
+    assert "th.col0" in rendered
+    assert "text-align: right !important" in rendered
+    assert expected_min_width in rendered
+    for column_index in range(1, numeric_column_count + 1):
+        assert f"th.col{column_index}" in rendered
+        assert f"td.col{column_index}" in rendered
     assert "text-align: center !important" in rendered
-    assert "min-width: 240px" in rendered
-    assert f"{sample.frequency_display_table['$x_k$'].iloc[0]:.2f}" in rendered
+    if table_attr == "frequency_display_table":
+        assert f"{table['$x_k$'].iloc[0]:.2f}" in rendered

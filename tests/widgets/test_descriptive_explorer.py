@@ -4,12 +4,14 @@ import pytest
 from pandera.typing import DataFrame
 
 from core import Observations, Settings
+from descriptive import FrequencyTableInput, build_frequency_table
 from widgets import (
     DescriptiveExplorerInput,
     IntervalWidthExplorerInput,
     build_descriptive_explorer,
     build_interval_width_explorer,
 )
+from widgets.descriptive_explorer import _fixed_domains, _slider_widths
 
 
 def _find_slider(container: widgets.Widget, description_prefix: str) -> widgets.Widget:
@@ -67,3 +69,16 @@ def test_interval_width_explorer_rejects_invalid_initial_width(fixed_settings: S
             initial_width=4.0,
             maximum_width=3.0,
         )
+
+
+def test_interval_width_explorer_fixed_domains_cover_all_slider_widths(fixed_settings: Settings) -> None:
+    observations = pd.DataFrame({"value": [2.0, 2.5, 3.0, 4.0, 4.5, 5.0]}).pipe(DataFrame[Observations])
+    input_data = IntervalWidthExplorerInput(observations=observations, settings=fixed_settings)
+    x_domain, _ = _fixed_domains(input_data)
+
+    for width in _slider_widths(input_data):
+        table = build_frequency_table(
+            FrequencyTableInput(observations=observations, bin_width=width)
+        )
+        assert float(table["interval_start"].min()) >= x_domain[0]
+        assert float(table["interval_end"].max()) <= x_domain[1]
