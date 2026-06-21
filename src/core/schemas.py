@@ -11,6 +11,26 @@ class BivariateObservations(pa.DataFrameModel):
     y: Series[float] = pa.Field(nullable=False)
 
 
+class TabularData(pa.DataFrameModel):
+    class Config:
+        strict = False
+
+
+class CategoricalFrequencyTable(pa.DataFrameModel):
+    category: Series[str] = pa.Field(nullable=False)
+    absolute_frequency: Series[int] = pa.Field(ge=0)
+    relative_frequency: Series[float] = pa.Field(ge=0.0, le=1.0)
+    cumulative_relative_frequency: Series[float] = pa.Field(ge=0.0, le=1.0)
+
+
+class DiscreteFrequencyTable(pa.DataFrameModel):
+    value: Series[int] = pa.Field(nullable=False)
+    absolute_frequency: Series[int] = pa.Field(ge=0)
+    relative_frequency: Series[float] = pa.Field(ge=0.0, le=1.0)
+    cumulative_absolute_frequency: Series[int] = pa.Field(ge=0)
+    cumulative_relative_frequency: Series[float] = pa.Field(ge=0.0, le=1.0)
+
+
 class FrequencyTable(pa.DataFrameModel):
     interval_start: Series[float] = pa.Field(nullable=False)
     interval_end: Series[float] = pa.Field(nullable=False)

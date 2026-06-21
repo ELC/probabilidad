@@ -13,7 +13,11 @@ from core import (
     Settings,
 )
 from descriptive import (
+    CategoricalFrequencyTableInput,
+    DiscreteFrequencyTableInput,
     FrequencyTableInput,
+    build_categorical_frequency_table,
+    build_discrete_frequency_table,
     build_frequency_table,
     summarize_observations,
 )
@@ -42,30 +46,42 @@ from sampling import (
 )
 from visualization import (
     BootstrapDistributionChartInput,
+    CategoricalBarChartInput,
+    CategoricalBarFromDataChartInput,
     CLTComparisonChartInput,
     ConfidenceIntervalChartInput,
     DensityChartInput,
     DescriptiveSummaryChartInput,
+    DiscreteStickChartInput,
+    DiscreteStickFromDataChartInput,
     FrequencyChartInput,
     HistogramChartInput,
     LLNChartInput,
     LLNMultipleTrajectoriesChartInput,
     ObservationsOverviewInput,
+    ParetoChartInput,
+    ParetoFromDataChartInput,
     PartitionDiagramInput,
     ProbabilityMassChartInput,
     ProbabilityTreeInput,
     TypicalValuesComparisonChartInput,
     VennTwoSetsInput,
     chart_bootstrap_distribution,
+    chart_categorical_bars,
+    chart_categorical_bars_from_data,
     chart_clt_comparison,
     chart_confidence_interval,
     chart_density,
     chart_descriptive_summary,
+    chart_discrete_sticks,
+    chart_discrete_sticks_from_data,
     chart_frequency_table,
     chart_histogram,
     chart_lln_multiple_trajectories,
     chart_lln_running_mean,
     chart_observations_overview,
+    chart_pareto,
+    chart_pareto_from_data,
     chart_partition_diagram,
     chart_probability_mass,
     chart_probability_tree,
@@ -91,6 +107,121 @@ def test_chart_frequency_table(normal_observations: DataFrame[Observations], fix
     assert bars_layer["encoding"]["x2"]["field"] == "interval_end"
     assert bars_layer["encoding"]["y2"]["field"] == "baseline"
     assert ogive_layer["encoding"]["x"]["field"] == "midpoint"
+
+
+def test_chart_categorical_bars_preserves_table_order_and_uses_container_width(fixed_settings: Settings) -> None:
+    table = build_categorical_frequency_table(
+        CategoricalFrequencyTableInput(
+            categories=("Guardia", "Clínica médica", "Laboratorio"),
+            absolute_frequencies=(22, 32, 4),
+        )
+    )
+    chart = chart_categorical_bars(
+        CategoricalBarChartInput(
+            frequency_table=table,
+            category_title="Área de atención",
+            settings=fixed_settings,
+        )
+    )
+    chart_spec = chart.to_dict()
+    assert chart_spec["width"] == "container"
+    assert chart_spec["encoding"]["x"]["sort"] is None
+    assert chart_spec["encoding"]["x"]["title"] == "Área de atención"
+
+
+def test_chart_categorical_bars_from_data_counts_source_column(fixed_settings: Settings) -> None:
+    data = pd.DataFrame({"area": ["Laboratorio", "Guardia", "Guardia", "Clínica médica"]})
+    chart = chart_categorical_bars_from_data(
+        CategoricalBarFromDataChartInput(
+            data=data,
+            category_column="area",
+            category_order=("Guardia", "Clínica médica", "Laboratorio"),
+            settings=fixed_settings,
+        )
+    )
+    chart_data = chart.to_dict()["datasets"]
+    rows = next(iter(chart_data.values()))
+    assert [row["category"] for row in rows] == ["Guardia", "Clínica médica", "Laboratorio"]
+    assert [row["absolute_frequency"] for row in rows] == [2, 1, 1]
+
+
+def test_chart_pareto_uses_relative_frequencies_and_container_width(fixed_settings: Settings) -> None:
+    table = build_categorical_frequency_table(
+        CategoricalFrequencyTableInput(
+            categories=("A", "B", "C"),
+            absolute_frequencies=(2, 5, 3),
+            sort_descending=True,
+        )
+    )
+    chart = chart_pareto(ParetoChartInput(frequency_table=table, category_title="Motivo", settings=fixed_settings))
+    chart_spec = chart.to_dict()
+    bars_layer = chart_spec["layer"][0]
+    line_layer = chart_spec["layer"][1]
+    assert chart_spec["width"] == "container"
+    assert bars_layer["encoding"]["x"]["sort"] is None
+    assert bars_layer["encoding"]["y"]["field"] == "relative_frequency"
+    assert line_layer["encoding"]["y"]["field"] == "cumulative_relative_frequency"
+    assert "resolve" not in chart_spec
+
+
+def test_chart_pareto_from_data_excludes_categories(fixed_settings: Settings) -> None:
+    data = pd.DataFrame({
+        "delay_reason": ["Ninguna", "Autorización", "Autorización", "Admisión", "Ninguna", "Admisión", "Admisión"]
+    })
+    chart = chart_pareto_from_data(
+        ParetoFromDataChartInput(
+            data=data,
+            category_column="delay_reason",
+            category_order=("Ninguna", "Admisión", "Autorización"),
+            exclude_categories=("Ninguna",),
+            settings=fixed_settings,
+        )
+    )
+    chart_data = chart.to_dict()["datasets"]
+    rows = next(iter(chart_data.values()))
+    assert [row["category"] for row in rows] == ["Admisión", "Autorización"]
+    assert [row["absolute_frequency"] for row in rows] == [3, 2]
+
+
+def test_chart_discrete_sticks_renders_stems_and_points(fixed_settings: Settings) -> None:
+    table = build_discrete_frequency_table(
+        DiscreteFrequencyTableInput(
+            exact_values=(0, 1, 2),
+            absolute_frequencies=(2, 3, 5),
+        )
+    )
+    chart = chart_discrete_sticks(
+        DiscreteStickChartInput(
+            frequency_table=table,
+            value_title="Personas esperando antes",
+            settings=fixed_settings,
+        )
+    )
+    chart_spec = chart.to_dict()
+    stems_layer = chart_spec["layer"][0]
+    points_layer = chart_spec["layer"][1]
+    assert chart_spec["width"] == "container"
+    assert stems_layer["mark"]["type"] == "rule"
+    assert stems_layer["encoding"]["x"]["field"] == "value"
+    assert stems_layer["encoding"]["y"]["field"] == "relative_frequency"
+    assert stems_layer["encoding"]["y2"]["datum"] == 0
+    assert points_layer["mark"]["type"] == "point"
+
+
+def test_chart_discrete_sticks_from_data_counts_exact_values(fixed_settings: Settings) -> None:
+    data = pd.DataFrame({"people_ahead": [2, 0, 2, 1, 2]})
+    chart = chart_discrete_sticks_from_data(
+        DiscreteStickFromDataChartInput(
+            data=data,
+            value_column="people_ahead",
+            exact_values=(0, 1, 2, 3),
+            settings=fixed_settings,
+        )
+    )
+    chart_data = chart.to_dict()["datasets"]
+    rows = next(iter(chart_data.values()))
+    assert [row["value"] for row in rows] == [0, 1, 2, 3]
+    assert [row["absolute_frequency"] for row in rows] == [1, 1, 3, 0]
 
 
 def test_chart_density_uses_distribution_name(fixed_settings: Settings) -> None:

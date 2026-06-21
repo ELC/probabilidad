@@ -16,9 +16,12 @@ from core.parameters import (
 from core.repr import RichMarkdownModel
 from core.schemas import (
     BivariateObservations,
+    CategoricalFrequencyTable,
+    DiscreteFrequencyTable,
     FrequencyTable,
     Observations,
     PMFTable,
+    TabularData,
 )
 from core.settings import Settings
 from core.theme import ChartTheme, ColorPalette
@@ -27,10 +30,12 @@ __all__ = [
     "BetaParams",
     "BinomialParams",
     "BivariateObservations",
+    "CategoricalFrequencyTable",
     "ChartTheme",
     "ChiSquareParams",
     "ColorPalette",
     "ContinuousUniformParams",
+    "DiscreteFrequencyTable",
     "DiscreteUniformParams",
     "ExponentialParams",
     "FParams",
@@ -45,4 +50,5 @@ __all__ = [
     "Settings",
     "StandardNormalParams",
     "StudentTParams",
+    "TabularData",
 ]

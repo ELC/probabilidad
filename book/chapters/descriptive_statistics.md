@@ -42,21 +42,27 @@ from pandera.typing import DataFrame
 
 from core import Observations, Settings
 from descriptive import (
-    FrequencyTableInput,
-    build_frequency_table,
+    ClinicSampleInput,
     detect_outliers_tukey,
+    generate_clinic_sample,
     standardize_observations,
     summarize_observations,
 )
 from exercises import NumericAnswerInput, verify_numeric_answer
 from visualization import (
+    CategoricalBarFromDataChartInput,
     DescriptiveSummaryChartInput,
+    DiscreteStickFromDataChartInput,
     FrequencyChartInput,
     HistogramChartInput,
+    ParetoFromDataChartInput,
     TypicalValuesComparisonChartInput,
+    chart_categorical_bars_from_data,
     chart_descriptive_summary,
+    chart_discrete_sticks_from_data,
     chart_frequency_table,
     chart_histogram,
+    chart_pareto_from_data,
     chart_typical_values_comparison,
 )
 from widgets import DescriptiveExplorerInput, build_descriptive_explorer
@@ -70,33 +76,59 @@ settings = Settings()
 (sec-descriptive-foundations)=
 ## Estadística en ingeniería: procesos, variabilidad y riesgo
 
-En ingeniería casi nunca observamos procesos completamente quietos. Una aplicación
-puede responder en 80 ms una vez y en 140 ms la siguiente; una pieza puede salir
-apenas más larga que otra; una red puede fallar por causas distintas según el día. Esa
-variabilidad genera incertidumbre: antes de medir, no sabemos con exactitud qué valor
-tomará la característica de interés en la próxima unidad o ejecución.
+En la sala de espera de la clínica, el proceso no está quieto. Un paciente puede
+esperar cuatro minutos y el siguiente doce; una mañana puede fluir sin demoras y otra
+puede trabarse por unos pocos casos largos. Esa variabilidad genera incertidumbre:
+antes de medir, no sabemos con exactitud qué valor tomará la característica de
+interés en el próximo paciente.
 
 Un **proceso** es una secuencia de etapas que transforma una **entrada** en una
-**salida**. En el camino actúan factores que cambian: materiales, personas,
-temperatura, memoria disponible, demanda, red, configuración, mantenimiento. La
+**salida**. En la clínica entran pacientes, se ordenan turnos, se asignan recursos y
+sale una atención después de cierta espera. En el camino actúan factores que cambian:
+demanda, horario, disponibilidad de personal, urgencias, duración de consultas. La
 estadística aporta herramientas para plantear el problema, recolectar datos,
 organizarlos, resumirlos y decidir con riesgo controlado.
 
-Antes de calcular cualquier resumen hay que formular el problema con precisión:
+Antes de calcular cualquier resumen hay que formular el problema con precisión. En
+la clínica, Lucía no quiere resumir "datos" en abstracto: quiere saber qué pasó con
+las esperas sobre las que debe decidir.
 
-- **Población.** Es el conjunto de unidades sobre el que queremos concluir o decidir.
-  Puede ser finita, con tamaño $N$, o infinita/indeterminada cuando representa todas
-  las ejecuciones posibles de un proceso estable.
-- **Unidad elemental** o **unidad de análisis.** Es cada elemento de esa población:
-  un paciente, una falla, un backup, una pieza o una ejecución de una aplicación.
-- **Variable.** Es la característica que observamos en cada unidad. Se simboliza con
-  mayúscula, por ejemplo $X$: tiempo de espera. Un valor observado se escribe en
-  minúscula, por ejemplo $x = 4{,}2$ minutos.
-- **Parámetro.** Es una medida que resume a la población: media poblacional $\mu$,
-  desvío estándar poblacional $\sigma$, varianza poblacional $\sigma^2$ o proporción
-  poblacional $\pi$.
-- **Estadístico.** Es una medida calculada sobre una muestra: media muestral
-  $\bar{x}$, desvío estándar muestral $s$ o proporción muestral.
+Si la decisión es cerrar el informe de la mañana, el universo relevante son los
+pacientes atendidos durante ese turno. Si la decisión es rediseñar horarios para todo
+el mes, el universo relevante se agranda: son las esperas de todos los días y horarios
+que el nuevo esquema debería cubrir. A ese universo de unidades sobre el que
+queremos concluir o decidir lo llamamos **población**. Según cómo se formule el
+problema, la población de la clínica puede ser finita —por ejemplo, los pacientes
+atendidos esta mañana, con tamaño $N$— o infinita/indeterminada —por ejemplo, todas
+las esperas que podrían observarse mientras el servicio funcione bajo condiciones
+estables—.
+
+Después hay que decir qué cuenta como una observación individual. En esta historia,
+puede ser cada paciente atendido o cada espera registrada, según cómo se haya
+definido la pregunta. A cada elemento de la población lo llamamos **unidad
+elemental** o **unidad de análisis**.
+
+Sobre cada unidad observamos una característica. Para Lucía, la característica central
+es el tiempo de espera, pero sobre el mismo paciente también podría observar la hora
+de llegada, el tipo de consulta, si tenía turno previo, la cantidad de personas que
+esperaban antes o si terminó derivado a otra área. En general, cada característica que
+puede cambiar de una unidad a otra se llama **variable** y se simboliza con una letra
+mayúscula, por ejemplo $X$: tiempo de espera. Un valor observado se escribe en
+minúscula, por ejemplo $x = 4{,}2$ minutos.
+
+En la práctica, muchas veces no observamos toda la población. Observamos una parte:
+por ejemplo, las 80 esperas anotadas durante una mañana. A esa parte observada la
+llamamos **muestra**, y su tamaño se simboliza con $n$.
+
+La notación cambia según si resumimos toda la población o sólo esa muestra:
+
+- Si Lucía tuviera **todas** las esperas de la población que le importa, el resumen
+  sería un **parámetro**. Usamos letras griegas: $\mu$ para la media poblacional,
+  $\sigma$ para el desvío estándar poblacional, $\sigma^2$ para la varianza
+  poblacional y $\pi$ para una proporción poblacional.
+- Si Lucía tiene sólo **una muestra**, el resumen es un **estadístico**. Usamos otra
+  notación: $\bar{x}$ para la media muestral, $s$ para el desvío estándar muestral y
+  una proporción muestral cuando resumimos respuestas de tipo sí/no.
 
 La misma colección física puede definir poblaciones distintas según el objetivo. Si
 Lucía decide sobre la mañana que acaba de terminar, la población puede ser esa
@@ -111,83 +143,197 @@ enfermera de turno fue anotando paciente a paciente, ordenados en la
 secuencia en que llegaron a la guardia.
 
 ```{code-cell} python
-rng_clinic = np.random.default_rng(settings.random_seed)
-raw_waiting_times = rng_clinic.normal(loc=4.0, scale=1.2, size=80).clip(min=0.0)
-waiting_times = pd.DataFrame({"value": raw_waiting_times}).pipe(DataFrame[Observations])
-waiting_times.head()
+clinic_sample = generate_clinic_sample(ClinicSampleInput(settings=settings, sample_size=80))
+clinic_sample.clinic_data.head()
 ```
 
 (sec-descriptive-variable-types)=
 ## Antes de agrupar: qué tipo de variable tenemos
 
-Las herramientas cambian según el tipo de variable. No se resume igual la zona donde
-ocurrió una falla que el número de defectos de un turno o el espacio ocupado por un
-backup.
+Antes de elegir una tabla o un gráfico hay que nombrar qué característica estamos
+observando en cada unidad. Las herramientas cambian según el tipo de variable: no
+se organiza igual una categoría, un conteo o una medición.
 
 | Tipo de variable | Qué valores puede tomar | Ejemplos | Presentación usual |
 |---|---|---|---|
-| **Cualitativa** o **atributo** | Categorías o niveles | zona de falla, estado de máquina, tipo de ficha | tabla de frecuencias, barras, sectores, Pareto |
-| **Cuantitativa discreta** | Valores contables, finitos o numerables | número de fallas, llamadas por intervalo, piezas defectuosas | tabla por valores exactos, gráfico de bastones |
-| **Cuantitativa continua** | Intervalos de números reales | tiempo, longitud, capacidad real, temperatura | tallo-hoja, intervalos de clase, histograma |
+| **Cualitativa** o **atributo** | Categorías o niveles | tipo de consulta, área de atención, prioridad asignada | tabla de frecuencias, barras, Pareto |
+| **Cuantitativa discreta** | Valores contables, finitos o numerables | personas esperando al llegar, reprogramaciones, llamados previos | tabla por valores exactos, gráfico de bastones |
+| **Cuantitativa continua** | Intervalos de números reales | tiempo de espera, duración de la consulta, hora de llegada | tallo-hoja, intervalos de clase, histograma |
+
+Con esa clasificación, los minutos de espera de la clínica son una variable
+cuantitativa continua: se miden sobre una escala de tiempo y podrían tomar valores
+intermedios, como 4,5 minutos o 4,52 minutos si el registro fuera más preciso.
 
 **Punto de control.** Antes de elegir un gráfico, formulá la variable en una
 frase: “en cada unidad voy a observar...”. Si la respuesta es una categoría,
 contás clases; si es un conteo, respetás valores enteros; si es una medición,
 pensás en intervalos.
 
+Un mismo contexto puede producir variables de tipos distintos. En la clínica, por
+ejemplo, cada unidad elemental puede ser un paciente atendido durante la mañana.
+Según la pregunta, cambia la variable:
+
+| Pregunta sobre cada paciente | Variable | Tipo |
+|---|---|---|
+| ¿A qué área fue derivado? | guardia, laboratorio, clínica médica | cualitativa |
+| ¿Tenía turno previo? | sí/no | cualitativa |
+| ¿Qué nivel de prioridad recibió? | baja, media, alta | cualitativa |
+| ¿Cuántas personas tenía adelante al llegar? | número de personas | cuantitativa discreta |
+| ¿Cuántas veces fue reprogramado? | número de reprogramaciones | cuantitativa discreta |
+| ¿Cuántos minutos esperó? | tiempo de espera | cuantitativa continua |
+| ¿Cuánto duró la consulta? | duración de la consulta | cuantitativa continua |
+
+La población no alcanza para decidir la herramienta: también importa qué
+característica observamos en cada unidad.
+
 ### Atributos: clases, porcentajes y Pareto
 
 Cuando la variable es cualitativa, cada categoría define una **clase**. La tabla
 cuenta cuántas unidades caen en cada clase y qué proporción representan:
 
-$$ f_k = \frac{n_k}{n}, \qquad \sum_k n_k = n, \qquad \sum_k f_k = 1 $$ (eq-relative-frequency)
+$$
+f_k = \frac{n_k}{n}
+$$ (eq-relative-frequency)
 
-Por ejemplo, si una red tuvo 105 fallas, una tabla por zona podría leerse así:
+$$
+\sum_k n_k = n
+$$ (eq-absolute-frequency-total)
 
-| Zona | Frecuencia absoluta $n_k$ | Frecuencia relativa $f_k$ |
-|---|---:|---:|
-| Norte | 18 | 0,171 |
-| Oeste | 11 | 0,105 |
-| Centro | 13 | 0,124 |
-| Sur | 34 | 0,324 |
-| Suroeste | 29 | 0,276 |
-| Total | 105 | 1,000 |
+$$
+\sum_k f_k = 1
+$$ (eq-relative-frequency-total)
 
-La frecuencia relativa suele expresarse como porcentaje: decir $f_k = 0{,}324$ es
-decir que el 32,4% de las fallas ocurrieron en zona sur. Para variables
-cualitativas son habituales el **gráfico de sectores** o circular, el **gráfico de
-barras** y el **diagrama de Pareto**.
+El subíndice $k$ identifica una clase concreta de la tabla: por ejemplo, una fila
+puede corresponder a "Guardia" y otra a "Pediatría". Así, $n_k$ es la cantidad
+observada en esa clase y $f_k$ es su proporción sobre el total.
 
-El Pareto es un gráfico de barras ordenado de mayor a menor frecuencia. En control
-de calidad suele agregarse una línea de porcentaje acumulado para detectar si unas
-pocas categorías explican la mayor parte de los problemas: la idea práctica es que
-muchos defectos pueden concentrarse en pocas causas.
+En la clínica, una tabla por área de atención podría leerse así:
+
+```{code-cell} python
+clinic_sample.area_frequency_table
+```
+
+```{code-cell} python
+chart_categorical_bars_from_data(
+    CategoricalBarFromDataChartInput(
+        data=clinic_sample.clinic_data,
+        category_column="area",
+        category_order=clinic_sample.area_categories,
+        title="Pacientes por área de atención",
+        category_title="Área de atención",
+        settings=settings,
+    )
+)
+```
+
+La frecuencia relativa suele expresarse como porcentaje: una proporción de
+$0{,}25$, por ejemplo, equivale al 25% de la muestra. Para variables cualitativas
+conviene usar **gráficos de barras**, porque facilitan la comparación visual entre
+categorías y partes del total. Aunque los gráficos de torta o de sectores son muy
+usados, hay estudios y guías de visualización que recomiendan evitarlos cuando el
+objetivo es comparar magnitudes con precisión [@few2007visual].
+
+Si ordenamos las barras de mayor a menor frecuencia y sumamos el porcentaje
+acumulado, aparece rápido si unas pocas causas explican gran parte de las demoras.
+Ese gráfico de barras ordenadas, pensado para priorizar dónde intervenir primero,
+se llama **diagrama de Pareto**.
+
+Si Lucía registra el motivo principal de demora en cada atención, algunas filas
+pueden quedar como "Ninguna". Para priorizar intervenciones, esa categoría se
+separa y el Pareto se construye sólo con las atenciones que sí tuvieron una causa
+de demora identificable. Así empieza por las causas más frecuentes, no por las más
+raras:
+
+```{code-cell} python
+clinic_sample.delay_reason_frequency_table
+```
+
+```{code-cell} python
+chart_pareto_from_data(
+    ParetoFromDataChartInput(
+        data=clinic_sample.clinic_data,
+        category_column="delay_reason",
+        category_order=clinic_sample.delay_reason_categories,
+        exclude_categories=("Ninguna",),
+        title="Motivos de demora: diagrama de Pareto",
+        category_title="Motivo principal",
+        settings=settings,
+    )
+)
+```
+
+La pregunta operativa no es sólo "cuál barra es más alta", sino dónde conviene
+intervenir primero para reducir más esperas largas con menos acciones.
+
+La línea que sube sobre las barras es una **ojiva**: muestra el porcentaje
+acumulado a medida que agregamos causas en orden de importancia. Esa lectura dice,
+por ejemplo, cuánta demora queda explicada si Lucía atiende primero las dos o tres
+causas principales. En términos operativos, da la información necesaria para hacer
+un **triage**: separar lo urgente y más frecuente de lo menos prioritario.
 
 ### Variables discretas: valores exactos y acumulados
 
 Si la variable cuantitativa es discreta, la tabla se arma por cada valor observado
 $x_k$. Además de $n_k$ y $f_k$, aparecen dos columnas acumuladas:
 
-$$ N_k = \sum_{r \le k} n_r, \qquad F_k = \sum_{r \le k} f_r $$ (eq-cumulative-frequency)
+$$
+N_k = \sum_{r \le k} n_r
+$$ (eq-cumulative-absolute-frequency)
+
+$$
+F_k = \sum_{r \le k} f_r
+$$ (eq-cumulative-relative-frequency)
 
 $N_k$ cuenta cuántas observaciones tienen valores menores o iguales que $x_k$;
-$F_k$ da la proporción acumulada. Si $F_k = 0{,}52$ para $x_k = 88$, interpretamos
-que el 52% de los días la terminal se usó 88 veces o menos. El gráfico natural para
-estos datos es el **gráfico de bastones**: un segmento vertical para cada valor
-posible, con altura proporcional a su frecuencia.
+$F_k$ da la proporción acumulada. En la clínica, si registramos cuántas personas
+tenía cada paciente por delante al llegar, una parte de la tabla podría verse así:
+
+```{code-cell} python
+clinic_sample.people_ahead_frequency_table
+```
+
+La fila de $3$ tiene dos lecturas distintas: $f_k$ dice qué proporción de
+pacientes tenía exactamente tres personas adelante, y $F_k$ dice qué proporción
+tenía tres personas o menos. El gráfico natural para estos datos es el **gráfico
+de bastones**: un segmento vertical para cada valor posible, con altura
+proporcional a su frecuencia.
+
+```{code-cell} python
+chart_discrete_sticks_from_data(
+    DiscreteStickFromDataChartInput(
+        data=clinic_sample.clinic_data,
+        value_column="people_ahead",
+        exact_values=clinic_sample.people_ahead_values,
+        title="Personas esperando antes del paciente",
+        value_title="Personas esperando antes",
+        settings=settings,
+    )
+)
+```
+
+El gráfico de bastones se parece al gráfico de barras porque en ambos la altura
+representa frecuencia. La diferencia está en el significado del eje horizontal:
+en barras comparamos categorías separadas, como áreas de atención; en bastones
+marcamos valores numéricos exactos de una variable discreta. Por eso el eje
+horizontal de un gráfico de bastones debe respetar el orden numérico: $0, 1, 2,
+\dots$. Además, puede haber valores sin observaciones, y ese espacio vacío también
+informa. En un gráfico de barras no existe un "valor numérico faltante" entre
+categorías: reordenar las barras puede ayudar a comparar sin cambiar el significado.
+En un gráfico de bastones, en cambio, reordenar los segmentos puede confundir,
+porque el lector espera que el eje avance en orden ascendente.
 
 ### Variables continuas: intervalos, tallo-hoja e histogramas
 
 En variables continuas casi nunca conviene contar cada valor exacto. Primero se
 puede usar un **diagrama de tallo y hoja**, que conserva los datos individuales pero
-los ordena visualmente: en 117, por ejemplo, el tallo puede ser 11 y la hoja 7. Es
-útil en conjuntos pequeños o medianos porque muestra la forma sin destruir del todo
-la lista original.
+los ordena visualmente: si un paciente esperó 4,7 minutos, por ejemplo, el tallo
+puede ser 4 y la hoja 7. Es útil en conjuntos pequeños o medianos porque muestra
+la forma sin destruir del todo la lista original.
 
 Para una tabla de frecuencias continua se particiona el rango observado en
 **intervalos de clase**. Conviene que tengan amplitud similar y que cada dato caiga
 en uno y sólo un intervalo; por eso se usan intervalos semiabiertos, como
-$(79, 91]$. El **punto medio** de una clase representa al intervalo cuando hacemos
+$(2, 4]$. El **punto medio** de una clase representa al intervalo cuando hacemos
 cálculos con datos agrupados.
 
 Elegir la cantidad de intervalos es parte del análisis. Demasiados intervalos dejan
@@ -202,10 +348,27 @@ alturas. Al pasar de datos originales a intervalos se pierde información, pero 
 legibilidad. En muestras pequeñas, cambiar el ancho de clase puede cambiar bastante
 la apariencia del histograma.
 
+En la clínica, si agrupamos los 80 tiempos de espera en intervalos de dos minutos,
+podríamos obtener una tabla como esta:
+
+```{code-cell} python
+clinic_sample.frequency_table
+```
+
+Cada fila dice dos cosas a la vez: `relative_frequency` cuenta qué proporción cae
+dentro de ese intervalo, y `cumulative_relative_frequency` acumula todo lo que
+queda por debajo de su límite superior. El punto medio representa a todo el
+intervalo cuando hacemos cuentas con datos agrupados; por eso agrupamos para leer
+mejor, pero aceptamos perder el detalle de cada espera individual.
+
 También se puede sumar un **polígono de frecuencias**, uniendo los puntos medios
 superiores de las barras, y un **polígono de frecuencias acumuladas**, que une las
 frecuencias acumuladas. La ojiva que usamos más abajo es una versión de ese gráfico
 acumulado.
+
+Para Lucía, la pregunta operativa puede ser "¿qué porcentaje esperó menos de cinco
+minutos?". Esa lectura sale de la distribución acumulada: no mira sólo una barra,
+sino todo lo que quedó por debajo del corte que importa para decidir.
 
 ### Cuando el tiempo importa
 
@@ -216,6 +379,11 @@ en una tabla de frecuencias, conviene mirar si aparecen tendencias, ciclos o cam
 de régimen. Si hay un patrón temporal fuerte, analizar frecuencias como si todos los
 datos hubieran ocurrido bajo las mismas condiciones puede llevar a conclusiones
 engañosas.
+
+En la clínica, esa advertencia tiene una forma concreta: las esperas pueden crecer
+hacia el mediodía, caer después de que se libera un consultorio o concentrarse justo
+después de una llegada simultánea de pacientes. Si mezclamos todo en una sola tabla
+sin mirar el orden temporal, una tendencia o un ciclo puede quedar escondido.
 
 (sec-descriptive-frequency)=
 ## Agrupar la lista antes de resumir
@@ -241,11 +409,8 @@ lentos? Hacé una predicción rápida: dónde se va a concentrar el
 histograma y en qué minuto creés que la ojiva va a cruzar el 70%.
 
 ```{code-cell} python
-frequency_input = FrequencyTableInput(observations=waiting_times, bin_width=2.0)
-frequency_table = build_frequency_table(frequency_input)
-
 frequency_chart_input = FrequencyChartInput(
-    frequency_table=frequency_table,
+    frequency_table=clinic_sample.frequency_table,
     title="Tiempos de espera (clínica) — histograma y ojiva",
     settings=settings,
 )
@@ -298,7 +463,7 @@ $$ \bar{x} = \frac{1}{n}\sum_{k=1}^{r} x_k n_k = \sum_{k=1}^{r} x_k f_k $$ (eq-g
 
 Si el conjunto observado es toda la población, el promedio es un parámetro y se
 escribe $\mu$. La media no tiene por qué coincidir con un valor observado: puede
-dar 88,44 usos por día aunque ningún día haya tenido exactamente 88,44 usos. Como
+dar 4,36 minutos aunque ningún paciente haya esperado exactamente 4,36 minutos. Como
 usa toda la información, también es sensible a valores extremos. Por eso sirve para
 comparar distribuciones sólo cuando sus formas son razonablemente semejantes.
 
@@ -306,7 +471,8 @@ comparar distribuciones sólo cuando sus formas son razonablemente semejantes.
 
 Otra medida de posición es la **moda**, escrita $\hat{x}$: el valor o categoría con
 mayor frecuencia. En una muestra de esperas puede ser el minuto que más se repite;
-en una variable cualitativa puede ser la zona con más fallas.
+en una encuesta puede ser la respuesta más elegida; en la fábrica puede ser la causa
+de defecto más frecuente.
 
 La moda tiene tres detalles importantes. Algunas muestras no tienen moda clara;
 otras tienen dos modas y se llaman **bimodales**; y es la única medida de tendencia
@@ -415,7 +581,7 @@ matemáticas; el desvío estándar vuelve a la unidad original y suele ser más 
 interpretar en contexto.
 
 ```{code-cell} python
-summary = summarize_observations(waiting_times)
+summary = summarize_observations(clinic_sample.waiting_times)
 summary
 ```
 
@@ -455,7 +621,7 @@ qué pasa con cada resumen cuando aparece un valor extremo.
 
 ```{code-cell} python
 waiting_times_with_extreme = pd.concat(
-    [waiting_times, pd.DataFrame({"value": [120.0]})], ignore_index=True
+    [clinic_sample.waiting_times, pd.DataFrame({"value": [120.0]})], ignore_index=True
 ).pipe(DataFrame[Observations])
 summary_with_extreme = summarize_observations(waiting_times_with_extreme)
 ```
@@ -518,14 +684,16 @@ mañana fue compacta; si queda lejos, el tramo alto de esperas se estiró.
 ## Cómo leer un boxplot
 
 Un **boxplot** — o diagrama de caja y bigotes — comprime la distribución en
-cinco referencias visuales: mínimo no atípico, $Q_1$, mediana, $Q_3$ y máximo
-no atípico. Es la tabla de posiciones convertida en dibujo.
+cinco referencias visuales. En la versión introductoria, esas referencias son mínimo,
+$Q_1$, mediana, $Q_3$ y máximo. En la versión de Tukey, que usamos en el gráfico,
+los extremos visuales son el mínimo no atípico y el máximo no atípico. En ambos
+casos, es la tabla de posiciones convertida en dibujo.
 
-En una versión introductoria también se dibujan los bigotes hasta el mínimo y el
-máximo observados. En esa lectura, la longitud total del diagrama es el rango y la
-longitud de la caja es el rango intercuartil. La versión que usamos en el gráfico es
-la variante de Tukey: los bigotes llegan sólo hasta valores no atípicos y los puntos
-externos se muestran aparte.
+Cuando los bigotes llegan al mínimo y al máximo observados, la longitud total del
+diagrama es el rango y la longitud de la caja es el rango intercuartil. En Tukey, los
+bigotes llegan sólo hasta valores no atípicos y los puntos externos se muestran
+aparte. Conviene reconocer ambas convenciones antes de comparar gráficos de
+distintas fuentes.
 
 En el gráfico, la línea dentro de la caja es la mediana: la mitad de las
 observaciones queda a la izquierda y la otra mitad a la derecha. Los bordes de
@@ -540,7 +708,7 @@ mirar antes de resumir todo con un único número.
 
 ```{code-cell} python
 summary_chart_input = DescriptiveSummaryChartInput(
-    observations=waiting_times,
+    observations=clinic_sample.waiting_times,
     statistics=summary,
     settings=settings,
 )
@@ -567,6 +735,13 @@ grandes: unos pocos valores altos tiran de la media y suele pasar que
 $\bar{x} > \tilde{x}$. Hay **sesgo hacia la izquierda** cuando la cola larga
 apunta a valores chicos: unos pocos valores bajos tiran de la media y suele
 pasar que $\bar{x} < \tilde{x}$.
+
+La dirección del sesgo la marca la **cola**, no la parte más alta del gráfico. En una
+distribución simétrica y con una sola moda, media, mediana y moda quedan cerca:
+$\bar{x} \approx \tilde{x} \approx \hat{x}$. Si la cola se estira a la derecha,
+la media suele quedar hacia ese lado y aparece el orden
+$\hat{x} < \tilde{x} < \bar{x}$. Si la cola se estira a la izquierda, el orden
+típico se invierte: $\bar{x} < \tilde{x} < \hat{x}$.
 
 ### Preguntas para leer formas típicas
 
@@ -601,7 +776,7 @@ sugiere sobre la distribución?
 
 chart_boxplot_example(
     [2.0, 2.5, 3.0, 3.5, 3.8, 4.0, 4.2, 4.5, 5.0, 5.5, 6.0],
-    "Pregunta 1 — boxplot equilibrado",
+    "Clínica — esperas equilibradas",
 )
 ```
 
@@ -628,7 +803,7 @@ muy largo. ¿Qué implica?
 
 chart_boxplot_example(
     [1.0, 1.0, 1.1, 1.2, 1.3, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0],
-    "Pregunta 2 — sesgo hacia la derecha",
+    "Clínica — esperas con cola derecha",
 )
 ```
 
@@ -655,7 +830,7 @@ la derecha del gráfico. ¿Cómo conviene leerlo?
 
 chart_boxplot_example(
     [3.8, 3.9, 4.0, 4.0, 4.1, 4.1, 4.2, 4.2, 4.3, 4.3, 7.0, 8.5, 9.0],
-    "Pregunta 3 — caja estable con valores atípicos altos",
+    "Clínica — caja estable con esperas atípicas altas",
 )
 ```
 
@@ -683,8 +858,8 @@ lados. ¿Qué diferencia hay entre los grupos?
 :tags: [hide-input]
 
 (
-    chart_boxplot_example([3.6, 3.8, 3.9, 4.0, 4.1, 4.2, 4.4], "Grupo A")
-    & chart_boxplot_example([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], "Grupo B")
+    chart_boxplot_example([3.6, 3.8, 3.9, 4.0, 4.1, 4.2, 4.4], "Clínica A")
+    & chart_boxplot_example([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], "Clínica B")
 ).resolve_scale(x="shared")
 ```
 
@@ -711,7 +886,7 @@ muy corto. ¿Qué lectura harías?
 
 chart_boxplot_example(
     [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 6.5, 6.7, 6.8, 6.9, 7.0, 7.0],
-    "Pregunta 5 — sesgo hacia la izquierda",
+    "Línea de producción — mediciones con cola izquierda",
 )
 ```
 
@@ -757,7 +932,7 @@ salió. En la práctica suele deberse a una de tres causas: se registró mal, pr
 una población distinta, o está bien medido pero representa un suceso poco común.
 
 ```{code-cell} python
-outlier_report = detect_outliers_tukey(waiting_times)
+outlier_report = detect_outliers_tukey(clinic_sample.waiting_times)
 outlier_report
 ```
 
@@ -779,6 +954,71 @@ campanular, esos porcentajes pueden cambiar mucho. También evita una confusión
 común: $\bar{x} \pm s$ no es el rango de variación; en muchas formas cubre sólo una
 parte central de los datos.
 
+Veamos una verificación concreta con la línea de producción. Tomemos 30 longitudes
+de piezas medidas durante una inspección. Si su forma fuera razonablemente
+campanular, los intervalos $\bar{x} \pm ks$ deberían cubrir aproximadamente 68%,
+95% y casi todas las observaciones para $k = 1, 2, 3$.
+
+```{code-cell} python
+piece_lengths = pd.DataFrame({
+    "value": [
+        85.0,
+        117.0,
+        92.0,
+        120.0,
+        94.0,
+        110.0,
+        151.0,
+        90.0,
+        80.0,
+        116.0,
+        95.0,
+        102.0,
+        100.0,
+        113.0,
+        118.0,
+        140.0,
+        133.0,
+        108.0,
+        115.0,
+        148.0,
+        110.0,
+        130.0,
+        100.0,
+        120.0,
+        108.0,
+        125.0,
+        105.0,
+        130.0,
+        112.0,
+        150.0,
+    ]
+}).pipe(DataFrame[Observations])
+
+piece_length_summary = summarize_observations(piece_lengths)
+piece_mean = piece_length_summary.location.mean
+piece_std = piece_length_summary.dispersion.sample_standard_deviation
+
+pd.DataFrame({
+    "k": [1, 2, 3],
+    "intervalo": [
+        f"{piece_mean - k * piece_std:.3f} a {piece_mean + k * piece_std:.3f}"
+        for k in [1, 2, 3]
+    ],
+    "proporción esperada": ["68%", "95%", "casi todos"],
+    "proporción observada": [
+        ((piece_lengths["value"] >= piece_mean - k * piece_std)
+         & (piece_lengths["value"] <= piece_mean + k * piece_std)).mean()
+        for k in [1, 2, 3]
+    ],
+})
+```
+
+Si los porcentajes observados se parecen bastante a la regla, eso no prueba que el
+proceso sea Normal; sólo dice que, para esta descripción rápida, media y desvío
+resumen razonablemente el centro y la dispersión. Si se alejan mucho, la forma pide
+otro gráfico y probablemente otro resumen.
+
 (sec-descriptive-zscore)=
 ## Posición relativa: el $z$-score
 
@@ -793,6 +1033,11 @@ $\bar{x}$ y $s$.
 **Paso 3:** reescalamos dividiendo por $s$:
 
 $$ z_i = \frac{x_i - \bar{x}}{s} $$ (eq-zscore)
+
+Si estuviéramos describiendo una población completa, usaríamos los parámetros
+poblacionales:
+
+$$ z = \frac{x - \mu}{\sigma} $$ (eq-population-zscore)
 
 Un $z_i$ positivo dice «este paciente esperó más que el promedio»; un
 $z_i$ negativo, «menos que el promedio». Y la magnitud cuenta cuántos
@@ -814,7 +1059,7 @@ sorpresa frente a un valor de control. Comparten la idea de estandarizar, pero
 responden preguntas distintas.
 
 ```{code-cell} python
-standardized = standardize_observations(waiting_times)
+standardized = standardize_observations(clinic_sample.waiting_times)
 standardized
 ```
 
@@ -913,7 +1158,13 @@ build_descriptive_explorer(explorer_input)
 (sec-descriptive-sampling)=
 ## Antes de inferir: cómo se juntaron los datos
 
-Un resumen descriptivo puede ser exacto y aun así engañar. Si las 80 esperas de la clínica fueron tomadas durante varias mañanas típicas, con pacientes habituales y sin cambios de proceso, la muestra habla bastante bien del servicio. Si todas salieron de un lunes después de un feriado, de una semana con un sistema caído o de la franja más congestionada, el promedio y el desvío describen esa situación especial, no necesariamente la clínica.
+Un resumen descriptivo puede ser exacto y aun así engañar. Si las 80 esperas de la
+clínica fueron tomadas durante varias mañanas típicas, con pacientes habituales y sin
+cambios de proceso, la muestra habla bastante bien del servicio. Si todas salieron de
+un lunes después de un feriado o de la franja más congestionada, el promedio y el
+desvío describen esa situación especial, no necesariamente la clínica. Lo mismo pasa
+si una encuesta sólo recoge respuestas de personas fáciles de contactar, o si la línea
+de producción se mide justo después de un ajuste excepcional de máquina.
 
 Si observamos todas las unidades de la población hacemos un **censo** o estudio
 exhaustivo. En ese caso el análisis descriptivo alcanza para responder sobre esa
@@ -954,7 +1205,7 @@ impecable, pero representa una situación particular. El segundo suele ser más
 
 La independencia también se ve en la historia de recolección. Si una demora
 inicial retrasa a todos los pacientes posteriores, las observaciones quedan
-encadenadas: cada espera ya no cuenta como una pieza nueva de información del
+encadenadas: cada espera ya no cuenta como una unidad nueva de información del
 mismo modo que en una mañana estable. En ese caso el gráfico sigue sirviendo
 para describir lo ocurrido, pero no alcanza para inferir cómo funciona el
 servicio en general.

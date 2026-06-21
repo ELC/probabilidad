@@ -6,7 +6,7 @@ import pandas as pd
 from pandera.typing import DataFrame
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from core import FrequencyTable, Observations
+from core import DiscreteFrequencyTable, FrequencyTable, Observations
 
 
 class FrequencyTableInput(BaseModel):
@@ -23,6 +23,29 @@ class FrequencyTableInput(BaseModel):
             raise ValueError(msg)
         if self.bin_count is not None and self.bin_width is not None:
             msg = "bin_count and bin_width cannot be used together"
+            raise ValueError(msg)
+        return self
+
+
+class DiscreteFrequencyTableInput(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    exact_values: tuple[int, ...]
+    absolute_frequencies: tuple[int, ...]
+
+    @model_validator(mode="after")
+    def _check_inputs(self) -> Self:
+        if len(self.exact_values) == 0:
+            msg = "exact_values cannot be empty"
+            raise ValueError(msg)
+        if len(self.exact_values) != len(self.absolute_frequencies):
+            msg = "exact_values and absolute_frequencies must have the same length"
+            raise ValueError(msg)
+        if any(frequency < 0 for frequency in self.absolute_frequencies):
+            msg = "absolute_frequencies must be non-negative"
+            raise ValueError(msg)
+        if sum(self.absolute_frequencies) <= 0:
+            msg = "absolute_frequencies must contain at least one positive value"
             raise ValueError(msg)
         return self
 
@@ -64,3 +87,22 @@ def build_frequency_table(input_data: FrequencyTableInput) -> DataFrame[Frequenc
         "cumulative_relative_frequency": cumulative_relative_frequency.astype(float),
     })
     return raw.pipe(DataFrame[FrequencyTable])
+
+
+def build_discrete_frequency_table(
+    input_data: DiscreteFrequencyTableInput,
+) -> DataFrame[DiscreteFrequencyTable]:
+    raw = pd.DataFrame({
+        "value": input_data.exact_values,
+        "absolute_frequency": input_data.absolute_frequencies,
+    })
+    total = raw["absolute_frequency"].sum()
+    relative_frequency = raw["absolute_frequency"] / total
+    cumulative_relative_frequency = relative_frequency.cumsum()
+    cumulative_relative_frequency.iloc[-1] = 1.0
+    table = raw.assign(
+        relative_frequency=relative_frequency,
+        cumulative_absolute_frequency=raw["absolute_frequency"].cumsum(),
+        cumulative_relative_frequency=cumulative_relative_frequency,
+    )
+    return table.pipe(DataFrame[DiscreteFrequencyTable])
