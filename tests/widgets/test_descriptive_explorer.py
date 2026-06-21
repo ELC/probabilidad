@@ -40,12 +40,13 @@ def test_interval_width_explorer_yields_vbox_with_stacked_outputs(fixed_settings
         IntervalWidthExplorerInput(observations=observations, settings=fixed_settings)
     )
     assert isinstance(container, widgets.VBox)
-    assert isinstance(container.children[0], widgets.FloatSlider)
-    assert isinstance(container.children[1], widgets.Output)
-    assert isinstance(container.children[2], widgets.Output)
+    slider, first_output, second_output = tuple(container.children)
+    assert isinstance(slider, widgets.FloatSlider)
+    assert isinstance(first_output, widgets.Output)
+    assert isinstance(second_output, widgets.Output)
     assert container.layout.width == "100%"
-    assert container.children[1].layout.width == "100%"
-    assert container.children[2].layout.width == "100%"
+    assert first_output.layout.width == "100%"
+    assert second_output.layout.width == "100%"
 
 
 def test_interval_width_explorer_reacts_to_slider_change(fixed_settings: Settings) -> None:

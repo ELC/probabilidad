@@ -81,8 +81,7 @@ def build_frequency_table(input_data: FrequencyTableInput) -> DataFrame[Frequenc
     cumulative_relative_frequency[-1] = 1.0
     raw = pd.DataFrame({
         "interval": [
-            f"${start:.2f} \\lt x \\le {end:.2f}$"
-            for start, end in zip(interval_start, interval_end, strict=True)
+            f"${start:.2f} \\lt x \\le {end:.2f}$" for start, end in zip(interval_start, interval_end, strict=True)
         ],
         "interval_start": interval_start.astype(float),
         "interval_end": interval_end.astype(float),

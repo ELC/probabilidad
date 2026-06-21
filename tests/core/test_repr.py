@@ -1,45 +1,20 @@
 import math
-from typing import Any
 
 import numpy as np
 import pytest
-from pydantic import BaseModel, ConfigDict
 
 from core import RichMarkdownModel
-from core.repr import DISPLAY_NAMES, FIELD_LABELS, display_name_for, field_label_for, format_value
+from core.repr import display_name_for, field_label_for, format_value
+from core.repr_labels import DISPLAY_NAMES, FIELD_LABELS
 
-
-class _NestedModel(RichMarkdownModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
-
-    name: str
-    value: float
-
-
-class _OuterModel(RichMarkdownModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
-
-    integer_field: int
-    float_field: float
-    boolean_field: bool
-    string_field: str
-    nested_field: _NestedModel
-    array_field: np.ndarray
-    tuple_field: tuple[float, ...]
-    set_field: frozenset[str]
-    optional_field: float | None
-
-
-class _NestedListModel(RichMarkdownModel):
-    model_config = ConfigDict(frozen=True)
-
-    members: tuple[_NestedModel, ...]
-
-
-class _PlainModel(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    value: int
+from .repr_models import (
+    MixedModel,
+    NestedListModel,
+    NestedModel,
+    OnlyChildrenModel,
+    OuterModel,
+    PlainModel,
+)
 
 
 def test_display_name_for_known_class_returns_spanish_name() -> None:
@@ -135,8 +110,8 @@ def test_format_value_handles_frozenset() -> None:
 
 
 def test_format_value_handles_plain_basemodel() -> None:
-    rendered = format_value(_PlainModel(value=3))
-    assert rendered == "_PlainModel(...)"
+    rendered = format_value(PlainModel(value=3))
+    assert rendered == "PlainModel(...)"
 
 
 def test_format_value_handles_unknown_object_uses_str() -> None:
@@ -151,20 +126,13 @@ def test_format_value_handles_none() -> None:
     assert format_value(None) == "None"
 
 
-class _OnlyChildrenModel(RichMarkdownModel):
-    model_config = ConfigDict(frozen=True)
-
-    location: _NestedModel
-    dispersion: _NestedModel
-
-
 def test_repr_html_renders_outer_table_with_scalar_fields() -> None:
-    outer = _OuterModel(
+    outer = OuterModel(
         integer_field=3,
         float_field=1.234,
         boolean_field=True,
         string_field="hola",
-        nested_field=_NestedModel(name="hijo", value=2.5),
+        nested_field=NestedModel(name="hijo", value=2.5),
         array_field=np.array([1.0, 2.0]),
         tuple_field=(0.5, 0.75),
         set_field=frozenset({"x"}),
@@ -203,19 +171,19 @@ def test_repr_html_falls_back_to_field_name_when_label_unknown() -> None:
 
 
 def test_repr_markdown_falls_back_to_html_table() -> None:
-    nested = _NestedModel(name="hijo", value=2.5)
+    nested = NestedModel(name="hijo", value=2.5)
     markdown = nested._repr_markdown_()  # pylint: disable=protected-access
     assert markdown.startswith("<table")
     assert "hijo" in markdown
 
 
 def test_repr_html_emits_sibling_tables_for_rich_fields() -> None:
-    outer = _OuterModel(
+    outer = OuterModel(
         integer_field=3,
         float_field=1.234,
         boolean_field=True,
         string_field="hola",
-        nested_field=_NestedModel(name="hijo", value=2.5),
+        nested_field=NestedModel(name="hijo", value=2.5),
         array_field=np.array([1.0, 2.0]),
         tuple_field=(0.5, 0.75),
         set_field=frozenset({"x"}),
@@ -229,9 +197,9 @@ def test_repr_html_emits_sibling_tables_for_rich_fields() -> None:
 
 
 def test_repr_html_drops_outer_table_when_all_fields_are_rich() -> None:
-    container = _OnlyChildrenModel(
-        location=_NestedModel(name="centro", value=4.0),
-        dispersion=_NestedModel(name="ancho", value=1.5),
+    container = OnlyChildrenModel(
+        location=NestedModel(name="centro", value=4.0),
+        dispersion=NestedModel(name="ancho", value=1.5),
     )
     rendered = container._repr_html_()  # pylint: disable=protected-access
     assert rendered.count("<table") == 2
@@ -244,10 +212,10 @@ def test_repr_html_drops_outer_table_when_all_fields_are_rich() -> None:
 
 
 def test_repr_html_indexes_rich_sequence_fields() -> None:
-    container = _NestedListModel(
+    container = NestedListModel(
         members=(
-            _NestedModel(name="a", value=1.0),
-            _NestedModel(name="b", value=2.0),
+            NestedModel(name="a", value=1.0),
+            NestedModel(name="b", value=2.0),
         ),
     )
     rendered = container._repr_html_()  # pylint: disable=protected-access
@@ -257,29 +225,24 @@ def test_repr_html_indexes_rich_sequence_fields() -> None:
 
 
 def test_repr_html_renders_empty_rich_sequence_inline() -> None:
-    container = _NestedListModel(members=())
+    container = NestedListModel(members=())
     rendered = container._repr_html_()  # pylint: disable=protected-access
     assert "(vacío)" in rendered
 
 
 def test_repr_html_renders_plain_sequence_value_as_list() -> None:
     class _PlainListModel(RichMarkdownModel):
-        items: tuple[_PlainModel, ...]
+        items: tuple[PlainModel, ...]
 
-    container = _PlainListModel(items=(_PlainModel(value=1), _PlainModel(value=2)))
+    container = _PlainListModel(items=(PlainModel(value=1), PlainModel(value=2)))
     rendered = container._repr_html_()  # pylint: disable=protected-access
     assert "<ul" in rendered
     assert "<li>" in rendered
-    assert "_PlainModel(...)" in rendered
+    assert "PlainModel(...)" in rendered
 
 
 def test_repr_html_renders_mixed_sequence_with_inline_rich_table() -> None:
-    class _MixedModel(RichMarkdownModel):
-        model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
-
-        items: tuple[Any, ...]
-
-    container = _MixedModel(items=(_NestedModel(name="x", value=1.0), 42))
+    container = MixedModel(items=(NestedModel(name="x", value=1.0), 42))
     rendered = container._repr_html_()  # pylint: disable=protected-access
     assert "<ul" in rendered
     assert rendered.count("<table") == 2

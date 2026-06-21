@@ -36,6 +36,7 @@ en este capítulo.
 
 ```{code-cell} python
 :tags: [remove-cell, hide-input]
+import altair as alt
 import numpy as np
 import pandas as pd
 from pandera.typing import DataFrame

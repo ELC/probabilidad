@@ -119,24 +119,22 @@ def _clinic_display_table(clinic_data: DataFrame[TabularData]) -> DataFrame[Tabu
 
 
 def style_display_table(table: pd.DataFrame) -> Styler:
-    float_formatters = dict.fromkeys(table.select_dtypes(include=["floating"]).columns, "{:.2f}")
-    return (
-        table.style.hide(axis="index")
-        .format(float_formatters)
-        .set_properties(**{"text-align": "center !important"})
-        .set_table_styles([
-            {"selector": "th", "props": [("text-align", "center !important")]},
-            {"selector": "td", "props": [("text-align", "center !important")]},
-            {
-                "selector": "th.col0",
-                "props": [("min-width", "240px"), ("white-space", "nowrap")],
-            },
-            {
-                "selector": "td.col0",
-                "props": [("min-width", "240px"), ("white-space", "nowrap")],
-            },
-        ])
-    )
+    float_columns = list(table.select_dtypes(include=[float]).columns)
+    styler = table.style.hide(axis="index")
+    if float_columns:
+        styler = styler.format("{:.2f}", subset=float_columns)
+    return styler.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center !important")]},
+        {"selector": "td", "props": [("text-align", "center !important")]},
+        {
+            "selector": "th.col0",
+            "props": [("min-width", "240px"), ("white-space", "nowrap")],
+        },
+        {
+            "selector": "td.col0",
+            "props": [("min-width", "240px"), ("white-space", "nowrap")],
+        },
+    ])
 
 
 def generate_clinic_sample(input_data: ClinicSampleInput) -> ClinicSample:
@@ -146,9 +144,7 @@ def generate_clinic_sample(input_data: ClinicSampleInput) -> ClinicSample:
         scale=input_data.waiting_time_standard_deviation,
         size=input_data.sample_size,
     ).clip(min=0.0)
-    area_absolute_frequencies = tuple(
-        rng_clinic.multinomial(input_data.sample_size, _probabilities(_AREA_WEIGHTS))
-    )
+    area_absolute_frequencies = tuple(rng_clinic.multinomial(input_data.sample_size, _probabilities(_AREA_WEIGHTS)))
     delay_reason_absolute_frequencies = tuple(
         rng_clinic.multinomial(input_data.sample_size, _probabilities(_DELAY_REASON_WEIGHTS))
     )
@@ -158,9 +154,7 @@ def generate_clinic_sample(input_data: ClinicSampleInput) -> ClinicSample:
     clinic_data = pd.DataFrame({
         "value": raw_waiting_times,
         "area": rng_clinic.permutation(np.repeat(_AREA_CATEGORIES, area_absolute_frequencies)),
-        "delay_reason": rng_clinic.permutation(
-            np.repeat(_DELAY_REASON_CATEGORIES, delay_reason_absolute_frequencies)
-        ),
+        "delay_reason": rng_clinic.permutation(np.repeat(_DELAY_REASON_CATEGORIES, delay_reason_absolute_frequencies)),
         "people_ahead": rng_clinic.permutation(np.repeat(_PEOPLE_AHEAD_VALUES, people_ahead_absolute_frequencies)),
     }).pipe(DataFrame[TabularData])
     waiting_times = clinic_data[["value"]].pipe(DataFrame[Observations])

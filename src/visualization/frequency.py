@@ -110,7 +110,8 @@ def chart_stem_leaf(input_data: StemLeafChartInput) -> alt.Chart:
     }).sort_values(["stem", "leaf"], ignore_index=True)
     source["position"] = source.groupby("stem").cumcount().add(1)
     chart = (
-        alt.Chart(source)
+        alt
+        .Chart(source)
         .mark_text(align="left", baseline="middle", dx=-5)
         .encode(
             x=alt.X(
@@ -142,7 +143,8 @@ def chart_histogram_with_frequency_polygon(input_data: FrequencyPolygonChartInpu
     x_scale = alt.Scale(domain=list(input_data.x_domain)) if input_data.x_domain is not None else alt.Undefined
     y_scale = alt.Scale(domain=list(input_data.y_domain)) if input_data.y_domain is not None else alt.Undefined
     bars = (
-        alt.Chart(input_data.frequency_table)
+        alt
+        .Chart(input_data.frequency_table)
         .mark_rect(opacity=theme.bar_opacity, color=theme.palette.primary)
         .encode(
             x=alt.X("interval_start:Q", scale=x_scale, title="Minutos de espera"),
@@ -157,7 +159,8 @@ def chart_histogram_with_frequency_polygon(input_data: FrequencyPolygonChartInpu
         )
     )
     polygon = (
-        alt.Chart(input_data.frequency_table)
+        alt
+        .Chart(input_data.frequency_table)
         .mark_line(point=True, color=theme.palette.secondary, strokeWidth=theme.line_stroke_width)
         .encode(
             x=alt.X("midpoint:Q", scale=x_scale, title="Minutos de espera"),
@@ -177,7 +180,8 @@ def chart_cumulative_frequency_polygon(input_data: FrequencyPolygonChartInput) -
     x_scale = alt.Scale(domain=list(input_data.x_domain)) if input_data.x_domain is not None else alt.Undefined
     y_scale = alt.Scale(domain=list(input_data.y_domain)) if input_data.y_domain is not None else alt.Undefined
     bars = (
-        alt.Chart(input_data.frequency_table)
+        alt
+        .Chart(input_data.frequency_table)
         .mark_rect(opacity=theme.bar_opacity, color=theme.palette.primary)
         .encode(
             x=alt.X("interval_start:Q", scale=x_scale, title="Minutos de espera"),
@@ -192,7 +196,8 @@ def chart_cumulative_frequency_polygon(input_data: FrequencyPolygonChartInput) -
         )
     )
     polygon = (
-        alt.Chart(input_data.frequency_table)
+        alt
+        .Chart(input_data.frequency_table)
         .mark_line(point=True, color=theme.palette.secondary, strokeWidth=theme.line_stroke_width)
         .encode(
             x=alt.X("midpoint:Q", scale=x_scale, title="Minutos de espera"),

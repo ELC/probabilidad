@@ -53,10 +53,7 @@ def _generate_synthetic_observations(parameters: NormalParams, sample_size: int,
 
 def _slider_widths(input_data: IntervalWidthExplorerInput) -> tuple[float, ...]:
     width_count = round((input_data.maximum_width - input_data.minimum_width) / input_data.step)
-    widths = {
-        round(input_data.minimum_width + index * input_data.step, 10)
-        for index in range(width_count + 1)
-    }
+    widths = {round(input_data.minimum_width + index * input_data.step, 10) for index in range(width_count + 1)}
     widths.add(round(input_data.initial_width, 10))
     return tuple(sorted(width for width in widths if width <= input_data.maximum_width))
 
@@ -162,8 +159,11 @@ def build_interval_width_explorer(input_data: IntervalWidthExplorerInput) -> wid
 
     width_slider.observe(render, names="value")
     render()
-    return widgets.VBox([
-        width_slider,
-        frequency_output,
-        cumulative_output,
-    ], layout=widgets.Layout(width="100%"))
+    return widgets.VBox(
+        [
+            width_slider,
+            frequency_output,
+            cumulative_output,
+        ],
+        layout=widgets.Layout(width="100%"),
+    )

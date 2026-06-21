@@ -26,7 +26,8 @@ class CategoricalBarChartInput(BaseModel):
 def chart_categorical_bars(input_data: CategoricalBarChartInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
     chart = (
-        alt.Chart(input_data.frequency_table)
+        alt
+        .Chart(input_data.frequency_table)
         .mark_bar(color=theme.palette.primary, opacity=theme.bar_opacity)
         .encode(
             x=alt.X("category:N", sort=None, axis=alt.Axis(labelAngle=30), title=input_data.category_title),
@@ -106,7 +107,8 @@ def chart_pareto(input_data: ParetoChartInput) -> alt.Chart:
         title="Frecuencia relativa",
     )
     bars = (
-        alt.Chart(input_data.frequency_table)
+        alt
+        .Chart(input_data.frequency_table)
         .mark_bar(color=theme.palette.primary, opacity=theme.bar_opacity)
         .encode(
             x=alt.X("category:N", sort=None, axis=alt.Axis(labelAngle=30), title=input_data.category_title),
@@ -115,7 +117,8 @@ def chart_pareto(input_data: ParetoChartInput) -> alt.Chart:
         )
     )
     cumulative_line = (
-        alt.Chart(input_data.frequency_table)
+        alt
+        .Chart(input_data.frequency_table)
         .mark_line(
             point=True,
             color=theme.palette.secondary,
@@ -180,7 +183,8 @@ class DiscreteStickChartInput(BaseModel):
 def chart_discrete_sticks(input_data: DiscreteStickChartInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
     chart = (
-        alt.Chart(input_data.frequency_table)
+        alt
+        .Chart(input_data.frequency_table)
         .mark_bar(color=theme.palette.primary, opacity=theme.bar_opacity, size=12)
         .encode(
             x=alt.X("value:O", sort=None, axis=alt.Axis(labelAngle=0), title=input_data.value_title),

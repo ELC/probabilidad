@@ -121,7 +121,8 @@ def _summary_chart(
     observations = pd.DataFrame({"value": values})
     history = _history(values, measures)
     histogram = (
-        alt.Chart(observations)
+        alt
+        .Chart(observations)
         .mark_bar(color=theme.palette.primary, opacity=theme.bar_opacity)
         .encode(
             x=alt.X(
@@ -137,7 +138,8 @@ def _summary_chart(
     )
     color = alt.Color("measure:N", legend=alt.Legend(title=None, orient="bottom"))
     evolution = (
-        alt.Chart(history)
+        alt
+        .Chart(history)
         .mark_line(point=True, strokeWidth=theme.line_stroke_width)
         .encode(
             x=alt.X(
@@ -213,13 +215,16 @@ def _build_summary_evolution_explorer(
     add_random_button.on_click(add_random)
     add_random_batch_button.on_click(add_random_batch)
     render()
-    return widgets.VBox([
-        widgets.HBox(
-            [value_input, add_value_button, add_random_button, add_random_batch_button],
-            layout=controls_layout,
-        ),
-        output,
-    ], layout=widgets.Layout(width="100%"))
+    return widgets.VBox(
+        [
+            widgets.HBox(
+                [value_input, add_value_button, add_random_button, add_random_batch_button],
+                layout=controls_layout,
+            ),
+            output,
+        ],
+        layout=widgets.Layout(width="100%"),
+    )
 
 
 def build_mean_evolution_explorer(input_data: SummaryEvolutionExplorerInput) -> widgets.Widget:
