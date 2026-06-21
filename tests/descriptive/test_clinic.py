@@ -7,9 +7,18 @@ def test_generate_clinic_sample_builds_cohesive_dataframe() -> None:
 
     assert len(sample.clinic_data) == 80
     assert set(sample.clinic_data.columns) == {"value", "area", "delay_reason", "people_ahead"}
+    assert list(sample.clinic_display_table.columns) == [
+        "Minutos de espera",
+        "Área de atención",
+        "Motivo de demora",
+        "Personas adelante",
+    ]
     assert len(sample.waiting_times) == 80
     assert sample.area_frequency_table["absolute_frequency"].sum() == 80
     assert sample.people_ahead_frequency_table["absolute_frequency"].sum() == 80
+    assert list(sample.area_display_table.columns) == ["Clase $k$", "$n_k$", "$f_k$"]
+    assert list(sample.people_ahead_display_table.columns) == ["$x_k$", "$n_k$", "$f_k$", "$N_k$", "$F_k$"]
+    assert list(sample.frequency_display_table.columns) == ["Intervalo", "$x_k$", "$n_k$", "$f_k$", "$N_k$", "$F_k$"]
 
 
 def test_generate_clinic_sample_excludes_none_from_pareto_table() -> None:

@@ -49,11 +49,16 @@ class ClinicSample(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
     clinic_data: DataFrame[TabularData]
+    clinic_display_table: DataFrame[TabularData]
     waiting_times: DataFrame[Observations]
     frequency_table: DataFrame[FrequencyTable]
     area_frequency_table: DataFrame[CategoricalFrequencyTable]
     delay_reason_frequency_table: DataFrame[CategoricalFrequencyTable]
     people_ahead_frequency_table: DataFrame[DiscreteFrequencyTable]
+    area_display_table: DataFrame[TabularData]
+    delay_reason_display_table: DataFrame[TabularData]
+    people_ahead_display_table: DataFrame[TabularData]
+    frequency_display_table: DataFrame[TabularData]
     area_categories: tuple[str, ...]
     delay_reason_categories: tuple[str, ...]
     people_ahead_values: tuple[int, ...]
@@ -61,6 +66,52 @@ class ClinicSample(BaseModel):
 
 def _probabilities(weights: np.ndarray) -> np.ndarray:
     return weights / weights.sum()
+
+
+def _categorical_display_table(
+    frequency_table: DataFrame[CategoricalFrequencyTable],
+    *,
+    category_label: str,
+    include_cumulative: bool = False,
+) -> DataFrame[TabularData]:
+    columns = {
+        category_label: frequency_table["category"],
+        "$n_k$": frequency_table["absolute_frequency"],
+        "$f_k$": frequency_table["relative_frequency"].round(2),
+    }
+    if include_cumulative:
+        columns["$F_k$"] = frequency_table["cumulative_relative_frequency"].round(2)
+    return pd.DataFrame(columns).pipe(DataFrame[TabularData])
+
+
+def _discrete_display_table(frequency_table: DataFrame[DiscreteFrequencyTable]) -> DataFrame[TabularData]:
+    return pd.DataFrame({
+        "$x_k$": frequency_table["value"],
+        "$n_k$": frequency_table["absolute_frequency"],
+        "$f_k$": frequency_table["relative_frequency"].round(2),
+        "$N_k$": frequency_table["cumulative_absolute_frequency"],
+        "$F_k$": frequency_table["cumulative_relative_frequency"].round(2),
+    }).pipe(DataFrame[TabularData])
+
+
+def _continuous_display_table(frequency_table: DataFrame[FrequencyTable]) -> DataFrame[TabularData]:
+    return pd.DataFrame({
+        "Intervalo": frequency_table["interval"],
+        "$x_k$": frequency_table["midpoint"].round(2),
+        "$n_k$": frequency_table["absolute_frequency"],
+        "$f_k$": frequency_table["relative_frequency"].round(2),
+        "$N_k$": frequency_table["cumulative_absolute_frequency"],
+        "$F_k$": frequency_table["cumulative_relative_frequency"].round(2),
+    }).pipe(DataFrame[TabularData])
+
+
+def _clinic_display_table(clinic_data: DataFrame[TabularData]) -> DataFrame[TabularData]:
+    return pd.DataFrame({
+        "Minutos de espera": clinic_data["value"].round(2),
+        "Área de atención": clinic_data["area"],
+        "Motivo de demora": clinic_data["delay_reason"],
+        "Personas adelante": clinic_data["people_ahead"],
+    }).pipe(DataFrame[TabularData])
 
 
 def generate_clinic_sample(input_data: ClinicSampleInput) -> ClinicSample:
@@ -119,11 +170,23 @@ def generate_clinic_sample(input_data: ClinicSampleInput) -> ClinicSample:
     )
     return ClinicSample(
         clinic_data=clinic_data,
+        clinic_display_table=_clinic_display_table(clinic_data),
         waiting_times=waiting_times,
         frequency_table=frequency_table,
         area_frequency_table=area_frequency_table,
         delay_reason_frequency_table=delay_reason_frequency_table,
         people_ahead_frequency_table=people_ahead_frequency_table,
+        area_display_table=_categorical_display_table(
+            area_frequency_table,
+            category_label="Clase $k$",
+        ),
+        delay_reason_display_table=_categorical_display_table(
+            delay_reason_frequency_table,
+            category_label="Causa $k$",
+            include_cumulative=True,
+        ),
+        people_ahead_display_table=_discrete_display_table(people_ahead_frequency_table),
+        frequency_display_table=_continuous_display_table(frequency_table),
         area_categories=_AREA_CATEGORIES,
         delay_reason_categories=_DELAY_REASON_CATEGORIES,
         people_ahead_values=_PEOPLE_AHEAD_VALUES,

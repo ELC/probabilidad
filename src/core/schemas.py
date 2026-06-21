@@ -32,11 +32,13 @@ class DiscreteFrequencyTable(pa.DataFrameModel):
 
 
 class FrequencyTable(pa.DataFrameModel):
+    interval: Series[str] = pa.Field(nullable=False)
     interval_start: Series[float] = pa.Field(nullable=False)
     interval_end: Series[float] = pa.Field(nullable=False)
     midpoint: Series[float] = pa.Field(nullable=False)
     absolute_frequency: Series[int] = pa.Field(ge=0)
     relative_frequency: Series[float] = pa.Field(ge=0.0, le=1.0)
+    cumulative_absolute_frequency: Series[int] = pa.Field(ge=0)
     cumulative_relative_frequency: Series[float] = pa.Field(ge=0.0, le=1.0)
 
 

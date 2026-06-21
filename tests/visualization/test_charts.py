@@ -55,6 +55,7 @@ from visualization import (
     DiscreteStickChartInput,
     DiscreteStickFromDataChartInput,
     FrequencyChartInput,
+    FrequencyPolygonChartInput,
     HistogramChartInput,
     LLNChartInput,
     LLNMultipleTrajectoriesChartInput,
@@ -64,6 +65,7 @@ from visualization import (
     PartitionDiagramInput,
     ProbabilityMassChartInput,
     ProbabilityTreeInput,
+    StemLeafChartInput,
     TypicalValuesComparisonChartInput,
     VennTwoSetsInput,
     chart_bootstrap_distribution,
@@ -71,12 +73,14 @@ from visualization import (
     chart_categorical_bars_from_data,
     chart_clt_comparison,
     chart_confidence_interval,
+    chart_cumulative_frequency_polygon,
     chart_density,
     chart_descriptive_summary,
     chart_discrete_sticks,
     chart_discrete_sticks_from_data,
     chart_frequency_table,
     chart_histogram,
+    chart_histogram_with_frequency_polygon,
     chart_lln_multiple_trajectories,
     chart_lln_running_mean,
     chart_observations_overview,
@@ -85,6 +89,7 @@ from visualization import (
     chart_partition_diagram,
     chart_probability_mass,
     chart_probability_tree,
+    chart_stem_leaf,
     chart_typical_values_comparison,
     chart_venn_two_sets,
 )
@@ -107,6 +112,39 @@ def test_chart_frequency_table(normal_observations: DataFrame[Observations], fix
     assert bars_layer["encoding"]["x2"]["field"] == "interval_end"
     assert bars_layer["encoding"]["y2"]["field"] == "baseline"
     assert ogive_layer["encoding"]["x"]["field"] == "midpoint"
+
+
+def test_chart_stem_leaf(normal_observations: DataFrame[Observations], fixed_settings: Settings) -> None:
+    chart = chart_stem_leaf(StemLeafChartInput(observations=normal_observations, settings=fixed_settings))
+    chart_spec = chart.to_dict()
+    assert chart_spec["mark"]["type"] == "text"
+    assert chart_spec["encoding"]["text"]["field"] == "leaf"
+    assert chart_spec["width"] == "container"
+
+
+def test_chart_histogram_with_frequency_polygon(
+    normal_observations: DataFrame[Observations], fixed_settings: Settings
+) -> None:
+    table = build_frequency_table(FrequencyTableInput(observations=normal_observations, bin_count=6))
+    chart = chart_histogram_with_frequency_polygon(
+        FrequencyPolygonChartInput(frequency_table=table, settings=fixed_settings)
+    )
+    chart_spec = chart.to_dict()
+    assert chart_spec["layer"][0]["mark"]["type"] == "rect"
+    assert chart_spec["layer"][1]["mark"]["type"] == "line"
+    assert chart_spec["layer"][1]["encoding"]["x"]["field"] == "midpoint"
+
+
+def test_chart_cumulative_frequency_polygon(
+    normal_observations: DataFrame[Observations], fixed_settings: Settings
+) -> None:
+    table = build_frequency_table(FrequencyTableInput(observations=normal_observations, bin_count=6))
+    chart = chart_cumulative_frequency_polygon(
+        FrequencyPolygonChartInput(frequency_table=table, settings=fixed_settings)
+    )
+    chart_spec = chart.to_dict()
+    assert chart_spec["layer"][0]["encoding"]["y"]["field"] == "cumulative_relative_frequency"
+    assert chart_spec["layer"][1]["encoding"]["x"]["field"] == "interval_end"
 
 
 def test_chart_categorical_bars_preserves_table_order_and_uses_container_width(fixed_settings: Settings) -> None:
@@ -198,14 +236,11 @@ def test_chart_discrete_sticks_renders_stems_and_points(fixed_settings: Settings
         )
     )
     chart_spec = chart.to_dict()
-    stems_layer = chart_spec["layer"][0]
-    points_layer = chart_spec["layer"][1]
     assert chart_spec["width"] == "container"
-    assert stems_layer["mark"]["type"] == "rule"
-    assert stems_layer["encoding"]["x"]["field"] == "value"
-    assert stems_layer["encoding"]["y"]["field"] == "relative_frequency"
-    assert stems_layer["encoding"]["y2"]["datum"] == 0
-    assert points_layer["mark"]["type"] == "point"
+    assert chart_spec["mark"]["type"] == "bar"
+    assert chart_spec["mark"]["size"] == 12
+    assert chart_spec["encoding"]["x"]["field"] == "value"
+    assert chart_spec["encoding"]["y"]["field"] == "relative_frequency"
 
 
 def test_chart_discrete_sticks_from_data_counts_exact_values(fixed_settings: Settings) -> None:

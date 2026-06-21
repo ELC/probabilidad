@@ -114,15 +114,15 @@ indica).
 | Representatividad | Grado en que la muestra se parece al proceso o población sobre la que queremos decidir. | [Antes de inferir: cómo se juntaron los datos](#sec-descriptive-sampling) |
 | Sesgo | Patrón de recolección o medición que empuja los datos sistemáticamente en una dirección. | [Antes de inferir: cómo se juntaron los datos](#sec-descriptive-sampling) |
 | Independencia de observaciones | Condición bajo la cual una observación no arrastra mecánicamente a la siguiente. | [Antes de inferir: cómo se juntaron los datos](#sec-descriptive-sampling) |
-| Tabla de frecuencias | Conteo absoluto, relativo y acumulado por clases, valores o intervalos. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types), [Agrupar la lista antes de resumir](#sec-descriptive-frequency) |
+| Tabla de frecuencias | Conteo absoluto, relativo y acumulado por clases, valores o intervalos. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types), [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
 | Diagrama de Pareto | Barras ordenadas de mayor a menor frecuencia, a menudo con porcentaje acumulado. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
 | Gráfico de bastones | Segmentos verticales que representan frecuencias de valores discretos. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
 | Diagrama de tallo y hoja | Organización de datos numéricos que separa dígitos tallo y hoja para conservar valores individuales. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
 | Intervalo de clase | Subintervalo usado para agrupar una variable continua. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
 | Punto medio de clase | Valor representativo de un intervalo de clase. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| Histograma | Barras que muestran cómo se reparte la frecuencia por intervalos. | [Agrupar la lista antes de resumir](#sec-descriptive-frequency) |
+| Histograma | Barras que muestran cómo se reparte la frecuencia por intervalos. | [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
 | Polígono de frecuencias | Línea que une los puntos medios superiores de las barras de un histograma. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| Ojiva | Curva de frecuencia acumulada por intervalos. | [Agrupar la lista antes de resumir](#sec-descriptive-frequency) |
+| Ojiva | Curva de frecuencia acumulada por intervalos. | [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
 | Serie de tiempo | Datos registrados en el orden en que ocurren para detectar tendencias, ciclos o cambios temporales. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
 | Percentil | Valor que deja cierto porcentaje de observaciones por debajo. | [Posición dentro de la muestra: cuartiles y percentiles](#sec-descriptive-position) |
 | Suma de cuadrados | $\sum(x_i - \bar{x})^2$, paso intermedio para $s$. | [Tres preguntas que resumen la muestra](#sec-descriptive-summary) |

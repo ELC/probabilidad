@@ -76,14 +76,17 @@ def build_frequency_table(input_data: FrequencyTableInput) -> DataFrame[Frequenc
     interval_end = edges[1:]
     midpoint = (interval_start + interval_end) / 2.0
     relative_frequency = absolute_frequency / values.size
+    cumulative_absolute_frequency = np.cumsum(absolute_frequency)
     cumulative_relative_frequency = np.cumsum(relative_frequency)
     cumulative_relative_frequency[-1] = 1.0
     raw = pd.DataFrame({
+        "interval": [f"{start:.2f} < x <= {end:.2f}" for start, end in zip(interval_start, interval_end, strict=True)],
         "interval_start": interval_start.astype(float),
         "interval_end": interval_end.astype(float),
         "midpoint": midpoint.astype(float),
         "absolute_frequency": absolute_frequency.astype(int),
         "relative_frequency": relative_frequency.astype(float),
+        "cumulative_absolute_frequency": cumulative_absolute_frequency.astype(int),
         "cumulative_relative_frequency": cumulative_relative_frequency.astype(float),
     })
     return raw.pipe(DataFrame[FrequencyTable])

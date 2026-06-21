@@ -53,16 +53,19 @@ from visualization import (
     CategoricalBarFromDataChartInput,
     DescriptiveSummaryChartInput,
     DiscreteStickFromDataChartInput,
-    FrequencyChartInput,
+    FrequencyPolygonChartInput,
     HistogramChartInput,
     ParetoFromDataChartInput,
+    StemLeafChartInput,
     TypicalValuesComparisonChartInput,
     chart_categorical_bars_from_data,
+    chart_cumulative_frequency_polygon,
     chart_descriptive_summary,
     chart_discrete_sticks_from_data,
-    chart_frequency_table,
     chart_histogram,
+    chart_histogram_with_frequency_polygon,
     chart_pareto_from_data,
+    chart_stem_leaf,
     chart_typical_values_comparison,
 )
 from widgets import DescriptiveExplorerInput, build_descriptive_explorer
@@ -144,7 +147,7 @@ secuencia en que llegaron a la guardia.
 
 ```{code-cell} python
 clinic_sample = generate_clinic_sample(ClinicSampleInput(settings=settings, sample_size=80))
-clinic_sample.clinic_data.head()
+clinic_sample.clinic_display_table.head()
 ```
 
 (sec-descriptive-variable-types)=
@@ -210,8 +213,15 @@ observada en esa clase y $f_k$ es su proporción sobre el total.
 En la clínica, una tabla por área de atención podría leerse así:
 
 ```{code-cell} python
-clinic_sample.area_frequency_table
+clinic_sample.area_display_table
 ```
+
+La frecuencia relativa suele expresarse como porcentaje: una proporción de
+$0{,}25$, por ejemplo, equivale al 25% de la muestra. Para variables cualitativas
+conviene usar **gráficos de barras**, porque facilitan la comparación visual entre
+categorías y partes del total. Aunque los gráficos de torta o de sectores son muy
+usados, hay estudios y guías de visualización que recomiendan evitarlos cuando el
+objetivo es comparar magnitudes con precisión [@few2007visual].
 
 ```{code-cell} python
 chart_categorical_bars_from_data(
@@ -226,13 +236,6 @@ chart_categorical_bars_from_data(
 )
 ```
 
-La frecuencia relativa suele expresarse como porcentaje: una proporción de
-$0{,}25$, por ejemplo, equivale al 25% de la muestra. Para variables cualitativas
-conviene usar **gráficos de barras**, porque facilitan la comparación visual entre
-categorías y partes del total. Aunque los gráficos de torta o de sectores son muy
-usados, hay estudios y guías de visualización que recomiendan evitarlos cuando el
-objetivo es comparar magnitudes con precisión [@few2007visual].
-
 Si ordenamos las barras de mayor a menor frecuencia y sumamos el porcentaje
 acumulado, aparece rápido si unas pocas causas explican gran parte de las demoras.
 Ese gráfico de barras ordenadas, pensado para priorizar dónde intervenir primero,
@@ -245,7 +248,7 @@ de demora identificable. Así empieza por las causas más frecuentes, no por las
 raras:
 
 ```{code-cell} python
-clinic_sample.delay_reason_frequency_table
+clinic_sample.delay_reason_display_table
 ```
 
 ```{code-cell} python
@@ -289,14 +292,14 @@ $F_k$ da la proporción acumulada. En la clínica, si registramos cuántas perso
 tenía cada paciente por delante al llegar, una parte de la tabla podría verse así:
 
 ```{code-cell} python
-clinic_sample.people_ahead_frequency_table
+clinic_sample.people_ahead_display_table
 ```
 
 La fila de $3$ tiene dos lecturas distintas: $f_k$ dice qué proporción de
 pacientes tenía exactamente tres personas adelante, y $F_k$ dice qué proporción
 tenía tres personas o menos. El gráfico natural para estos datos es el **gráfico
-de bastones**: un segmento vertical para cada valor posible, con altura
-proporcional a su frecuencia.
+de bastones**: una barra angosta para cada valor posible, con altura proporcional
+a su frecuencia.
 
 ```{code-cell} python
 chart_discrete_sticks_from_data(
@@ -319,9 +322,10 @@ horizontal de un gráfico de bastones debe respetar el orden numérico: $0, 1, 2
 \dots$. Además, puede haber valores sin observaciones, y ese espacio vacío también
 informa. En un gráfico de barras no existe un "valor numérico faltante" entre
 categorías: reordenar las barras puede ayudar a comparar sin cambiar el significado.
-En un gráfico de bastones, en cambio, reordenar los segmentos puede confundir,
+En un gráfico de bastones, en cambio, reordenar las barras angostas puede confundir,
 porque el lector espera que el eje avance en orden ascendente.
 
+(sec-descriptive-frequency)=
 ### Variables continuas: intervalos, tallo-hoja e histogramas
 
 En variables continuas casi nunca conviene contar cada valor exacto. Primero se
@@ -329,6 +333,16 @@ puede usar un **diagrama de tallo y hoja**, que conserva los datos individuales 
 los ordena visualmente: si un paciente esperó 4,7 minutos, por ejemplo, el tallo
 puede ser 4 y la hoja 7. Es útil en conjuntos pequeños o medianos porque muestra
 la forma sin destruir del todo la lista original.
+
+```{code-cell} python
+chart_stem_leaf(
+    StemLeafChartInput(
+        observations=clinic_sample.waiting_times,
+        title="Tiempos de espera: diagrama de tallo y hoja",
+        settings=settings,
+    )
+)
+```
 
 Para una tabla de frecuencias continua se particiona el rango observado en
 **intervalos de clase**. Conviene que tengan amplitud similar y que cada dato caiga
@@ -346,25 +360,69 @@ barra debe ser proporcional a la frecuencia. Si todas las amplitudes son iguales
 altura también queda proporcional a la frecuencia; si no lo son, hay que ajustar las
 alturas. Al pasar de datos originales a intervalos se pierde información, pero se gana
 legibilidad. En muestras pequeñas, cambiar el ancho de clase puede cambiar bastante
-la apariencia del histograma.
+la apariencia del histograma. A diferencia del gráfico de bastones, las barras de
+un histograma no llevan espacios entre sí: si aparece un hueco, se lee como un
+intervalo sin observaciones. En los bastones, en cambio, el espacio entre valores
+exactos no representa una probabilidad intermedia.
+
+**Antes de mirar.** Si la mañana fue razonablemente estable, ¿esperás ver muchas
+esperas cerca de un valor central o una cola larga de casos lentos? Hacé una
+predicción rápida: dónde se va a concentrar el histograma y en qué minuto creés
+que la ojiva va a cruzar el 70%.
+
+```{code-cell} python
+chart_histogram_with_frequency_polygon(
+    FrequencyPolygonChartInput(
+        frequency_table=clinic_sample.frequency_table,
+        title="Tiempos de espera: histograma y polígono de frecuencias",
+        settings=settings,
+    )
+)
+```
+
+El **polígono de frecuencias** une los puntos medios superiores de las barras del
+histograma. No agrega datos nuevos: traza una línea sobre la misma tabla para leer
+mejor la forma general, especialmente si queremos comparar centros, colas o
+asimetrías.
+
+```{code-cell} python
+chart_cumulative_frequency_polygon(
+    FrequencyPolygonChartInput(
+        frequency_table=clinic_sample.frequency_table,
+        title="Tiempos de espera: frecuencias acumuladas y ojiva",
+        settings=settings,
+    )
+)
+```
+
+El **polígono de frecuencias acumuladas** une las frecuencias acumuladas. Cuando
+esos puntos se ubican en los límites superiores de los intervalos, esa línea es la
+**ojiva**: permite leer qué proporción quedó por debajo de un corte dado, como
+cinco minutos de espera.
 
 En la clínica, si agrupamos los 80 tiempos de espera en intervalos de dos minutos,
 podríamos obtener una tabla como esta:
 
 ```{code-cell} python
-clinic_sample.frequency_table
+clinic_sample.frequency_display_table
 ```
 
-Cada fila dice dos cosas a la vez: `relative_frequency` cuenta qué proporción cae
-dentro de ese intervalo, y `cumulative_relative_frequency` acumula todo lo que
-queda por debajo de su límite superior. El punto medio representa a todo el
-intervalo cuando hacemos cuentas con datos agrupados; por eso agrupamos para leer
-mejor, pero aceptamos perder el detalle de cada espera individual.
+Cada fila dice dos cosas a la vez: $f_k$ cuenta qué proporción cae dentro de ese
+intervalo, y $F_k$ acumula todo lo que queda por debajo de su límite superior. El
+punto medio representa a todo el intervalo cuando hacemos cuentas con datos
+agrupados; por eso agrupamos para leer mejor, pero aceptamos perder el detalle de
+cada espera individual.
 
-También se puede sumar un **polígono de frecuencias**, uniendo los puntos medios
-superiores de las barras, y un **polígono de frecuencias acumuladas**, que une las
-frecuencias acumuladas. La ojiva que usamos más abajo es una versión de ese gráfico
-acumulado.
+Si $n_j$ es la cantidad de observaciones en el intervalo $j$ y $n$ el tamaño total,
+las frecuencias relativas de intervalos se leen igual que antes:
+
+$$
+f_j = \frac{n_j}{n}
+$$ (eq-frequency-table-relative)
+
+$$
+F_j = \sum_{r \le j} f_r
+$$ (eq-frequency-table-cumulative)
 
 Para Lucía, la pregunta operativa puede ser "¿qué porcentaje esperó menos de cinco
 minutos?". Esa lectura sale de la distribución acumulada: no mira sólo una barra,
@@ -384,51 +442,6 @@ En la clínica, esa advertencia tiene una forma concreta: las esperas pueden cre
 hacia el mediodía, caer después de que se libera un consultorio o concentrarse justo
 después de una llegada simultánea de pacientes. Si mezclamos todo en una sola tabla
 sin mirar el orden temporal, una tendencia o un ciclo puede quedar escondido.
-
-(sec-descriptive-frequency)=
-## Agrupar la lista antes de resumir
-
-Antes de cualquier número, **dibujamos**. La primera decisión no es qué fórmula usar, sino
-cómo convertir ochenta valores sueltos en una forma legible sin borrar lo importante.
-
-La forma más directa de mirar una lista de minutos es agruparla en
-intervalos — por ejemplo, 0 a 2 minutos, 2 a 4, 4 a 6 — y contar
-cuántos pacientes cayeron en cada grupo. Esa cuenta por intervalo es
-lo que se llama una **tabla de frecuencias**. Si la dibujamos con
-barras (más alta donde se amontonaron muchas esperas, más bajita donde
-casi no hubo), sale un **histograma**: un gráfico que muestra dónde se
-concentran los datos y si aparecen colas o valores poco frecuentes. Y
-si encima trazamos una línea que va sumando, paso a paso, el porcentaje
-**acumulado** de pacientes hasta cada minuto, esa línea — la **ojiva** —
-nos deja leer de un vistazo cosas como «el 70% esperó menos de cinco
-minutos».
-
-**Antes de mirar.** Si la mañana fue razonablemente estable, ¿esperás
-ver muchas esperas cerca de un valor central o una cola larga de casos
-lentos? Hacé una predicción rápida: dónde se va a concentrar el
-histograma y en qué minuto creés que la ojiva va a cruzar el 70%.
-
-```{code-cell} python
-frequency_chart_input = FrequencyChartInput(
-    frequency_table=clinic_sample.frequency_table,
-    title="Tiempos de espera (clínica) — histograma y ojiva",
-    settings=settings,
-)
-chart_frequency_table(frequency_chart_input)
-```
-
-La tabla que alimenta el gráfico tiene tres columnas que conviene distinguir.
-La **frecuencia absoluta** cuenta pacientes en cada intervalo; la **frecuencia
-relativa** divide esa cuenta por el total; la **frecuencia relativa acumulada**
-va sumando las filas anteriores. Si $n_j$ es la cantidad de observaciones en el
-intervalo $j$ y $n$ el tamaño total,
-
-$$ f_j = \frac{n_j}{n}, \qquad F_j = \sum_{r \le j} f_r $$ (eq-frequency-table)
-
-El histograma responde «¿dónde se amontonan los datos?». La ojiva responde
-«¿qué proporción queda por debajo de cierto corte?». Antes de resumir con una
-media o un desvío, esta mirada protege contra una trampa común: pedirle a un
-solo número que cuente una forma completa.
 
 (sec-descriptive-summary)=
 ## Tres preguntas que resumen la muestra
@@ -457,15 +470,37 @@ $1, 2, \dots, n$ — así que la fórmula dice exactamente lo mismo que
 
 Si los datos ya están agrupados en $r$ clases, usamos el valor de la clase $x_k$
 — el valor exacto en datos discretos o el punto medio del intervalo en datos
-continuos — y su frecuencia:
+continuos — y su frecuencia. Como $f_k$ es la frecuencia relativa definida en
+[](#eq-relative-frequency), podemos escribir:
 
-$$ \bar{x} = \frac{1}{n}\sum_{k=1}^{r} x_k n_k = \sum_{k=1}^{r} x_k f_k $$ (eq-grouped-mean)
+$$
+\bar{x} = \frac{1}{n}\sum_{k=1}^{r} x_k n_k
+$$ (eq-grouped-mean-absolute)
+
+$$
+\bar{x} = \sum_{k=1}^{r} x_k \frac{n_k}{n}
+$$ (eq-grouped-mean-relative-ratio)
+
+$$
+\bar{x} = \sum_{k=1}^{r} x_k f_k
+$$ (eq-grouped-mean)
 
 Si el conjunto observado es toda la población, el promedio es un parámetro y se
 escribe $\mu$. La media no tiene por qué coincidir con un valor observado: puede
 dar 4,36 minutos aunque ningún paciente haya esperado exactamente 4,36 minutos. Como
 usa toda la información, también es sensible a valores extremos. Por eso sirve para
 comparar distribuciones sólo cuando sus formas son razonablemente semejantes.
+
+La media que usamos acá es la **media aritmética**. Existen otras medias útiles,
+pero responden a preguntas distintas. La **media geométrica** se usa cuando el
+fenómeno se compone multiplicando cambios relativos: por ejemplo, si Lucía compara
+mejoras porcentuales sucesivas en el tiempo de espera promedio después de varios
+ajustes de agenda, la mejora típica no debería promediarse sumando porcentajes sin
+más. La **media armónica** se usa para promediar tasas cuando el denominador común
+es fijo: por ejemplo, si se comparan ritmos de atención medidos en pacientes por
+hora en franjas de igual duración, puede describir mejor el ritmo típico que una
+media aritmética simple de tasas. En este libro vamos a trabajar con la media
+aritmética; elegir y calcular otras medias queda fuera de alcance.
 
 ### El valor más frecuente: la moda
 

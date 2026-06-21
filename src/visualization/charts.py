@@ -111,6 +111,107 @@ def chart_frequency_table(input_data: FrequencyChartInput) -> alt.Chart:
     return apply_theme(chart, input_data.settings)
 
 
+class StemLeafChartInput(BaseModel):
+    model_config = _ARBITRARY
+
+    observations: DataFrame[Observations]
+    title: str = "Diagrama de tallo y hoja"
+    settings: Settings = Settings()
+
+
+def chart_stem_leaf(input_data: StemLeafChartInput) -> alt.Chart:
+    values = np.floor(input_data.observations["value"].to_numpy() * 10).astype(int)
+    source = pd.DataFrame({
+        "stem": values // 10,
+        "leaf": values % 10,
+    }).sort_values(["stem", "leaf"], ignore_index=True)
+    source["position"] = source.groupby("stem").cumcount().add(1)
+    chart = (
+        alt.Chart(source)
+        .mark_text(align="left", baseline="middle", dx=-5)
+        .encode(
+            x=alt.X(
+                "position:Q",
+                title="",
+                axis=alt.Axis(ticks=False, labels=False, grid=False),
+            ),
+            y=alt.Y("stem:O", title="Tallo", axis=alt.Axis(tickSize=0)),
+            text=alt.Text("leaf:O"),
+            tooltip=["stem", "leaf"],
+        )
+        .properties(title=input_data.title, width="container", height=input_data.settings.chart_theme.height)
+    )
+    return apply_theme(chart, input_data.settings, set_size=False)
+
+
+class FrequencyPolygonChartInput(BaseModel):
+    model_config = _ARBITRARY
+
+    frequency_table: DataFrame[FrequencyTable]
+    title: str = "Histograma y polígono de frecuencias"
+    settings: Settings = Settings()
+
+
+def chart_histogram_with_frequency_polygon(input_data: FrequencyPolygonChartInput) -> alt.Chart:
+    theme = input_data.settings.chart_theme
+    bars = (
+        alt.Chart(input_data.frequency_table)
+        .mark_rect(opacity=theme.bar_opacity, color=theme.palette.primary)
+        .encode(
+            x=alt.X("interval_start:Q", title="Minutos de espera"),
+            x2="interval_end:Q",
+            y=alt.Y("relative_frequency:Q", axis=alt.Axis(format="%"), title="Frecuencia relativa"),
+            tooltip=["interval", "absolute_frequency", "relative_frequency"],
+        )
+    )
+    polygon = (
+        alt.Chart(input_data.frequency_table)
+        .mark_line(point=True, color=theme.palette.secondary, strokeWidth=theme.line_stroke_width)
+        .encode(
+            x=alt.X("midpoint:Q", title="Minutos de espera"),
+            y=alt.Y("relative_frequency:Q", axis=alt.Axis(format="%")),
+        )
+    )
+    chart = alt.layer(bars, polygon).properties(
+        title=input_data.title,
+        width="container",
+        height=theme.height,
+    )
+    return apply_theme(chart, input_data.settings, set_size=False)
+
+
+def chart_cumulative_frequency_polygon(input_data: FrequencyPolygonChartInput) -> alt.Chart:
+    theme = input_data.settings.chart_theme
+    bars = (
+        alt.Chart(input_data.frequency_table)
+        .mark_rect(opacity=theme.bar_opacity, color=theme.palette.primary)
+        .encode(
+            x=alt.X("interval_start:Q", title="Minutos de espera"),
+            x2="interval_end:Q",
+            y=alt.Y(
+                "cumulative_relative_frequency:Q",
+                axis=alt.Axis(format="%"),
+                title="Frecuencia relativa acumulada",
+            ),
+            tooltip=["interval", "cumulative_absolute_frequency", "cumulative_relative_frequency"],
+        )
+    )
+    polygon = (
+        alt.Chart(input_data.frequency_table)
+        .mark_line(point=True, color=theme.palette.secondary, strokeWidth=theme.line_stroke_width)
+        .encode(
+            x=alt.X("interval_end:Q", title="Minutos de espera"),
+            y=alt.Y("cumulative_relative_frequency:Q", axis=alt.Axis(format="%")),
+        )
+    )
+    chart = alt.layer(bars, polygon).properties(
+        title=input_data.title,
+        width="container",
+        height=theme.height,
+    )
+    return apply_theme(chart, input_data.settings, set_size=False)
+
+
 class CategoricalBarChartInput(BaseModel):
     model_config = _ARBITRARY
 
@@ -276,32 +377,23 @@ class DiscreteStickChartInput(BaseModel):
 
 def chart_discrete_sticks(input_data: DiscreteStickChartInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
-    stems = (
+    chart = (
         alt.Chart(input_data.frequency_table)
-        .mark_rule(color=theme.palette.primary, strokeWidth=theme.line_stroke_width)
+        .mark_bar(color=theme.palette.primary, opacity=theme.bar_opacity, size=12)
         .encode(
-            x=alt.X("value:O", title=input_data.value_title),
+            x=alt.X("value:O", sort=None, title=input_data.value_title),
             y=alt.Y(
                 "relative_frequency:Q",
                 axis=alt.Axis(format="%"),
                 title="Frecuencia relativa",
             ),
-            y2=alt.datum(0),
             tooltip=["value", "absolute_frequency", "relative_frequency"],
         )
-    )
-    points = (
-        alt.Chart(input_data.frequency_table)
-        .mark_point(filled=True, color=theme.palette.primary, size=70)
-        .encode(
-            x=alt.X("value:O", title=input_data.value_title),
-            y=alt.Y("relative_frequency:Q", axis=alt.Axis(format="%")),
-        )
-    )
-    chart = alt.layer(stems, points).properties(
+        .properties(
         title=input_data.title,
         width="container",
         height=theme.height,
+        )
     )
     return apply_theme(chart, input_data.settings, set_size=False)
 
