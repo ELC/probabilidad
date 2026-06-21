@@ -51,6 +51,30 @@ def _generate_synthetic_observations(parameters: NormalParams, sample_size: int,
     return pd.DataFrame({"value": samples.astype(float)}).pipe(DataFrame[Observations])
 
 
+def _slider_widths(input_data: IntervalWidthExplorerInput) -> tuple[float, ...]:
+    width_count = round((input_data.maximum_width - input_data.minimum_width) / input_data.step)
+    widths = {
+        round(input_data.minimum_width + index * input_data.step, 10)
+        for index in range(width_count + 1)
+    }
+    widths.add(round(input_data.initial_width, 10))
+    return tuple(sorted(width for width in widths if width <= input_data.maximum_width))
+
+
+def _fixed_domains(input_data: IntervalWidthExplorerInput) -> tuple[tuple[float, float], tuple[float, float]]:
+    tables = [
+        build_frequency_table(FrequencyTableInput(observations=input_data.observations, bin_width=width))
+        for width in _slider_widths(input_data)
+    ]
+    x_domain = (
+        min(float(table["interval_start"].min()) for table in tables),
+        max(float(table["interval_end"].max()) for table in tables),
+    )
+    max_relative_frequency = max(float(table["relative_frequency"].max()) for table in tables)
+    relative_y_domain = (0.0, min(1.0, max_relative_frequency * 1.05))
+    return x_domain, relative_y_domain
+
+
 def build_descriptive_explorer(input_data: DescriptiveExplorerInput) -> widgets.Widget:
     mean_slider = widgets.FloatSlider(min=-10.0, max=10.0, step=0.5, value=0.0, description="μ")
     deviation_slider = widgets.FloatSlider(min=0.5, max=5.0, step=0.1, value=1.0, description="σ")
@@ -91,6 +115,7 @@ def build_descriptive_explorer(input_data: DescriptiveExplorerInput) -> widgets.
 
 
 def build_interval_width_explorer(input_data: IntervalWidthExplorerInput) -> widgets.Widget:
+    x_domain, relative_y_domain = _fixed_domains(input_data)
     width_slider = widgets.FloatSlider(
         min=input_data.minimum_width,
         max=input_data.maximum_width,
@@ -99,8 +124,8 @@ def build_interval_width_explorer(input_data: IntervalWidthExplorerInput) -> wid
         description="ancho",
         readout_format=".2f",
     )
-    left_output = widgets.Output(layout=widgets.Layout(width="50%"))
-    right_output = widgets.Output(layout=widgets.Layout(width="50%"))
+    frequency_output = widgets.Output(layout=widgets.Layout(width="100%"))
+    cumulative_output = widgets.Output(layout=widgets.Layout(width="100%"))
 
     def render(_change: Any | None = None) -> None:
         frequency_table = build_frequency_table(
@@ -114,6 +139,8 @@ def build_interval_width_explorer(input_data: IntervalWidthExplorerInput) -> wid
                 frequency_table=frequency_table,
                 title="Frecuencia por intervalo",
                 settings=input_data.settings,
+                x_domain=x_domain,
+                y_domain=relative_y_domain,
             )
         )
         cumulative_chart = chart_cumulative_frequency_polygon(
@@ -121,18 +148,21 @@ def build_interval_width_explorer(input_data: IntervalWidthExplorerInput) -> wid
                 frequency_table=frequency_table,
                 title="Frecuencia acumulada",
                 settings=input_data.settings,
+                x_domain=x_domain,
+                y_domain=(0.0, 1.0),
             )
         )
-        with left_output:
-            left_output.clear_output(wait=True)
+        with frequency_output:
+            frequency_output.clear_output(wait=True)
             display(frequency_chart)
-        with right_output:
-            right_output.clear_output(wait=True)
+        with cumulative_output:
+            cumulative_output.clear_output(wait=True)
             display(cumulative_chart)
 
     width_slider.observe(render, names="value")
     render()
     return widgets.VBox([
         width_slider,
-        widgets.HBox([left_output, right_output], layout=widgets.Layout(width="100%")),
+        frequency_output,
+        cumulative_output,
     ])

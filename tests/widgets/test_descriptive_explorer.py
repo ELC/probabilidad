@@ -34,17 +34,17 @@ def test_descriptive_explorer_reacts_to_slider_change(fixed_settings: Settings) 
     mean_slider.value += 1.0
 
 
-def test_interval_width_explorer_yields_vbox_with_hstacked_outputs(fixed_settings: Settings) -> None:
+def test_interval_width_explorer_yields_vbox_with_stacked_outputs(fixed_settings: Settings) -> None:
     observations = pd.DataFrame({"value": [2.0, 2.5, 3.0, 4.0, 4.5, 5.0]}).pipe(DataFrame[Observations])
     container = build_interval_width_explorer(
         IntervalWidthExplorerInput(observations=observations, settings=fixed_settings)
     )
     assert isinstance(container, widgets.VBox)
     assert isinstance(container.children[0], widgets.FloatSlider)
-    assert isinstance(container.children[1], widgets.HBox)
-    assert len(container.children[1].children) == 2
+    assert isinstance(container.children[1], widgets.Output)
+    assert isinstance(container.children[2], widgets.Output)
     assert container.children[1].layout.width == "100%"
-    assert container.children[1].children[0].layout.width == "50%"
+    assert container.children[2].layout.width == "100%"
 
 
 def test_interval_width_explorer_reacts_to_slider_change(fixed_settings: Settings) -> None:

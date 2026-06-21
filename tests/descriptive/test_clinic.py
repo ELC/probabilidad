@@ -1,5 +1,5 @@
 from core import Settings
-from descriptive import ClinicSampleInput, generate_clinic_sample
+from descriptive import ClinicSampleInput, generate_clinic_sample, style_display_table
 
 
 def test_generate_clinic_sample_builds_cohesive_dataframe() -> None:
@@ -36,3 +36,13 @@ def test_generate_clinic_sample_is_reproducible() -> None:
 
     assert first.clinic_data.equals(second.clinic_data)
     assert first.frequency_table.equals(second.frequency_table)
+
+
+def test_style_display_table_centers_headers_and_formats_floats() -> None:
+    sample = generate_clinic_sample(ClinicSampleInput(settings=Settings(), sample_size=80))
+
+    rendered = style_display_table(sample.frequency_display_table).to_html()
+
+    assert "text-align: center !important" in rendered
+    assert "min-width: 240px" in rendered
+    assert f"{sample.frequency_display_table['$x_k$'].iloc[0]:.2f}" in rendered

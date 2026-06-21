@@ -33,31 +33,31 @@ indica).
 | $n$ | Tamaño de la muestra | [Una muestra de tiempos de espera](#sec-descriptive-sample) |
 | $X$ | Variable observada sobre cada unidad de análisis | [Estadística en ingeniería: procesos, variabilidad y riesgo](#sec-descriptive-foundations) |
 | $x_1, \dots, x_n$, $x_i$ | Observaciones individuales de la muestra | [Una muestra de tiempos de espera](#sec-descriptive-sample) |
-| $n_k$ | Frecuencia absoluta de la clase o valor $k$ | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| $f_k$ | Frecuencia relativa de la clase o valor $k$ | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| $N_k$ | Frecuencia absoluta acumulada hasta $x_k$ | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| $F_k$ | Frecuencia relativa acumulada hasta $x_k$ | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| $x_k$ | Valor exacto o punto medio de la clase $k$ | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| $\bar{x}$ | Media muestral | [Tres preguntas que resumen la muestra](#sec-descriptive-summary) |
-| $\hat{x}$ | Moda muestral | [Tres preguntas que resumen la muestra](#sec-descriptive-summary) |
-| $\tilde{x}$ | Mediana muestral | [Tres preguntas que resumen la muestra](#sec-descriptive-summary) |
+| $n_k$ | Frecuencia absoluta de la clase o valor $k$ | [Atributos: clases, porcentajes y Pareto](#sec-descriptive-attributes) |
+| $f_k$ | Frecuencia relativa de la clase o valor $k$ | [Atributos: clases, porcentajes y Pareto](#sec-descriptive-attributes), [](#eq-relative-frequency) |
+| $N_k$ | Frecuencia absoluta acumulada hasta $x_k$ | [Variables discretas: valores exactos y acumulados](#sec-descriptive-discrete-frequency), [](#eq-cumulative-absolute-frequency) |
+| $F_k$ | Frecuencia relativa acumulada hasta $x_k$ | [Variables discretas: valores exactos y acumulados](#sec-descriptive-discrete-frequency), [](#eq-cumulative-relative-frequency) |
+| $x_k$ | Valor exacto o punto medio de la clase $k$ | [Una espera típica: el promedio](#sec-descriptive-mean) |
+| $\bar{x}$ | Media muestral | [Una espera típica: el promedio](#sec-descriptive-mean), [](#eq-mean) |
+| $\hat{x}$ | Moda muestral | [El valor más frecuente: la moda](#sec-descriptive-mode) |
+| $\tilde{x}$ | Mediana muestral | [Otra espera típica: la mediana](#sec-descriptive-median-definition), [](#eq-position) |
 | $\mu$ | Media poblacional | [Estadística en ingeniería: procesos, variabilidad y riesgo](#sec-descriptive-foundations) |
 | $\pi$ | Proporción poblacional | [Estadística en ingeniería: procesos, variabilidad y riesgo](#sec-descriptive-foundations) |
-| $\text{SS}$ | Suma de cuadrados $\sum(x_i - \bar{x})^2$ | [Tres preguntas que resumen la muestra](#sec-descriptive-summary) |
-| $s$ | Desvío estándar muestral (divisor $n-1$) | [Tres preguntas que resumen la muestra](#sec-descriptive-summary) |
+| $\text{SS}$ | Suma de cuadrados $\sum(x_i - \bar{x})^2$ | [Qué tan parecidas son las esperas: el desvío estándar](#sec-descriptive-standard-deviation) |
+| $s$ | Desvío estándar muestral (divisor $n-1$) | [Qué tan parecidas son las esperas: el desvío estándar](#sec-descriptive-standard-deviation), [](#eq-std) |
 | $R$ | Rango muestral $\max_i x_i - \min_i x_i$ | [Tres preguntas que resumen la muestra](#sec-descriptive-summary) |
-| $s^2$, $S^2$ | Varianza muestral | [Tres preguntas que resumen la muestra](#sec-descriptive-summary) |
-| $Q_1$, $Q_3$ | Primer y tercer cuartil | [Posición dentro de la muestra: cuartiles y percentiles](#sec-descriptive-position) |
-| $Q_2$, $P_{50}$ | Segundo cuartil y percentil 50; coinciden con la mediana | [Posición dentro de la muestra: cuartiles y percentiles](#sec-descriptive-position) |
-| $\text{IQR}$ | Rango intercuartil $Q_3 - Q_1$ | [Tres preguntas que resumen la muestra](#sec-descriptive-summary), [Detección de outliers — la regla de Tukey](#sec-descriptive-tukey) |
+| $s^2$, $S^2$ | Varianza muestral | [Qué tan parecidas son las esperas: el desvío estándar](#sec-descriptive-standard-deviation), [](#eq-sample-variance) |
+| $Q_1$, $Q_3$ | Primer y tercer cuartil | [Variables discretas: valores exactos y acumulados](#sec-descriptive-discrete-frequency) |
+| $Q_2$, $P_{50}$ | Segundo cuartil y percentil 50; coinciden con la mediana | [Variables discretas: valores exactos y acumulados](#sec-descriptive-discrete-frequency) |
+| $\text{IQR}$ | Rango intercuartil $Q_3 - Q_1$ | [Qué tan parecidas son las esperas: el desvío estándar](#sec-descriptive-standard-deviation), [](#eq-iqr) |
 | $CV$ | Coeficiente de variación $s/\bar{x}$ | [Comparar dispersión en escalas distintas](#sec-descriptive-cv) |
 | $z_i$ | $z$-score (standard score) muestral de la observación $x_i$ | [Posición relativa: el $z$-score](#sec-descriptive-zscore) |
 | $z_{\text{obs}}$ | Valor observado del estadístico $Z$ en un test $z$ ($z$-statistic) | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known), ec. (5.1) |
 | $X$, $Y$, $T$ | Variables aleatorias | [De eventos sueltos a distribuciones](#sec-rv-distribution) |
 | $X_i$ | $i$-ésima v.a. en una secuencia i.i.d. | [Repetir bajo las mismas reglas](#sec-sums-iid) |
 | $E[X]$, $\mu$ | Esperanza | [Contar defectos con una Binomial](#sec-rv-binomial) |
-| $\mathrm{Var}(X)$, $\sigma^2$ | Varianza poblacional | [Tres preguntas que resumen la muestra](#sec-descriptive-summary); [Contar defectos con una Binomial](#sec-rv-binomial) |
-| $\sigma$ | Desvío estándar poblacional | [Tres preguntas que resumen la muestra](#sec-descriptive-summary); [Contar defectos con una Binomial](#sec-rv-binomial) |
+| $\mathrm{Var}(X)$, $\sigma^2$ | Varianza poblacional | [Qué tan parecidas son las esperas: el desvío estándar](#sec-descriptive-standard-deviation), [](#eq-population-variance); [Contar defectos con una Binomial](#sec-rv-binomial) |
+| $\sigma$ | Desvío estándar poblacional | [Qué tan parecidas son las esperas: el desvío estándar](#sec-descriptive-standard-deviation), [](#eq-population-std); [Contar defectos con una Binomial](#sec-rv-binomial) |
 | $p$ | Probabilidad de éxito (Bernoulli / Binomial / Geométrica) | [Una respuesta sí/no: Bernoulli](#sec-rv-bernoulli) |
 | $k$ | Valor concreto de una v.a. discreta | [Contar defectos con una Binomial](#sec-rv-binomial) |
 | $P(X = k)$ | Función de probabilidad puntual (PMF) | [De eventos sueltos a distribuciones](#sec-rv-distribution) |
@@ -114,23 +114,25 @@ indica).
 | Representatividad | Grado en que la muestra se parece al proceso o población sobre la que queremos decidir. | [Antes de inferir: cómo se juntaron los datos](#sec-descriptive-sampling) |
 | Sesgo | Patrón de recolección o medición que empuja los datos sistemáticamente en una dirección. | [Antes de inferir: cómo se juntaron los datos](#sec-descriptive-sampling) |
 | Independencia de observaciones | Condición bajo la cual una observación no arrastra mecánicamente a la siguiente. | [Antes de inferir: cómo se juntaron los datos](#sec-descriptive-sampling) |
-| Tabla de frecuencias | Conteo absoluto, relativo y acumulado por clases, valores o intervalos. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types), [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
-| Diagrama de Pareto | Barras ordenadas de mayor a menor frecuencia, a menudo con porcentaje acumulado. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| Gráfico de bastones | Segmentos verticales que representan frecuencias de valores discretos. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| Diagrama de tallo y hoja | Organización de datos numéricos que separa dígitos tallo y hoja para conservar valores individuales. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| Intervalo de clase | Subintervalo usado para agrupar una variable continua. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| Punto medio de clase | Valor representativo de un intervalo de clase. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
+| Tabla de frecuencias | Conteo absoluto, relativo y acumulado por clases, valores o intervalos. | [Atributos: clases, porcentajes y Pareto](#sec-descriptive-attributes), [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
+| Diagrama de Pareto | Barras ordenadas de mayor a menor frecuencia, a menudo con porcentaje acumulado. | [Atributos: clases, porcentajes y Pareto](#sec-descriptive-attributes) |
+| Gráfico de bastones | Segmentos verticales que representan frecuencias de valores discretos. | [Variables discretas: valores exactos y acumulados](#sec-descriptive-discrete-frequency) |
+| Diagrama de tallo y hoja | Organización de datos numéricos que separa dígitos tallo y hoja para conservar valores individuales. | [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
+| Intervalo de clase | Subintervalo usado para agrupar una variable continua. | [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
+| Punto medio de clase | Valor representativo de un intervalo de clase. | [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
 | Histograma | Barras que muestran cómo se reparte la frecuencia por intervalos. | [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
-| Polígono de frecuencias | Línea que une los puntos medios superiores de las barras de un histograma. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
+| Polígono de frecuencias | Línea que une los puntos medios superiores de las barras de un histograma. | [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
 | Ojiva | Curva de frecuencia acumulada por intervalos. | [Variables continuas: intervalos, tallo-hoja e histogramas](#sec-descriptive-frequency) |
-| Serie de tiempo | Datos registrados en el orden en que ocurren para detectar tendencias, ciclos o cambios temporales. | [Antes de agrupar: qué tipo de variable tenemos](#sec-descriptive-variable-types) |
-| Percentil | Valor que deja cierto porcentaje de observaciones por debajo. | [Posición dentro de la muestra: cuartiles y percentiles](#sec-descriptive-position) |
-| Suma de cuadrados | $\sum(x_i - \bar{x})^2$, paso intermedio para $s$. | [Tres preguntas que resumen la muestra](#sec-descriptive-summary) |
-| Regla empírica | Aproximación 68%-95%-casi todos para datos simétricos y campanulares alrededor de $\bar{x}$. | [Regla empírica: media más desvíos](#sec-descriptive-empirical-rule) |
-| Outlier | Observación fuera de $[Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}]$. | [Detección de outliers — la regla de Tukey](#sec-descriptive-tukey) |
-| $z$-score (*standard score*) | Distancia de una observación a la media, expresada en unidades de desvío estándar. | [Posición relativa: el $z$-score](#sec-descriptive-zscore) |
+| Serie de tiempo | Datos registrados en el orden en que ocurren para detectar tendencias, ciclos o cambios temporales. | [Cuando el tiempo importa](#sec-descriptive-time-order) |
+| Percentil | Valor que deja cierto porcentaje de observaciones por debajo. | [Variables discretas: valores exactos y acumulados](#sec-descriptive-discrete-frequency) |
+| Decil | Percentil que divide la muestra en diez partes. | [Variables discretas: valores exactos y acumulados](#sec-descriptive-discrete-frequency) |
+| Cuartil | Percentil que divide la muestra en cuatro partes. | [Variables discretas: valores exactos y acumulados](#sec-descriptive-discrete-frequency) |
+| Suma de cuadrados | $\sum(x_i - \bar{x})^2$, paso intermedio para $s$. | [Qué tan parecidas son las esperas: el desvío estándar](#sec-descriptive-standard-deviation) |
+| Regla empírica | Aproximación 68%-95%-casi todos para datos simétricos y campanulares alrededor de $\bar{x}$. | [Regla empírica: media más desvíos](#sec-descriptive-empirical-rule), [](#eq-empirical-rule) |
+| Outlier | Observación fuera de $[Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}]$. | [Detección de outliers — la regla de Tukey](#sec-descriptive-tukey), [](#eq-iqr-fence) |
+| $z$-score (*standard score*) | Distancia de una observación a la media, expresada en unidades de desvío estándar. | [Posición relativa: el $z$-score](#sec-descriptive-zscore), [](#eq-zscore) |
 | $z$-statistic | Valor del estadístico de prueba estandarizado bajo $H_0$ en un test $z$. | [IC para la espera media con $\sigma$ conocido](#sec-inf-mean-known), [Test de hipótesis sobre la espera media](#sec-inf-test) |
-| Coeficiente de variación | Cociente $s/\bar{x}$, adimensional. | [Comparar dispersión en escalas distintas](#sec-descriptive-cv), ec. (1.8) |
+| Coeficiente de variación | Cociente $s/\bar{x}$, adimensional. | [Comparar dispersión en escalas distintas](#sec-descriptive-cv), [](#eq-coefficient-variation) |
 | Evento | Subconjunto del espacio muestral. | [Un experimento concreto](#sec-prob-experiment) |
 | Complemento | Evento formado por todo lo que queda fuera de otro evento. | [Un experimento concreto](#sec-prob-experiment), ec. (2.2) |
 | Independencia de eventos | Condición bajo la cual saber que ocurrió un evento no cambia la probabilidad del otro. | [Cuando saber una cosa no cambia la otra](#sec-prob-independence), ec. (2.4) |
@@ -148,7 +150,7 @@ indica).
 | PMF | *Probability mass function* — distribución discreta. | [De eventos sueltos a distribuciones](#sec-rv-distribution) |
 | Esperanza | Promedio teórico de la distribución. | [Contar defectos con una Binomial](#sec-rv-binomial) |
 | Varianza | Promedio teórico del cuadrado del desvío. | [Contar defectos con una Binomial](#sec-rv-binomial) |
-| Moda | Valor o categoría con mayor frecuencia; puede aplicarse también a variables cualitativas. | [Tres preguntas que resumen la muestra](#sec-descriptive-summary); [Contar defectos con una Binomial](#sec-rv-binomial) |
+| Moda | Valor o categoría con mayor frecuencia; puede aplicarse también a variables cualitativas. | [El valor más frecuente: la moda](#sec-descriptive-mode); [Contar defectos con una Binomial](#sec-rv-binomial) |
 | Bernoulli | Variable indicadora con éxito $p$. | [Una respuesta sí/no: Bernoulli](#sec-rv-bernoulli), ec. (3.3) |
 | Geométrica | Distribución del número de intento en el que aparece el primer éxito. | [Esperar hasta el primer éxito: Geométrica](#sec-rv-geometric), ec. (3.5) |
 | PDF | *Probability density function* — distribución continua. | [De eventos sueltos a distribuciones](#sec-rv-distribution) |

@@ -119,14 +119,22 @@ def _clinic_display_table(clinic_data: DataFrame[TabularData]) -> DataFrame[Tabu
 
 
 def style_display_table(table: pd.DataFrame) -> Styler:
+    float_formatters = dict.fromkeys(table.select_dtypes(include=["floating"]).columns, "{:.2f}")
     return (
         table.style.hide(axis="index")
-        .set_properties(**{"text-align": "center"})
+        .format(float_formatters)
+        .set_properties(**{"text-align": "center !important"})
         .set_table_styles([
-            {"selector": "th", "props": [("text-align", "center")]},
-            {"selector": "td", "props": [("text-align", "center")]},
-            {"selector": "th.col0", "props": [("min-width", "240px"), ("white-space", "nowrap")]},
-            {"selector": "td.col0", "props": [("min-width", "240px"), ("white-space", "nowrap")]},
+            {"selector": "th", "props": [("text-align", "center !important")]},
+            {"selector": "td", "props": [("text-align", "center !important")]},
+            {
+                "selector": "th.col0",
+                "props": [("min-width", "240px"), ("white-space", "nowrap")],
+            },
+            {
+                "selector": "td.col0",
+                "props": [("min-width", "240px"), ("white-space", "nowrap")],
+            },
         ])
     )
 

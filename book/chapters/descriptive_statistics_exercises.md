@@ -214,7 +214,7 @@ $$
 \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i,
 $$
 
-y el desvío muestral viene de [](descriptive_statistics.md#eq-std):
+y el desvío muestral viene de [](descriptive_statistics.md#eq-std-ss):
 
 $$
 s = \sqrt{\frac{1}{n - 1} \sum_{i=1}^{n} (x_i - \bar{x})^2}.

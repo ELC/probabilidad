@@ -133,17 +133,26 @@ class FrequencyPolygonChartInput(BaseModel):
     frequency_table: DataFrame[FrequencyTable]
     title: str = "Histograma y polígono de frecuencias"
     settings: Settings = Settings()
+    x_domain: tuple[float, float] | None = None
+    y_domain: tuple[float, float] | None = None
 
 
 def chart_histogram_with_frequency_polygon(input_data: FrequencyPolygonChartInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
+    x_scale = alt.Scale(domain=list(input_data.x_domain)) if input_data.x_domain is not None else alt.Undefined
+    y_scale = alt.Scale(domain=list(input_data.y_domain)) if input_data.y_domain is not None else alt.Undefined
     bars = (
         alt.Chart(input_data.frequency_table)
         .mark_rect(opacity=theme.bar_opacity, color=theme.palette.primary)
         .encode(
-            x=alt.X("interval_start:Q", title="Minutos de espera"),
+            x=alt.X("interval_start:Q", scale=x_scale, title="Minutos de espera"),
             x2="interval_end:Q",
-            y=alt.Y("relative_frequency:Q", axis=alt.Axis(format="%"), title="Frecuencia relativa"),
+            y=alt.Y(
+                "relative_frequency:Q",
+                axis=alt.Axis(format="%"),
+                scale=y_scale,
+                title="Frecuencia relativa",
+            ),
             tooltip=["interval", "absolute_frequency", "relative_frequency"],
         )
     )
@@ -151,8 +160,8 @@ def chart_histogram_with_frequency_polygon(input_data: FrequencyPolygonChartInpu
         alt.Chart(input_data.frequency_table)
         .mark_line(point=True, color=theme.palette.secondary, strokeWidth=theme.line_stroke_width)
         .encode(
-            x=alt.X("midpoint:Q", title="Minutos de espera"),
-            y=alt.Y("relative_frequency:Q", axis=alt.Axis(format="%")),
+            x=alt.X("midpoint:Q", scale=x_scale, title="Minutos de espera"),
+            y=alt.Y("relative_frequency:Q", axis=alt.Axis(format="%"), scale=y_scale),
         )
     )
     chart = alt.layer(bars, polygon).properties(
@@ -165,13 +174,20 @@ def chart_histogram_with_frequency_polygon(input_data: FrequencyPolygonChartInpu
 
 def chart_cumulative_frequency_polygon(input_data: FrequencyPolygonChartInput) -> alt.Chart:
     theme = input_data.settings.chart_theme
+    x_scale = alt.Scale(domain=list(input_data.x_domain)) if input_data.x_domain is not None else alt.Undefined
+    y_scale = alt.Scale(domain=list(input_data.y_domain)) if input_data.y_domain is not None else alt.Undefined
     bars = (
         alt.Chart(input_data.frequency_table)
         .mark_rect(opacity=theme.bar_opacity, color=theme.palette.primary)
         .encode(
-            x=alt.X("interval_start:Q", title="Minutos de espera"),
+            x=alt.X("interval_start:Q", scale=x_scale, title="Minutos de espera"),
             x2="interval_end:Q",
-            y=alt.Y("relative_frequency:Q", axis=alt.Axis(format="%"), title="Frecuencia relativa"),
+            y=alt.Y(
+                "relative_frequency:Q",
+                axis=alt.Axis(format="%"),
+                scale=y_scale,
+                title="Frecuencia relativa",
+            ),
             tooltip=["interval", "cumulative_absolute_frequency", "cumulative_relative_frequency"],
         )
     )
@@ -179,8 +195,8 @@ def chart_cumulative_frequency_polygon(input_data: FrequencyPolygonChartInput) -
         alt.Chart(input_data.frequency_table)
         .mark_line(point=True, color=theme.palette.secondary, strokeWidth=theme.line_stroke_width)
         .encode(
-            x=alt.X("midpoint:Q", title="Minutos de espera"),
-            y=alt.Y("cumulative_relative_frequency:Q", axis=alt.Axis(format="%")),
+            x=alt.X("midpoint:Q", scale=x_scale, title="Minutos de espera"),
+            y=alt.Y("cumulative_relative_frequency:Q", axis=alt.Axis(format="%"), scale=y_scale),
         )
     )
     chart = alt.layer(bars, polygon).properties(

@@ -29,7 +29,7 @@ def chart_categorical_bars(input_data: CategoricalBarChartInput) -> alt.Chart:
         alt.Chart(input_data.frequency_table)
         .mark_bar(color=theme.palette.primary, opacity=theme.bar_opacity)
         .encode(
-            x=alt.X("category:N", sort=None, title=input_data.category_title),
+            x=alt.X("category:N", sort=None, axis=alt.Axis(labelAngle=30), title=input_data.category_title),
             y=alt.Y("absolute_frequency:Q", title="Frecuencia"),
             tooltip=["category", "absolute_frequency", "relative_frequency"],
         )
@@ -109,7 +109,7 @@ def chart_pareto(input_data: ParetoChartInput) -> alt.Chart:
         alt.Chart(input_data.frequency_table)
         .mark_bar(color=theme.palette.primary, opacity=theme.bar_opacity)
         .encode(
-            x=alt.X("category:N", sort=None, title=input_data.category_title),
+            x=alt.X("category:N", sort=None, axis=alt.Axis(labelAngle=30), title=input_data.category_title),
             y=y_axis,
             tooltip=["category", "absolute_frequency", "relative_frequency"],
         )
@@ -122,7 +122,7 @@ def chart_pareto(input_data: ParetoChartInput) -> alt.Chart:
             strokeWidth=theme.line_stroke_width,
         )
         .encode(
-            x=alt.X("category:N", sort=None),
+            x=alt.X("category:N", sort=None, axis=alt.Axis(labelAngle=30)),
             y=alt.Y(
                 "cumulative_relative_frequency:Q",
                 axis=alt.Axis(format="%"),

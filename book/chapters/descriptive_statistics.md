@@ -35,7 +35,7 @@ en este capítulo.
 > hablar de todo el servicio.
 
 ```{code-cell} python
-:tags: [remove-cell, hide-input, remove-input]
+:tags: [remove-cell, hide-input]
 import numpy as np
 import pandas as pd
 from pandera.typing import DataFrame
@@ -78,7 +78,7 @@ from widgets import (
 ```
 
 ```{code-cell} python
-:tags: [remove-cell, hide-input, remove-input]
+:tags: [remove-cell, hide-input]
 settings = Settings()
 ```
 
@@ -152,7 +152,7 @@ enfermera de turno fue anotando paciente a paciente, ordenados en la
 secuencia en que llegaron a la guardia.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 clinic_sample = generate_clinic_sample(ClinicSampleInput(settings=settings, sample_size=80))
 style_display_table(clinic_sample.clinic_display_table.head())
 ```
@@ -196,6 +196,7 @@ Según la pregunta, cambia la variable:
 La población no alcanza para decidir la herramienta: también importa qué
 característica observamos en cada unidad.
 
+(sec-descriptive-attributes)=
 ### Atributos: clases, porcentajes y Pareto
 
 Cuando la variable es cualitativa, cada categoría define una **clase**. La tabla
@@ -220,7 +221,7 @@ observada en esa clase y $f_k$ es su proporción sobre el total.
 En la clínica, una tabla por área de atención podría leerse así:
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 style_display_table(clinic_sample.area_display_table)
 ```
 
@@ -232,7 +233,7 @@ usados, hay estudios y guías de visualización que recomiendan evitarlos cuando
 objetivo es comparar magnitudes con precisión [@few2007visual].
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 chart_categorical_bars_from_data(
     CategoricalBarFromDataChartInput(
         data=clinic_sample.clinic_data,
@@ -257,12 +258,12 @@ de demora identificable. Así empieza por las causas más frecuentes, no por las
 raras:
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 style_display_table(clinic_sample.delay_reason_display_table)
 ```
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 chart_pareto_from_data(
     ParetoFromDataChartInput(
         data=clinic_sample.clinic_data,
@@ -285,6 +286,7 @@ por ejemplo, cuánta demora queda explicada si Lucía atiende primero las dos o 
 causas principales. En términos operativos, da la información necesaria para hacer
 un **triage**: separar lo urgente y más frecuente de lo menos prioritario.
 
+(sec-descriptive-discrete-frequency)=
 ### Variables discretas: valores exactos y acumulados
 
 Si la variable cuantitativa es discreta, la tabla se arma por cada valor observado
@@ -302,8 +304,16 @@ $N_k$ cuenta cuántas observaciones tienen valores menores o iguales que $x_k$;
 $F_k$ da la proporción acumulada. En la clínica, si registramos cuántas personas
 tenía cada paciente por delante al llegar, una parte de la tabla podría verse así:
 
+La frecuencia relativa acumulada también permite hablar de **puntos de corte**.
+Un **percentil** indica el valor hasta el cual se acumula cierto porcentaje de
+la muestra: el percentil 25 es el menor valor cuya frecuencia acumulada alcanza
+al menos el 25%. Los **deciles** son percentiles definidos en múltiplos de 10%:
+$D_1$ alcanza al menos el 10%, $D_2$ al menos el 20%, y así sucesivamente. Los
+**cuartiles** son percentiles definidos en múltiplos de 25%: $Q_1$ alcanza al
+menos el 25%, $Q_2$ al menos el 50% y $Q_3$ al menos el 75%.
+
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 style_display_table(clinic_sample.people_ahead_display_table)
 ```
 
@@ -314,7 +324,7 @@ de bastones**: una barra angosta para cada valor posible, con altura proporciona
 a su frecuencia.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 chart_discrete_sticks_from_data(
     DiscreteStickFromDataChartInput(
         data=clinic_sample.clinic_data,
@@ -348,7 +358,7 @@ puede ser 4 y la hoja 7. Es útil en conjuntos pequeños o medianos porque muest
 la forma sin destruir del todo la lista original.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 chart_stem_leaf(
     StemLeafChartInput(
         observations=clinic_sample.waiting_times,
@@ -385,7 +395,7 @@ predicción rápida: dónde se va a concentrar el histograma y en qué minuto cr
 que la ojiva va a cruzar el 70%.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 chart_histogram_with_frequency_polygon(
     FrequencyPolygonChartInput(
         frequency_table=clinic_sample.frequency_table,
@@ -401,7 +411,7 @@ mejor la forma general, especialmente si queremos comparar centros, colas o
 asimetrías.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 chart_cumulative_frequency_polygon(
     FrequencyPolygonChartInput(
         frequency_table=clinic_sample.frequency_table,
@@ -424,7 +434,7 @@ mejor la lectura operativa: qué proporción de pacientes quedó por debajo de c
 tiempo de espera.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 build_interval_width_explorer(
     IntervalWidthExplorerInput(
         observations=clinic_sample.waiting_times,
@@ -437,7 +447,7 @@ En la clínica, si agrupamos los 80 tiempos de espera en intervalos de un minuto
 podríamos obtener una tabla como esta:
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 style_display_table(clinic_sample.frequency_display_table)
 ```
 
@@ -448,20 +458,16 @@ agrupados; por eso agrupamos para leer mejor, pero aceptamos perder el detalle d
 cada espera individual.
 
 Si $n_j$ es la cantidad de observaciones en el intervalo $j$ y $n$ el tamaño total,
-las frecuencias relativas de intervalos se leen igual que antes:
-
-$$
-f_j = \frac{n_j}{n}
-$$ (eq-frequency-table-relative)
-
-$$
-F_j = \sum_{r \le j} f_r
-$$ (eq-frequency-table-cumulative)
+la frecuencia relativa de intervalos se calcula como en [](#eq-relative-frequency):
+casos de la clase dividido el total. La acumulada se lee con la misma lógica de
+[](#eq-cumulative-relative-frequency), pero recorriendo intervalos en lugar de
+valores exactos.
 
 Para Lucía, la pregunta operativa puede ser "¿qué porcentaje esperó menos de cinco
 minutos?". Esa lectura sale de la distribución acumulada: no mira sólo una barra,
 sino todo lo que quedó por debajo del corte que importa para decidir.
 
+(sec-descriptive-time-order)=
 ### Cuando el tiempo importa
 
 Si las observaciones se registran en el orden en que ocurren, el tiempo puede ser una
@@ -485,6 +491,7 @@ fue una espera típica, qué tan parecidas fueron las esperas entre sí,
 y si hubo alguna fuera de lo común. Cada pregunta se contesta con un
 número distinto, y vamos a definir uno por uno.
 
+(sec-descriptive-mean)=
 ### Una espera típica: el promedio
 
 El primer candidato a «valor típico» es el **promedio**: sumar todos
@@ -536,6 +543,7 @@ hora en franjas de igual duración, puede describir mejor el ritmo típico que u
 media aritmética simple de tasas. En este libro vamos a trabajar con la media
 aritmética; elegir y calcular otras medias queda fuera de alcance.
 
+(sec-descriptive-mode)=
 ### El valor más frecuente: la moda
 
 Otra medida de posición es la **moda**, escrita $\hat{x}$: el valor o categoría con
@@ -546,6 +554,7 @@ La moda tiene tres detalles importantes. Algunas muestras no tienen moda clara;
 otras tienen dos modas y se llaman **bimodales**; y es la única medida de tendencia
 central que puede calcularse para cualquier tipo de variable, incluso cualitativa.
 
+(sec-descriptive-median-definition)=
 ### Otra espera típica: la mediana
 
 El promedio tiene un punto débil. Si entre los 80 pacientes hubo uno
@@ -577,6 +586,7 @@ información importante sobre la simetría de los datos: si la media queda basta
 separada de la mediana, suele haber una cola o valores extremos tirando del
 equilibrio numérico.
 
+(sec-descriptive-standard-deviation)=
 ### Qué tan parecidas son las esperas: el desvío estándar
 
 Saber el promedio no alcanza: necesitamos también qué tan **parecidas**
@@ -589,18 +599,24 @@ La idea es medir, en promedio, cuánto se aleja cada paciente del
 promedio general. Lo armamos en tres pasos.
 
 **Paso 1.** Calculamos $\bar{x}$ con la fórmula [](#eq-mean) para tener el
-punto de referencia:
-
-$$ \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i $$
+punto de referencia.
 
 **Paso 2.** Para cada paciente miramos cuánto se desvió del promedio
 ($x_i - \bar{x}$). Algunas diferencias son positivas (esperaron más),
-otras negativas (esperaron menos), y si las sumáramos directamente los
-signos se cancelarían. Para que eso no pase, las elevamos al cuadrado
-antes de sumarlas. A esa suma la llamamos **suma de cuadrados** y la
-escribimos $\text{SS}$ (por *sum of squares*):
+otras negativas (esperaron menos), y al sumarlas directamente los valores
+positivos y negativos pueden compensarse hasta dar cero, aunque haya
+variación real. Para evitarlo necesitamos transformar cada desvío en un
+número no negativo. Elevar al cuadrado es una forma sencilla de lograrlo:
+convierte todos los desvíos en cantidades positivas o nulas antes de
+sumarlas.[^squared-deviations] A esa suma la llamamos **suma de cuadrados**
+y la escribimos $\text{SS}$ (por *sum of squares*):
 
 $$ \text{SS} = \sum_{i=1}^{n}(x_i - \bar{x})^2 $$
+
+[^squared-deviations]: Otra opción sería usar valores absolutos, como
+    $|x_i-\bar{x}|$. El cuadrado se usa con frecuencia porque es una función
+    suave y diferenciable, lo que facilita buscar mínimos y derivar
+    propiedades algebraicas; además penaliza más los desvíos grandes.
 
 **Paso 3.** Dividimos esa suma por $n-1$. Ese cociente es la **varianza
 muestral**:
@@ -615,23 +631,53 @@ El divisor $n-1$ aparece porque usamos los mismos datos para estimar
 $\bar{x}$: una vez fijado el promedio, el último desvío ya queda determinado
 por los anteriores. No es un detalle cosmético; evita que la dispersión
 muestral quede sistemáticamente demasiado chica cuando usamos la muestra para
-hablar de un proceso más amplio.
+hablar de un proceso más amplio.[^bessel-correction]
 
-Si los datos corresponden a toda la población, usamos la media poblacional $\mu$,
-el tamaño poblacional $N$ y el denominador $N$:
+[^bessel-correction]: La corrección de Bessel compensa que $\bar{x}$ se eligió
+    a partir de la misma muestra y, en general, no coincide exactamente con la
+    media poblacional $\mu$. Como $\bar{x}$ queda atraída hacia los valores
+    observados, las distancias $x_i-\bar{x}$ suelen ser menores que las
+    distancias que mediríamos contra $\mu$: les falta parte de la distancia
+    entre $\bar{x}$ y $\mu$. Al elevar esas diferencias al cuadrado, esa reducción
+    también se cuadratiza; por eso $\sum_i(x_i-\bar{x})^2/n$ tiende a subestimar
+    la varianza poblacional $\sigma^2$. Dividir por $n-1$ corrige ese sesgo en
+    promedio y refleja que, una vez fijada la media muestral, queda un grado de
+    libertad menos. Para una explicación visual introductoria, ver
+    [@sampleVarianceNMinusOneSimple]; para una explicación desde el álgebra lineal, ver
+    [@sampleVarianceNMinusOneAdvanced].
 
-$$ \sigma^2 = \frac{1}{N}\sum_{i=1}^{N}(x_i - \mu)^2, \qquad
-\sigma = \sqrt{\sigma^2} $$ (eq-population-variance)
+La varianza tiene un problema práctico: como elevamos los desvíos al cuadrado,
+también deja las unidades al cuadrado. En este caso hablaríamos de minutos
+cuadrados, una unidad difícil de interpretar como espera. Para volver a las
+unidades originales (minutos, no minutos al cuadrado), tomamos raíz cuadrada. Lo
+que sale es el **desvío estándar muestral**, que escribimos $s$:
 
-Para volver a las unidades originales (minutos, no minutos al cuadrado),
-tomamos raíz cuadrada. Lo que sale es el **desvío estándar muestral**, que
-escribimos $s$:
+$$
+s = \sqrt{s^2}
+$$ (eq-std)
 
-$$ s = \sqrt{\frac{\text{SS}}{n - 1}} $$ (eq-std)
+Como $s^2$ es la varianza muestral definida en [](#eq-sample-variance), también
+podemos escribir:
+
+$$
+s = \sqrt{\frac{\text{SS}}{n - 1}}
+$$ (eq-std-ss)
 
 En palabras: $s$ es la distancia típica entre una observación
 cualquiera y el promedio. Cuanto más chico es $s$, más parecidas son
 las esperas entre sí.
+
+Si los datos corresponden a toda la población, usamos la media poblacional $\mu$,
+el tamaño poblacional $N$ y el denominador $N$. La varianza poblacional se
+escribe $\sigma^2$ y el desvío estándar poblacional se escribe $\sigma$:
+
+$$
+\sigma^2 = \frac{1}{N}\sum_{i=1}^{N}(x_i - \mu)^2
+$$ (eq-population-variance)
+
+$$
+\sigma = \sqrt{\sigma^2}
+$$ (eq-population-std)
 
 Otra medida de dispersión, más simple y más sensible a extremos, es el
 **rango**. Si miramos la observación más chica y la más grande de la muestra,
@@ -640,8 +686,10 @@ observada: cuánto separa al caso más bajo del caso más alto. A diferencia de
 $s$, que usa todas las observaciones, $R$ depende sólo de los dos extremos; por
 eso crece mucho cuando aparece un valor atípico.
 
-El **rango intercuartil** o **recorrido intercuartílico** resume la variación del
-50% central:
+Como vimos al hablar de frecuencias acumuladas, $Q_1$ y $Q_3$ son los cuartiles
+que dejan cerca del 25% y del 75% de las observaciones por debajo. El **rango
+intercuartil** o **recorrido intercuartílico** resume la variación del 50%
+central:
 
 $$ \text{IQR} = Q_3 - Q_1 $$ (eq-iqr)
 
@@ -652,7 +700,7 @@ matemáticas; el desvío estándar vuelve a la unidad original y suele ser más 
 interpretar en contexto.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 summary = summarize_observations(clinic_sample.waiting_times)
 summary
 ```
@@ -692,7 +740,7 @@ estamos cambiando los datos reales: armamos una segunda muestra para comparar
 qué pasa con cada resumen cuando aparece un valor extremo.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 waiting_times_with_extreme = pd.concat(
     [clinic_sample.waiting_times, pd.DataFrame({"value": [120.0]})], ignore_index=True
 ).pipe(DataFrame[Observations])
@@ -700,7 +748,7 @@ summary_with_extreme = summarize_observations(waiting_times_with_extreme)
 ```
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 typical_values_chart_input = TypicalValuesComparisonChartInput(
     original_statistics=summary,
     comparison_statistics=summary_with_extreme,
@@ -737,7 +785,7 @@ Con una tabla de frecuencias acumuladas, se buscan de la misma manera que la
 mediana: la primera fila cuya acumulada alcanza el porcentaje pedido.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 position_summary = pd.DataFrame({
     "corte": ["mínimo", "Q1", "mediana / Q2", "Q3", "máximo"],
     "minutos": [
@@ -782,7 +830,7 @@ separados: no son errores automáticamente, pero sí observaciones que conviene
 mirar antes de resumir todo con un único número.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 summary_chart_input = DescriptiveSummaryChartInput(
     observations=clinic_sample.waiting_times,
     statistics=summary,
@@ -832,7 +880,7 @@ y la **derecha** a valores mayores. Por eso cada pregunta describe no sólo la
 forma, sino también hacia qué lado de la escala se ubican los datos.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 
 def chart_boxplot_example(values: list[float], title: str):
     observations = pd.DataFrame({"value": values}).pipe(DataFrame[Observations])
@@ -848,7 +896,7 @@ bigotes tienen longitudes parecidas hacia la izquierda y hacia la derecha. ¿Qu�
 sugiere sobre la distribución?
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 
 chart_boxplot_example(
     [2.0, 2.5, 3.0, 3.5, 3.8, 4.0, 4.2, 4.5, 5.0, 5.5, 6.0],
@@ -875,7 +923,7 @@ $R \gg \text{IQR}$.
 muy largo. ¿Qué implica?
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 
 chart_boxplot_example(
     [1.0, 1.0, 1.1, 1.2, 1.3, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0],
@@ -902,7 +950,7 @@ describe sólo el 50% central.
 la derecha del gráfico. ¿Cómo conviene leerlo?
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 
 chart_boxplot_example(
     [3.8, 3.9, 4.0, 4.0, 4.1, 4.1, 4.2, 4.2, 4.3, 4.3, 7.0, 8.5, 9.0],
@@ -931,7 +979,7 @@ y hacia la derecha; en el grupo B la caja se extiende mucho más hacia ambos
 lados. ¿Qué diferencia hay entre los grupos?
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 
 (
     chart_boxplot_example([3.6, 3.8, 3.9, 4.0, 4.1, 4.2, 4.4], "Clínica A")
@@ -958,7 +1006,7 @@ dispersión: $s_A \ll s_B$, $\text{IQR}_A \ll \text{IQR}_B$ y $R_A \ll R_B$.
 muy corto. ¿Qué lectura harías?
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 
 chart_boxplot_example(
     [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 6.5, 6.7, 6.8, 6.9, 7.0, 7.0],
@@ -992,9 +1040,7 @@ entre $Q_1$ y $Q_3$ resume el tramo central de la muestra.
 
 **Paso 1.** Ordenamos los datos y ubicamos $Q_1$ y $Q_3$.
 
-**Paso 2.** Definimos el rango intercuartil:
-
-$$ \text{IQR} = Q_3 - Q_1 $$
+**Paso 2.** Usamos el rango intercuartil definido en [](#eq-iqr).
 
 **Paso 3.** Una observación es **outlier** si cae fuera del intervalo:
 
@@ -1008,7 +1054,7 @@ salió. En la práctica suele deberse a una de tres causas: se registró mal, pr
 una población distinta, o está bien medido pero representa un suceso poco común.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 outlier_report = detect_outliers_tukey(clinic_sample.waiting_times)
 outlier_report
 ```
@@ -1037,7 +1083,7 @@ campanular, los intervalos $\bar{x} \pm ks$ deberían cubrir aproximadamente 68%
 95% y casi todas las observaciones para $k = 1, 2, 3$.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 piece_lengths = pd.DataFrame({
     "value": [
         85.0,
@@ -1137,7 +1183,7 @@ sorpresa frente a un valor de control. Comparten la idea de estandarizar, pero
 responden preguntas distintas.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 standardized = standardize_observations(clinic_sample.waiting_times)
 standardized
 ```
@@ -1158,7 +1204,7 @@ unidad — de minutos a piezas defectuosas —, pero seguimos haciendo
 estadística descriptiva sobre una lista de observaciones.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 rng_factory = np.random.default_rng(seed=20260202)
 raw_defect_counts = rng_factory.poisson(lam=3.5, size=60).astype(float)
 defect_counts = pd.DataFrame({"value": raw_defect_counts}).pipe(DataFrame[Observations])
@@ -1173,7 +1219,7 @@ chart_histogram(defect_histogram_input)
 ```
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 defect_summary = summarize_observations(defect_counts)
 defect_summary
 ```
@@ -1201,7 +1247,7 @@ tabla, anticipá: ¿la clínica o la fábrica parece más irregular respecto de 
 centro?
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 cv_comparison = pd.DataFrame({
     "muestra": ["Clínica: minutos", "Fábrica: defectos"],
     "media": [summary.location.mean, defect_summary.location.mean],
@@ -1233,7 +1279,7 @@ le dirías a la responsable de operaciones: cambió la espera típica o cambió 
 regularidad del servicio?
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 explorer_input = DescriptiveExplorerInput(settings=settings)
 build_descriptive_explorer(explorer_input)
 ```
@@ -1311,7 +1357,7 @@ sobre la espera típica y qué no dice sobre la regularidad del servicio.
 cambiar turnos, o pedirías también dispersión y posibles outliers?
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 exercise_sample = pd.DataFrame({"value": [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]}).pipe(
     DataFrame[Observations]
 )
@@ -1327,7 +1373,7 @@ verify_numeric_answer(verify_input_mean)
 
 ## Ejercicio 2 — Desvío estándar muestral
 
-Para la misma muestra, aplicá la fórmula [](#eq-std). Usá $\bar{x} = 5$ del
+Para la misma muestra, aplicá la fórmula [](#eq-std-ss). Usá $\bar{x} = 5$ del
 ejercicio 1.
 
 **Intentá antes de ejecutar.** Calculá la suma de cuadrados, dividí por $n-1$
@@ -1337,7 +1383,7 @@ a 2 minutos te parece mucha o poca dispersión para una media de 5?
 **Pista mínima.** Los valores 2 y 9 son los que más empujan la dispersión.
 
 ```{code-cell} python
-:tags: [hide-input, remove-input]
+:tags: [hide-input]
 expected_std = summarize_observations(exercise_sample).dispersion.sample_standard_deviation
 
 student_answer_std = 2.138
