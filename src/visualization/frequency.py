@@ -171,11 +171,7 @@ def chart_cumulative_frequency_polygon(input_data: FrequencyPolygonChartInput) -
         .encode(
             x=alt.X("interval_start:Q", title="Minutos de espera"),
             x2="interval_end:Q",
-            y=alt.Y(
-                "cumulative_relative_frequency:Q",
-                axis=alt.Axis(format="%"),
-                title="Frecuencia relativa acumulada",
-            ),
+            y=alt.Y("relative_frequency:Q", axis=alt.Axis(format="%"), title="Frecuencia relativa"),
             tooltip=["interval", "cumulative_absolute_frequency", "cumulative_relative_frequency"],
         )
     )
@@ -183,7 +179,7 @@ def chart_cumulative_frequency_polygon(input_data: FrequencyPolygonChartInput) -
         alt.Chart(input_data.frequency_table)
         .mark_line(point=True, color=theme.palette.secondary, strokeWidth=theme.line_stroke_width)
         .encode(
-            x=alt.X("interval_end:Q", title="Minutos de espera"),
+            x=alt.X("midpoint:Q", title="Minutos de espera"),
             y=alt.Y("cumulative_relative_frequency:Q", axis=alt.Axis(format="%")),
         )
     )

@@ -3,6 +3,7 @@ from typing import cast
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
+from pandas.io.formats.style import Styler
 from pandera.typing import DataFrame
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -45,7 +46,7 @@ class ClinicSampleInput(BaseModel):
     sample_size: int = Field(default=80, ge=1)
     waiting_time_mean: float = 4.0
     waiting_time_standard_deviation: float = Field(default=1.2, gt=0.0)
-    waiting_time_bin_width: float = Field(default=2.0, gt=0.0)
+    waiting_time_bin_width: float = Field(default=1.0, gt=0.0)
 
 
 class ClinicSample(BaseModel):
@@ -115,6 +116,19 @@ def _clinic_display_table(clinic_data: DataFrame[TabularData]) -> DataFrame[Tabu
         "Motivo de demora": clinic_data["delay_reason"],
         "Personas adelante": clinic_data["people_ahead"],
     }).pipe(DataFrame[TabularData])
+
+
+def style_display_table(table: pd.DataFrame) -> Styler:
+    return (
+        table.style.hide(axis="index")
+        .set_properties(**{"text-align": "center"})
+        .set_table_styles([
+            {"selector": "th", "props": [("text-align", "center")]},
+            {"selector": "td", "props": [("text-align", "center")]},
+            {"selector": "th.col0", "props": [("min-width", "240px"), ("white-space", "nowrap")]},
+            {"selector": "td.col0", "props": [("min-width", "240px"), ("white-space", "nowrap")]},
+        ])
+    )
 
 
 def generate_clinic_sample(input_data: ClinicSampleInput) -> ClinicSample:

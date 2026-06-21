@@ -1,5 +1,5 @@
 from descriptive.categorical import CategoricalFrequencyTableInput, build_categorical_frequency_table
-from descriptive.clinic import ClinicSample, ClinicSampleInput, generate_clinic_sample
+from descriptive.clinic import ClinicSample, ClinicSampleInput, generate_clinic_sample, style_display_table
 from descriptive.dispersion import DispersionStatistics, compute_dispersion
 from descriptive.frequencies import (
     DiscreteFrequencyTableInput,
@@ -33,5 +33,6 @@ __all__ = [
     "generate_clinic_sample",
     "standardize_observations",
     "sturges_bin_count",
+    "style_display_table",
     "summarize_observations",
 ]

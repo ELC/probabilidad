@@ -183,7 +183,7 @@ def chart_discrete_sticks(input_data: DiscreteStickChartInput) -> alt.Chart:
         alt.Chart(input_data.frequency_table)
         .mark_bar(color=theme.palette.primary, opacity=theme.bar_opacity, size=12)
         .encode(
-            x=alt.X("value:O", sort=None, title=input_data.value_title),
+            x=alt.X("value:O", sort=None, axis=alt.Axis(labelAngle=0), title=input_data.value_title),
             y=alt.Y(
                 "relative_frequency:Q",
                 axis=alt.Axis(format="%"),

@@ -34,7 +34,7 @@ def test_build_frequency_table_uses_default_bin_count(normal_observations: DataF
 def test_build_frequency_table_with_explicit_bin_count(small_observations: DataFrame[Observations]) -> None:
     table = build_frequency_table(FrequencyTableInput(observations=small_observations, bin_count=4))
     assert len(table) == 4
-    assert table["interval"].iloc[0] == "2.00 < x <= 3.75"
+    assert table["interval"].iloc[0] == "$2.00 \\lt x \\le 3.75$"
     assert table["cumulative_absolute_frequency"].iloc[-1] == len(small_observations)
     assert math.isclose(table["cumulative_relative_frequency"].iloc[-1], 1.0)
 

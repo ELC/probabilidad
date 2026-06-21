@@ -35,7 +35,7 @@ en este capítulo.
 > hablar de todo el servicio.
 
 ```{code-cell} python
-:tags: [remove-cell, hide-input]
+:tags: [remove-cell, hide-input, remove-input]
 import numpy as np
 import pandas as pd
 from pandera.typing import DataFrame
@@ -46,6 +46,7 @@ from descriptive import (
     detect_outliers_tukey,
     generate_clinic_sample,
     standardize_observations,
+    style_display_table,
     summarize_observations,
 )
 from exercises import NumericAnswerInput, verify_numeric_answer
@@ -72,7 +73,7 @@ from widgets import DescriptiveExplorerInput, build_descriptive_explorer
 ```
 
 ```{code-cell} python
-:tags: [remove-cell, hide-input]
+:tags: [remove-cell, hide-input, remove-input]
 settings = Settings()
 ```
 
@@ -146,9 +147,9 @@ enfermera de turno fue anotando paciente a paciente, ordenados en la
 secuencia en que llegaron a la guardia.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 clinic_sample = generate_clinic_sample(ClinicSampleInput(settings=settings, sample_size=80))
-clinic_sample.clinic_display_table.head()
+style_display_table(clinic_sample.clinic_display_table.head())
 ```
 
 (sec-descriptive-variable-types)=
@@ -214,8 +215,8 @@ observada en esa clase y $f_k$ es su proporción sobre el total.
 En la clínica, una tabla por área de atención podría leerse así:
 
 ```{code-cell} python
-:tags: [hide-input]
-clinic_sample.area_display_table
+:tags: [hide-input, remove-input]
+style_display_table(clinic_sample.area_display_table)
 ```
 
 La frecuencia relativa suele expresarse como porcentaje: una proporción de
@@ -226,7 +227,7 @@ usados, hay estudios y guías de visualización que recomiendan evitarlos cuando
 objetivo es comparar magnitudes con precisión [@few2007visual].
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 chart_categorical_bars_from_data(
     CategoricalBarFromDataChartInput(
         data=clinic_sample.clinic_data,
@@ -251,12 +252,12 @@ de demora identificable. Así empieza por las causas más frecuentes, no por las
 raras:
 
 ```{code-cell} python
-:tags: [hide-input]
-clinic_sample.delay_reason_display_table
+:tags: [hide-input, remove-input]
+style_display_table(clinic_sample.delay_reason_display_table)
 ```
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 chart_pareto_from_data(
     ParetoFromDataChartInput(
         data=clinic_sample.clinic_data,
@@ -297,8 +298,8 @@ $F_k$ da la proporción acumulada. En la clínica, si registramos cuántas perso
 tenía cada paciente por delante al llegar, una parte de la tabla podría verse así:
 
 ```{code-cell} python
-:tags: [hide-input]
-clinic_sample.people_ahead_display_table
+:tags: [hide-input, remove-input]
+style_display_table(clinic_sample.people_ahead_display_table)
 ```
 
 La fila de $3$ tiene dos lecturas distintas: $f_k$ dice qué proporción de
@@ -308,7 +309,7 @@ de bastones**: una barra angosta para cada valor posible, con altura proporciona
 a su frecuencia.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 chart_discrete_sticks_from_data(
     DiscreteStickFromDataChartInput(
         data=clinic_sample.clinic_data,
@@ -342,7 +343,7 @@ puede ser 4 y la hoja 7. Es útil en conjuntos pequeños o medianos porque muest
 la forma sin destruir del todo la lista original.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 chart_stem_leaf(
     StemLeafChartInput(
         observations=clinic_sample.waiting_times,
@@ -355,7 +356,7 @@ chart_stem_leaf(
 Para una tabla de frecuencias continua se particiona el rango observado en
 **intervalos de clase**. Conviene que tengan amplitud similar y que cada dato caiga
 en uno y sólo un intervalo; por eso se usan intervalos semiabiertos, como
-$(2, 4]$. El **punto medio** de una clase representa al intervalo cuando hacemos
+$(2, 3]$. El **punto medio** de una clase representa al intervalo cuando hacemos
 cálculos con datos agrupados.
 
 Elegir la cantidad de intervalos es parte del análisis. Demasiados intervalos dejan
@@ -379,7 +380,7 @@ predicción rápida: dónde se va a concentrar el histograma y en qué minuto cr
 que la ojiva va a cruzar el 70%.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 chart_histogram_with_frequency_polygon(
     FrequencyPolygonChartInput(
         frequency_table=clinic_sample.frequency_table,
@@ -395,7 +396,7 @@ mejor la forma general, especialmente si queremos comparar centros, colas o
 asimetrías.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 chart_cumulative_frequency_polygon(
     FrequencyPolygonChartInput(
         frequency_table=clinic_sample.frequency_table,
@@ -410,12 +411,12 @@ esos puntos se ubican en los límites superiores de los intervalos, esa línea e
 **ojiva**: permite leer qué proporción quedó por debajo de un corte dado, como
 cinco minutos de espera.
 
-En la clínica, si agrupamos los 80 tiempos de espera en intervalos de dos minutos,
+En la clínica, si agrupamos los 80 tiempos de espera en intervalos de un minuto,
 podríamos obtener una tabla como esta:
 
 ```{code-cell} python
-:tags: [hide-input]
-clinic_sample.frequency_display_table
+:tags: [hide-input, remove-input]
+style_display_table(clinic_sample.frequency_display_table)
 ```
 
 Cada fila dice dos cosas a la vez: $f_k$ cuenta qué proporción cae dentro de ese
@@ -629,7 +630,7 @@ matemáticas; el desvío estándar vuelve a la unidad original y suele ser más 
 interpretar en contexto.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 summary = summarize_observations(clinic_sample.waiting_times)
 summary
 ```
@@ -669,7 +670,7 @@ estamos cambiando los datos reales: armamos una segunda muestra para comparar
 qué pasa con cada resumen cuando aparece un valor extremo.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 waiting_times_with_extreme = pd.concat(
     [clinic_sample.waiting_times, pd.DataFrame({"value": [120.0]})], ignore_index=True
 ).pipe(DataFrame[Observations])
@@ -677,7 +678,7 @@ summary_with_extreme = summarize_observations(waiting_times_with_extreme)
 ```
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 typical_values_chart_input = TypicalValuesComparisonChartInput(
     original_statistics=summary,
     comparison_statistics=summary_with_extreme,
@@ -714,7 +715,7 @@ Con una tabla de frecuencias acumuladas, se buscan de la misma manera que la
 mediana: la primera fila cuya acumulada alcanza el porcentaje pedido.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 position_summary = pd.DataFrame({
     "corte": ["mínimo", "Q1", "mediana / Q2", "Q3", "máximo"],
     "minutos": [
@@ -725,7 +726,7 @@ position_summary = pd.DataFrame({
         summary.location.maximum,
     ],
 })
-position_summary
+style_display_table(position_summary)
 ```
 
 Antes de leer la tabla, pensá en la ojiva: $Q_1$, $Q_2$ y $Q_3$ son puntos sobre
@@ -759,7 +760,7 @@ separados: no son errores automáticamente, pero sí observaciones que conviene
 mirar antes de resumir todo con un único número.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 summary_chart_input = DescriptiveSummaryChartInput(
     observations=clinic_sample.waiting_times,
     statistics=summary,
@@ -809,7 +810,7 @@ y la **derecha** a valores mayores. Por eso cada pregunta describe no sólo la
 forma, sino también hacia qué lado de la escala se ubican los datos.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 
 def chart_boxplot_example(values: list[float], title: str):
     observations = pd.DataFrame({"value": values}).pipe(DataFrame[Observations])
@@ -825,7 +826,7 @@ bigotes tienen longitudes parecidas hacia la izquierda y hacia la derecha. ¿Qu�
 sugiere sobre la distribución?
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 
 chart_boxplot_example(
     [2.0, 2.5, 3.0, 3.5, 3.8, 4.0, 4.2, 4.5, 5.0, 5.5, 6.0],
@@ -852,7 +853,7 @@ $R \gg \text{IQR}$.
 muy largo. ¿Qué implica?
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 
 chart_boxplot_example(
     [1.0, 1.0, 1.1, 1.2, 1.3, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0],
@@ -879,7 +880,7 @@ describe sólo el 50% central.
 la derecha del gráfico. ¿Cómo conviene leerlo?
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 
 chart_boxplot_example(
     [3.8, 3.9, 4.0, 4.0, 4.1, 4.1, 4.2, 4.2, 4.3, 4.3, 7.0, 8.5, 9.0],
@@ -908,7 +909,7 @@ y hacia la derecha; en el grupo B la caja se extiende mucho más hacia ambos
 lados. ¿Qué diferencia hay entre los grupos?
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 
 (
     chart_boxplot_example([3.6, 3.8, 3.9, 4.0, 4.1, 4.2, 4.4], "Clínica A")
@@ -935,7 +936,7 @@ dispersión: $s_A \ll s_B$, $\text{IQR}_A \ll \text{IQR}_B$ y $R_A \ll R_B$.
 muy corto. ¿Qué lectura harías?
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 
 chart_boxplot_example(
     [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 6.5, 6.7, 6.8, 6.9, 7.0, 7.0],
@@ -985,7 +986,7 @@ salió. En la práctica suele deberse a una de tres causas: se registró mal, pr
 una población distinta, o está bien medido pero representa un suceso poco común.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 outlier_report = detect_outliers_tukey(clinic_sample.waiting_times)
 outlier_report
 ```
@@ -1014,7 +1015,7 @@ campanular, los intervalos $\bar{x} \pm ks$ deberían cubrir aproximadamente 68%
 95% y casi todas las observaciones para $k = 1, 2, 3$.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 piece_lengths = pd.DataFrame({
     "value": [
         85.0,
@@ -1054,7 +1055,7 @@ piece_length_summary = summarize_observations(piece_lengths)
 piece_mean = piece_length_summary.location.mean
 piece_std = piece_length_summary.dispersion.sample_standard_deviation
 
-pd.DataFrame({
+style_display_table(pd.DataFrame({
     "k": [1, 2, 3],
     "intervalo": [
         f"{piece_mean - k * piece_std:.3f} a {piece_mean + k * piece_std:.3f}"
@@ -1066,7 +1067,7 @@ pd.DataFrame({
          & (piece_lengths["value"] <= piece_mean + k * piece_std)).mean()
         for k in [1, 2, 3]
     ],
-})
+}))
 ```
 
 Si los porcentajes observados se parecen bastante a la regla, eso no prueba que el
@@ -1114,7 +1115,7 @@ sorpresa frente a un valor de control. Comparten la idea de estandarizar, pero
 responden preguntas distintas.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 standardized = standardize_observations(clinic_sample.waiting_times)
 standardized
 ```
@@ -1135,7 +1136,7 @@ unidad — de minutos a piezas defectuosas —, pero seguimos haciendo
 estadística descriptiva sobre una lista de observaciones.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 rng_factory = np.random.default_rng(seed=20260202)
 raw_defect_counts = rng_factory.poisson(lam=3.5, size=60).astype(float)
 defect_counts = pd.DataFrame({"value": raw_defect_counts}).pipe(DataFrame[Observations])
@@ -1150,7 +1151,7 @@ chart_histogram(defect_histogram_input)
 ```
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 defect_summary = summarize_observations(defect_counts)
 defect_summary
 ```
@@ -1178,7 +1179,7 @@ tabla, anticipá: ¿la clínica o la fábrica parece más irregular respecto de 
 centro?
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 cv_comparison = pd.DataFrame({
     "muestra": ["Clínica: minutos", "Fábrica: defectos"],
     "media": [summary.location.mean, defect_summary.location.mean],
@@ -1191,7 +1192,7 @@ cv_comparison = pd.DataFrame({
         defect_summary.dispersion.coefficient_of_variation,
     ],
 })
-cv_comparison
+style_display_table(cv_comparison)
 ```
 
 La muestra con mayor $CV$ no es necesariamente la que tiene mayor desvío en
@@ -1210,7 +1211,7 @@ le dirías a la responsable de operaciones: cambió la espera típica o cambió 
 regularidad del servicio?
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 explorer_input = DescriptiveExplorerInput(settings=settings)
 build_descriptive_explorer(explorer_input)
 ```
@@ -1288,7 +1289,7 @@ sobre la espera típica y qué no dice sobre la regularidad del servicio.
 cambiar turnos, o pedirías también dispersión y posibles outliers?
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 exercise_sample = pd.DataFrame({"value": [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]}).pipe(
     DataFrame[Observations]
 )
@@ -1314,7 +1315,7 @@ a 2 minutos te parece mucha o poca dispersión para una media de 5?
 **Pista mínima.** Los valores 2 y 9 son los que más empujan la dispersión.
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [hide-input, remove-input]
 expected_std = summarize_observations(exercise_sample).dispersion.sample_standard_deviation
 
 student_answer_std = 2.138

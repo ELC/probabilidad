@@ -144,8 +144,8 @@ def test_chart_cumulative_frequency_polygon(
         FrequencyPolygonChartInput(frequency_table=table, settings=fixed_settings)
     )
     chart_spec = chart.to_dict()
-    assert chart_spec["layer"][0]["encoding"]["y"]["field"] == "cumulative_relative_frequency"
-    assert chart_spec["layer"][1]["encoding"]["x"]["field"] == "interval_end"
+    assert chart_spec["layer"][0]["encoding"]["y"]["field"] == "relative_frequency"
+    assert chart_spec["layer"][1]["encoding"]["x"]["field"] == "midpoint"
 
 
 def test_chart_categorical_bars_preserves_table_order_and_uses_container_width(fixed_settings: Settings) -> None:
@@ -243,6 +243,7 @@ def test_chart_discrete_sticks_renders_stems_and_points(fixed_settings: Settings
     assert chart_spec["mark"]["type"] == "bar"
     assert chart_spec["mark"]["size"] == 12
     assert chart_spec["encoding"]["x"]["field"] == "value"
+    assert chart_spec["encoding"]["x"]["axis"]["labelAngle"] == 0
     assert chart_spec["encoding"]["y"]["field"] == "relative_frequency"
 
 
