@@ -1,4 +1,4 @@
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 import pandas as pd
@@ -22,6 +22,9 @@ from descriptive.frequencies import (
     build_discrete_frequency_table,
     build_frequency_table,
 )
+
+if TYPE_CHECKING:
+    from pandas.io.formats.style_render import CSSDict
 
 _AREA_CATEGORIES = ("Guardia", "Clínica médica", "Laboratorio", "Pediatría", "Traumatología")
 _AREA_WEIGHTS = np.array([22, 32, 4, 14, 8])
@@ -124,17 +127,17 @@ def _first_column_min_width(table: pd.DataFrame) -> str:
 
 
 def style_display_table(table: pd.DataFrame) -> Styler:
-    float_columns = list(table.select_dtypes(include=[float]).columns)
+    float_columns = table.select_dtypes(include=[float]).columns
     styler = table.style.hide(axis="index")
-    if float_columns:
+    if len(float_columns):
         styler = styler.format("{:.2f}", subset=float_columns)
     first_column_min_width = _first_column_min_width(table)
-    first_column_styles = [
+    first_column_styles: list[tuple[str, str]] = [
         ("min-width", first_column_min_width),
         ("white-space", "nowrap"),
         ("text-align", "center !important"),
     ]
-    table_styles = [
+    table_styles: list[CSSDict] = [
         {"selector": "th", "props": [("text-align", "center !important")]},
         {"selector": "td", "props": [("text-align", "center !important")]},
         {"selector": "th > div", "props": [("text-align", "center !important")]},
@@ -143,7 +146,7 @@ def style_display_table(table: pd.DataFrame) -> Styler:
         {"selector": "td.col0", "props": first_column_styles},
     ]
     for column_index in range(1, table.shape[1]):
-        centered = [("text-align", "center !important")]
+        centered: list[tuple[str, str]] = [("text-align", "center !important")]
         table_styles.extend([
             {"selector": f"th.col{column_index}", "props": centered},
             {"selector": f"td.col{column_index}", "props": centered},

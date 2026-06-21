@@ -75,7 +75,7 @@ def chart_descriptive_summary(input_data: DescriptiveSummaryChartInput) -> alt.C
 
 
 def chart_boxplot_example(input_data: BoxplotExampleChartInput) -> alt.Chart:
-    observations = pd.DataFrame({"value": input_data.values}).pipe(DataFrame[Observations])
+    observations = pd.DataFrame({"value": input_data.values}).pipe(DataFrame[Observations])  # noqa: PD011
     statistics = summarize_observations(observations)
     chart_input = DescriptiveSummaryChartInput(
         observations=observations,

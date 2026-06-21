@@ -45,9 +45,7 @@ def test_chart_categorical_bars_preserves_table_order_and_uses_container_width(f
 
 
 def test_chart_categorical_bars_from_data_counts_source_column(fixed_settings: Settings) -> None:
-    data = pd.DataFrame({"area": ["Laboratorio", "Guardia", "Guardia", "Clínica médica"]}).pipe(
-        DataFrame[TabularData]
-    )
+    data = pd.DataFrame({"area": ["Laboratorio", "Guardia", "Guardia", "Clínica médica"]}).pipe(DataFrame[TabularData])
     chart = chart_categorical_bars_from_data(
         CategoricalBarFromDataChartInput(
             data=data,

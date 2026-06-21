@@ -77,8 +77,6 @@ def test_interval_width_explorer_fixed_domains_cover_all_slider_widths(fixed_set
     x_domain, _ = _fixed_domains(input_data)
 
     for width in _slider_widths(input_data):
-        table = build_frequency_table(
-            FrequencyTableInput(observations=observations, bin_width=width)
-        )
+        table = build_frequency_table(FrequencyTableInput(observations=observations, bin_width=width))
         assert float(table["interval_start"].min()) >= x_domain[0]
         assert float(table["interval_end"].max()) <= x_domain[1]
