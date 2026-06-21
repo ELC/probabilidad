@@ -50,8 +50,8 @@ from descriptive import (
     style_display_table,
     summarize_observations,
 )
-from exercises import NumericAnswerInput, verify_numeric_answer
 from visualization import (
+    BoxplotExampleChartInput,
     CategoricalBarFromDataChartInput,
     DescriptiveSummaryChartInput,
     DiscreteStickFromDataChartInput,
@@ -59,6 +59,7 @@ from visualization import (
     HistogramChartInput,
     ParetoFromDataChartInput,
     StemLeafChartInput,
+    chart_boxplot_example,
     chart_categorical_bars_from_data,
     chart_cumulative_frequency_polygon,
     apply_theme,
@@ -162,6 +163,7 @@ secuencia en que llegaron a la guardia.
 ```{code-cell} python
 :tags: [hide-input]
 clinic_sample = generate_clinic_sample(ClinicSampleInput(settings=settings, sample_size=80))
+summary = summarize_observations(clinic_sample.waiting_times)
 style_display_table(clinic_sample.clinic_display_table.head())
 ```
 
@@ -593,6 +595,48 @@ build_mode_evolution_explorer(
 )
 ```
 
+(sec-descriptive-position)=
+### Posición dentro de la muestra: percentiles, deciles y cuartiles
+
+Además de resumir con un único centro, a Lucía le interesa ubicar cortes dentro
+de la lista ordenada. Si pregunta «¿hasta qué minuto esperó el 75% de los
+pacientes?», no busca el promedio: busca un **percentil**.
+
+Un percentil $p$ es un valor que deja aproximadamente el $p\%$ de las
+observaciones por debajo. Los **deciles** hacen cortes cada 10%: $D_1$ deja
+cerca del 10%, $D_2$ cerca del 20%, y así sucesivamente. Los **cuartiles** hacen
+cortes cada 25%: $Q_1$ deja cerca del 25%, $Q_2$ deja cerca del 50% y $Q_3$ deja
+cerca del 75%.
+
+Más formalmente, estos cortes son mínimos valores que acumulan al menos cierto
+porcentaje de observaciones ordenadas. El segundo cuartil coincide con el
+percentil 50:
+
+$$ Q_2 = P_{50} $$ (eq-second-quartile)
+
+Con una tabla de frecuencias acumuladas, se buscan mirando la primera fila cuya
+acumulada alcanza el porcentaje pedido.
+
+```{code-cell} python
+:tags: [hide-input]
+position_summary = pd.DataFrame({
+    "corte": ["mínimo", "Q1", "P50 / Q2", "Q3", "máximo"],
+    "minutos": [
+        summary.location.minimum,
+        summary.location.first_quartile,
+        summary.location.median,
+        summary.location.third_quartile,
+        summary.location.maximum,
+    ],
+})
+style_display_table(position_summary)
+```
+
+Antes de leer la tabla, pensá en la ojiva: $Q_1$, $P_{50}$ y $Q_3$ son puntos
+sobre esa curva acumulada. Si $Q_3$ queda cerca del corte central, la mayor
+parte de la mañana fue compacta; si queda lejos, el tramo alto de esperas se
+estiró.
+
 (sec-descriptive-median-definition)=
 ### Otra medida resumen: la mediana
 
@@ -613,9 +657,13 @@ $$ \tilde{x} = \begin{cases}
 medio», así que se promedian los dos centrales.)
 
 Formalmente, la mediana es el mínimo valor que acumula al menos el 50% de las
-observaciones ordenadas. Por eso, cuando tenemos una tabla de frecuencias, puede
-leerse mirando la primera fila cuya frecuencia relativa acumulada alcanza o supera
-0,50.
+observaciones ordenadas. Con la notación anterior, es el percentil 50 y también
+el segundo cuartil:
+
+$$ \tilde{x} = P_{50} = Q_2 $$ (eq-median-percentile)
+
+Por eso, cuando tenemos una tabla de frecuencias, puede leerse mirando la primera
+fila cuya frecuencia relativa acumulada alcanza o supera 0,50.
 
 **Predicción.** Antes de usar el control, anticipá si una espera extrema debería
 mover la mediana tanto como movía el promedio. Probá con 20 minutos y mirá la
@@ -793,7 +841,6 @@ build_iqr_evolution_explorer(
 
 ```{code-cell} python
 :tags: [hide-input]
-summary = summarize_observations(clinic_sample.waiting_times)
 summary
 ```
 
@@ -846,47 +893,22 @@ suma. La mediana, en cambio, suele moverse menos porque depende del orden. La
 moda puede quedarse quieta si el valor nuevo no cambia qué valor redondeado se
 repite más.
 
-(sec-descriptive-position)=
-## Posición dentro de la muestra: cuartiles y percentiles
+## Exploración interactiva
 
-La mediana respondió una pregunta de posición: ¿qué valor deja la mitad de los
-datos a cada lado? Podemos hacer la misma pregunta con otros cortes. Si Lucía
-pregunta «¿hasta qué minuto esperó el 75% de los pacientes?», ya no busca una
-medida resumen central sino un **percentil**.
+Probá esa intuición moviendo $\sigma$ con el control de abajo. Antes de tocar
+el control, anticipá dos cosas: qué debería pasar con la dispersión visual de
+las esperas y qué debería quedarse casi quieto. Después mové un parámetro por
+vez y verificá si tu predicción se cumple.
 
-Un percentil $p$ es el valor que deja aproximadamente el $p\%$ de las
-observaciones por debajo. Los **cuartiles** son tres percentiles especiales:
-$Q_1$ deja cerca del 25%, $Q_2$ coincide con la mediana y $Q_3$ deja cerca del
-75%.
-
-Más formalmente, los cuartiles y percentiles son mínimos valores que acumulan al
-menos cierto porcentaje de observaciones ordenadas. Así, $Q_1$ acumula al menos
-25%, $Q_2$ acumula al menos 50% y $Q_3$ acumula al menos 75%. El segundo cuartil
-coincide con la mediana y con el percentil 50:
-
-$$ Q_2 = \tilde{x} = P_{50} $$ (eq-second-quartile)
-
-Con una tabla de frecuencias acumuladas, se buscan de la misma manera que la
-mediana: la primera fila cuya acumulada alcanza el porcentaje pedido.
+**Chequeo rápido.** Si el centro queda parecido pero el tramo central se
+ensancha, ¿qué le dirías a Lucía: cambió la medida resumen o cambió la
+regularidad del servicio?
 
 ```{code-cell} python
 :tags: [hide-input]
-position_summary = pd.DataFrame({
-    "corte": ["mínimo", "Q1", "mediana / Q2", "Q3", "máximo"],
-    "minutos": [
-        summary.location.minimum,
-        summary.location.first_quartile,
-        summary.location.median,
-        summary.location.third_quartile,
-        summary.location.maximum,
-    ],
-})
-style_display_table(position_summary)
+explorer_input = DescriptiveExplorerInput(settings=settings)
+build_descriptive_explorer(explorer_input)
 ```
-
-Antes de leer la tabla, pensá en la ojiva: $Q_1$, $Q_2$ y $Q_3$ son puntos sobre
-esa curva acumulada. Si $Q_3$ queda cerca de la mediana, la mayor parte de la
-mañana fue compacta; si queda lejos, el tramo alto de esperas se estiró.
 
 (sec-descriptive-boxplot)=
 ## Cómo leer un boxplot
@@ -928,6 +950,91 @@ Un boxplot clásico no suele incluir la media. En este gráfico la agregamos com
 línea punteada para compararla visualmente con la mediana y reforzar cómo los
 valores extremos pueden mover el promedio.
 
+### Cuando el boxplot esconde la forma
+
+El boxplot es compacto, pero justamente por eso puede ser engañoso. Dos muestras
+pueden tener centro, cuartiles y rango muy parecidos, y aun así contar historias
+operativas distintas. En una clínica, una sola campana alrededor de cuatro minutos
+podría indicar un flujo regular; dos grupos separados podrían indicar dos circuitos
+distintos de atención mezclados en el mismo resumen.
+
+En el ejemplo siguiente, la muestra bimodal se genera como la combinación de dos
+grupos con forma de campana: pacientes atendidos casi sin demora y pacientes que
+entran en un circuito más lento. El boxplot central resume ambas muestras con una
+lectura muy parecida; los histogramas, alineados en el mismo eje x, muestran que las
+formas son muy diferentes.
+
+```{code-cell} python
+:tags: [hide-input]
+rng_boxplot = np.random.default_rng(20260303)
+unimodal_waits = rng_boxplot.normal(4.0, 0.75, 320).clip(1.5, 6.5)
+bimodal_waits = np.concatenate([
+    rng_boxplot.normal(3.35, 0.35, 160),
+    rng_boxplot.normal(4.65, 0.35, 160),
+])
+```
+
+```{code-cell} python
+:tags: [hide-input]
+boxplot_comparison = pd.DataFrame({
+    "value": np.concatenate([unimodal_waits, bimodal_waits]),
+    "muestra": ["Unimodal"] * len(unimodal_waits) + ["Bimodal"] * len(bimodal_waits),
+})
+shared_boxplot_domain = [1.5, 6.5]
+```
+
+```{code-cell} python
+:tags: [hide-input]
+hist_unimodal = alt.Chart(boxplot_comparison.query("muestra == 'Unimodal'")).mark_bar(
+    color=settings.chart_theme.palette.primary, opacity=settings.chart_theme.bar_opacity
+).encode(x=alt.X("value:Q", bin=alt.Bin(maxbins=24), scale=alt.Scale(domain=shared_boxplot_domain), title=None), y=alt.Y("count()", title="Frecuencia")).properties(title="Muestra unimodal", width=settings.chart_theme.width, height=120)
+boxplot_middle = alt.Chart(boxplot_comparison).mark_boxplot(extent=1.5, size=36).encode(x=alt.X("value:Q", scale=alt.Scale(domain=shared_boxplot_domain), title="Minutos de espera"), y=alt.Y("muestra:N", title=None)).properties(width=settings.chart_theme.width, height=110)
+hist_bimodal = alt.Chart(boxplot_comparison.query("muestra == 'Bimodal'")).mark_bar(color=settings.chart_theme.palette.secondary, opacity=settings.chart_theme.bar_opacity).encode(x=alt.X("value:Q", bin=alt.Bin(maxbins=24), scale=alt.Scale(domain=shared_boxplot_domain), title="Minutos de espera"), y=alt.Y("count()", title="Frecuencia")).properties(title="Muestra bimodal", width=settings.chart_theme.width, height=120)
+apply_theme(alt.vconcat(hist_unimodal, boxplot_middle, hist_bimodal, spacing=8).resolve_scale(x="shared"), settings, set_size=False)
+```
+
+La enseñanza no es que el boxplot sea inútil, sino que no alcanza solo. Si el resumen
+visual sugiere una mañana razonable pero el histograma muestra dos grupos, Lucía no
+debería promediar todo sin preguntar qué separa a esos grupos: área de atención,
+horario de llegada, derivación o disponibilidad de consultorios.
+
+(sec-descriptive-tukey)=
+## Detección de outliers — la regla de Tukey
+
+Un **outlier** — o dato atípico — es una observación tan alejada del resto
+que conviene mirarla aparte: puede ser un error de carga, un caso excepcional
+o una señal importante que no queremos esconder dentro del promedio.
+
+Para detectarlos vamos a reutilizar los cuartiles del boxplot. La distancia
+entre $Q_1$ y $Q_3$ resume el tramo central de la muestra.
+
+**Paso 1.** Ordenamos los datos y ubicamos $Q_1$ y $Q_3$.
+
+**Paso 2.** Calculamos el rango intercuartil definido en [](#eq-iqr) y marcamos
+como **outlier** cualquier observación que caiga fuera del intervalo:
+
+$$ \bigl[Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}\bigr] $$ (eq-iqr-fence)
+
+Es la misma regla que define hasta dónde llegan los bigotes del boxplot: por
+eso ese gráfico es buen detector visual.
+
+Cuando aparece un valor atípico, antes de descartarlo conviene preguntar de dónde
+salió. En la práctica suele deberse a una de tres causas: se registró mal, proviene de
+una población distinta, o está bien medido pero representa un suceso poco común.
+
+```{code-cell} python
+:tags: [hide-input]
+outlier_report = detect_outliers_tukey(clinic_sample.waiting_times)
+outlier_report
+```
+
+En la muestra de la clínica, `outlier_report` separa el tramo habitual de espera de
+los casos que quedan más allá de los límites de Tukey. Si el reporte marca pocas
+esperas altas, la lectura operativa no es "borrarlas", sino revisarlas: pueden ser
+pacientes derivados, autorizaciones demoradas o consultas anteriores que trabaron el
+flujo. Para Lucía, esos casos no invalidan el resumen general, pero sí dicen dónde
+conviene mirar antes de cambiar turnos para todo el servicio.
+
 (sec-descriptive-shape)=
 ## Forma, sesgo y colas
 
@@ -955,30 +1062,11 @@ típico se invierte: $\bar{x} < \tilde{x} < \hat{x}$.
 ### Preguntas para leer formas típicas
 
 Antes de abrir cada respuesta, imaginá el boxplot y traducí su forma a una
-frase sobre los datos. En las respuestas usamos los símbolos del glosario:
-$\bar{x}$ para la media muestral, $\tilde{x}$ para la mediana muestral y
-$\text{IQR}$ para el rango intercuartil. También usamos $s$ para el desvío
-estándar muestral y $R$ para el rango muestral.
+frase sobre los datos.
 
 En estos boxplots horizontales, la **izquierda** corresponde a valores menores
 y la **derecha** a valores mayores. Por eso cada pregunta describe no sólo la
 forma, sino también hacia qué lado de la escala se ubican los datos.
-
-```{code-cell} python
-:tags: [hide-input]
-
-def chart_boxplot_example(values: list[float], title: str, *, apply_theme: bool = True):
-    observations = pd.DataFrame({"value": values}).pipe(DataFrame[Observations])
-    statistics = summarize_observations(observations)
-    chart_input = DescriptiveSummaryChartInput(
-        observations=observations,
-        statistics=statistics,
-        title=title,
-        settings=settings,
-        apply_theme=apply_theme,
-    )
-    return chart_descriptive_summary(chart_input)
-```
 
 **Pregunta 1.** La caja está centrada, la mediana cae casi en el medio y los dos
 bigotes tienen longitudes parecidas hacia la izquierda y hacia la derecha. ¿Qué
@@ -988,8 +1076,10 @@ sugiere sobre la distribución?
 :tags: [hide-input]
 
 chart_boxplot_example(
-    [2.0, 2.5, 3.0, 3.5, 3.8, 4.0, 4.2, 4.5, 5.0, 5.5, 6.0],
-    "Clínica — esperas equilibradas",
+    BoxplotExampleChartInput(
+        values=(2.0, 2.5, 3.0, 3.5, 3.8, 4.0, 4.2, 4.5, 5.0, 5.5, 6.0),
+        settings=settings,
+    )
 )
 ```
 
@@ -1015,8 +1105,10 @@ muy largo. ¿Qué implica?
 :tags: [hide-input]
 
 chart_boxplot_example(
-    [1.0, 1.0, 1.1, 1.2, 1.3, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0],
-    "Clínica — esperas con cola derecha",
+    BoxplotExampleChartInput(
+        values=(1.0, 1.0, 1.1, 1.2, 1.3, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0),
+        settings=settings,
+    )
 )
 ```
 
@@ -1042,8 +1134,10 @@ la derecha del gráfico. ¿Cómo conviene leerlo?
 :tags: [hide-input]
 
 chart_boxplot_example(
-    [3.8, 3.9, 4.0, 4.0, 4.1, 4.1, 4.2, 4.2, 4.3, 4.3, 7.0, 8.5, 9.0],
-    "Clínica — caja estable con esperas atípicas altas",
+    BoxplotExampleChartInput(
+        values=(3.8, 3.9, 4.0, 4.0, 4.1, 4.1, 4.2, 4.2, 4.3, 4.3, 7.0, 8.5, 9.0),
+        settings=settings,
+    )
 )
 ```
 
@@ -1072,8 +1166,16 @@ lados. ¿Qué diferencia hay entre los grupos?
 
 apply_theme(
     alt.vconcat(
-        chart_boxplot_example([3.6, 3.8, 3.9, 4.0, 4.1, 4.2, 4.4], "Clínica A", apply_theme=False),
-        chart_boxplot_example([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], "Clínica B", apply_theme=False),
+        chart_boxplot_example(BoxplotExampleChartInput(
+            values=(3.6, 3.8, 3.9, 4.0, 4.1, 4.2, 4.4),
+            settings=settings,
+            apply_theme=False,
+        )).properties(width=settings.chart_theme.width, height=settings.chart_theme.height),
+        chart_boxplot_example(BoxplotExampleChartInput(
+            values=(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0),
+            settings=settings,
+            apply_theme=False,
+        )).properties(width=settings.chart_theme.width, height=settings.chart_theme.height),
         spacing=10,
     ).resolve_scale(x="shared"),
     settings,
@@ -1103,8 +1205,10 @@ muy corto. ¿Qué lectura harías?
 :tags: [hide-input]
 
 chart_boxplot_example(
-    [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 6.5, 6.7, 6.8, 6.9, 7.0, 7.0],
-    "Línea de producción — mediciones con cola izquierda",
+    BoxplotExampleChartInput(
+        values=(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 6.5, 6.7, 6.8, 6.9, 7.0, 7.0),
+        settings=settings,
+    )
 )
 ```
 
@@ -1122,43 +1226,12 @@ valores chicos, así que $R \gg \text{IQR}$. El $\text{IQR}$ resume la zona
 central alta, no toda la cola.
 ::::
 
-(sec-descriptive-tukey)=
-## Detección de outliers — la regla de Tukey
-
-Un **outlier** — o dato atípico — es una observación tan alejada del resto
-que conviene mirarla aparte: puede ser un error de carga, un caso excepcional
-o una señal importante que no queremos esconder dentro del promedio.
-
-Para detectarlos vamos a reutilizar los cuartiles del boxplot. La distancia
-entre $Q_1$ y $Q_3$ resume el tramo central de la muestra.
-
-**Paso 1.** Ordenamos los datos y ubicamos $Q_1$ y $Q_3$.
-
-**Paso 2.** Usamos el rango intercuartil definido en [](#eq-iqr).
-
-**Paso 3.** Una observación es **outlier** si cae fuera del intervalo:
-
-$$ \bigl[Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}\bigr] $$ (eq-iqr-fence)
-
-Es la misma regla que define hasta dónde llegan los bigotes del boxplot: por
-eso ese gráfico es buen detector visual.
-
-Cuando aparece un valor atípico, antes de descartarlo conviene preguntar de dónde
-salió. En la práctica suele deberse a una de tres causas: se registró mal, proviene de
-una población distinta, o está bien medido pero representa un suceso poco común.
-
-```{code-cell} python
-:tags: [hide-input]
-outlier_report = detect_outliers_tukey(clinic_sample.waiting_times)
-outlier_report
-```
-
 (sec-descriptive-empirical-rule)=
 ## Regla empírica: media más desvíos
 
-Cuando una distribución es aproximadamente simétrica y campanular, como una forma
-Normal, el desvío estándar se interpreta junto con la media usando la **regla
-empírica**:
+Cuando un histograma es aproximadamente simétrico, con un solo centro claro y una
+forma de campana, el desvío estándar se interpreta junto con la media usando la
+**regla empírica**:
 
 $$
 \bar{x} \pm s \approx 68\%, \qquad
@@ -1166,76 +1239,40 @@ $$
 \bar{x} \pm 3s \approx \text{casi todos los datos}
 $$ (eq-empirical-rule)
 
-La regla es descriptiva y depende de la forma. Si la distribución no es simétrica y
-campanular, esos porcentajes pueden cambiar mucho. También evita una confusión
+La regla es descriptiva y depende de la forma. Si el histograma no tiene esa forma
+de campana, esos porcentajes pueden cambiar mucho. También evita una confusión
 común: $\bar{x} \pm s$ no es el rango de variación; en muchas formas cubre sólo una
 parte central de los datos.
 
-Veamos una verificación concreta con la línea de producción. Tomemos 30 longitudes
-de piezas medidas durante una inspección. Si su forma fuera razonablemente
-campanular, los intervalos $\bar{x} \pm ks$ deberían cubrir aproximadamente 68%,
-95% y casi todas las observaciones para $k = 1, 2, 3$.
+Veamos una verificación concreta con los minutos de espera. Si su forma fuera
+razonablemente campanular, los intervalos $\bar{x} \pm ks$ deberían cubrir
+aproximadamente 68%, 95% y casi todas las observaciones para $k = 1, 2, 3$.
 
 ```{code-cell} python
 :tags: [hide-input]
-piece_lengths = pd.DataFrame({
-    "value": [
-        85.0,
-        117.0,
-        92.0,
-        120.0,
-        94.0,
-        110.0,
-        151.0,
-        90.0,
-        80.0,
-        116.0,
-        95.0,
-        102.0,
-        100.0,
-        113.0,
-        118.0,
-        140.0,
-        133.0,
-        108.0,
-        115.0,
-        148.0,
-        110.0,
-        130.0,
-        100.0,
-        120.0,
-        108.0,
-        125.0,
-        105.0,
-        130.0,
-        112.0,
-        150.0,
-    ]
-}).pipe(DataFrame[Observations])
-
-piece_length_summary = summarize_observations(piece_lengths)
-piece_mean = piece_length_summary.location.mean
-piece_std = piece_length_summary.dispersion.sample_standard_deviation
+waiting_summary = summarize_observations(clinic_sample.waiting_times)
+waiting_mean = waiting_summary.location.mean
+waiting_std = waiting_summary.dispersion.sample_standard_deviation
 
 style_display_table(pd.DataFrame({
     "k": [1, 2, 3],
     "intervalo": [
-        f"{piece_mean - k * piece_std:.3f} a {piece_mean + k * piece_std:.3f}"
+        f"{waiting_mean - k * waiting_std:.3f} a {waiting_mean + k * waiting_std:.3f}"
         for k in [1, 2, 3]
     ],
     "proporción esperada": ["68%", "95%", "casi todos"],
     "proporción observada": [
-        ((piece_lengths["value"] >= piece_mean - k * piece_std)
-         & (piece_lengths["value"] <= piece_mean + k * piece_std)).mean()
+        ((clinic_sample.waiting_times["value"] >= waiting_mean - k * waiting_std)
+         & (clinic_sample.waiting_times["value"] <= waiting_mean + k * waiting_std)).mean()
         for k in [1, 2, 3]
     ],
 }))
 ```
 
-Si los porcentajes observados se parecen bastante a la regla, eso no prueba que el
-proceso sea Normal; sólo dice que, para esta descripción rápida, media y desvío
-resumen razonablemente el centro y la dispersión. Si se alejan mucho, la forma pide
-otro gráfico y probablemente otro resumen.
+Si los porcentajes observados se parecen bastante a la regla, eso no prueba una
+ley matemática especial; sólo dice que, para esta descripción rápida, media y
+desvío resumen razonablemente el centro y la dispersión. Si se alejan mucho, la
+forma pide otro gráfico y probablemente otro resumen.
 
 (sec-descriptive-zscore)=
 ## Posición relativa: el $z$-score
@@ -1246,9 +1283,7 @@ promedio está?».
 **Paso 1:** partimos de las fórmulas [](#eq-mean) y [](#eq-std) para tener
 $\bar{x}$ y $s$.
 
-**Paso 2:** centramos restando el promedio.
-
-**Paso 3:** reescalamos dividiendo por $s$:
+**Paso 2:** centramos restando el promedio y reescalamos dividiendo por $s$:
 
 $$ z_i = \frac{x_i - \bar{x}}{s} $$ (eq-zscore)
 
@@ -1267,14 +1302,15 @@ $|z_i| > 3$, la observación está a más de tres desvíos de la media y merece 
 No es una sentencia automática de error; en algunos procesos un valor así puede ser
 real y relevante.
 
+La regla de Tukey usa otra escala, basada en cuartiles. En una forma campanular
+simétrica, sus límites $Q_1 - 1{,}5\,\text{IQR}$ y $Q_3 + 1{,}5\,\text{IQR}$
+quedan aproximadamente a $2{,}7$ desvíos estándar del centro. Por eso, en datos con
+esa forma, Tukey y el criterio $|z_i| > 3$ suelen señalar casos parecidos, aunque
+no idénticos: Tukey es un poco más sensible y además funciona sin usar la media.
+
 En este capítulo usamos $z_i$ solo como resumen descriptivo: compara cada
 observación con el promedio del mismo conjunto de datos. Ayuda a ver qué
 valores están cerca del centro y cuáles quedan relativamente lejos.
-
-**No confundas.** Este $z_i$ es una posición relativa dentro de una muestra. Un
-$z$-statistic de inferencia se calcula bajo una hipótesis y sirve para medir
-sorpresa frente a un valor de control. Comparten la idea de estandarizar, pero
-responden preguntas distintas.
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -1282,54 +1318,52 @@ standardized = standardize_observations(clinic_sample.waiting_times)
 standardized
 ```
 
-(sec-descriptive-defects)=
-## Piezas defectuosas por turno
+(sec-descriptive-people-ahead)=
+## Personas por delante al llegar
 
-Ahora salgamos de la sala de espera y crucemos a otro proceso cotidiano. En
-una fábrica, al final de cada turno, la supervisora revisa el parte de
-inspección: no le importa cuánto tardó cada pieza, sino cuántas salieron
-defectuosas. Un turno puede cerrar con 1 pieza defectuosa, otro con 5, otro
-con ninguna.
+Sigamos en la clínica, pero cambiemos la variable. Además de los minutos de
+espera, Lucía registró cuántas personas tenía cada paciente por delante al llegar.
+Ya no estamos midiendo tiempo continuo: ahora contamos personas. Un paciente puede
+llegar con 0 personas delante, otro con 3, otro con 7.
 
-Después de 60 turnos, la pregunta vuelve a sonar conocida: ¿qué medida resume el
-conteo?, ¿qué tan estable fue la línea?, ¿apareció algún turno
-suficientemente raro como para revisar qué pasó? Cambiamos de escala y de
-unidad — de minutos a piezas defectuosas —, pero seguimos haciendo
-estadística descriptiva sobre una lista de observaciones.
+La pregunta vuelve a sonar conocida: ¿qué medida resume el conteo?, ¿qué tan
+estable fue la fila?, ¿apareció una llegada suficientemente cargada como para
+revisar qué pasó? Cambiamos de unidad — de minutos a personas —, pero seguimos
+haciendo estadística descriptiva sobre observaciones de la misma mañana.
 
 ```{code-cell} python
 :tags: [hide-input]
-rng_factory = np.random.default_rng(seed=20260202)
-raw_defect_counts = rng_factory.poisson(lam=3.5, size=60).astype(float)
-defect_counts = pd.DataFrame({"value": raw_defect_counts}).pipe(DataFrame[Observations])
+people_ahead_observations = pd.DataFrame({
+    "value": clinic_sample.clinic_data["people_ahead"].astype(float)
+}).pipe(DataFrame[Observations])
 
-defect_histogram_input = HistogramChartInput(
-    observations=defect_counts,
+people_ahead_histogram_input = HistogramChartInput(
+    observations=people_ahead_observations,
     bin_count=12,
-    title="Piezas defectuosas por turno (60 turnos)",
+    title="Personas por delante al llegar",
     settings=settings,
 )
-chart_histogram(defect_histogram_input)
+chart_histogram(people_ahead_histogram_input)
 ```
 
 ```{code-cell} python
 :tags: [hide-input]
-defect_summary = summarize_observations(defect_counts)
-defect_summary
+people_ahead_summary = summarize_observations(people_ahead_observations)
+people_ahead_summary
 ```
 
 (sec-descriptive-cv)=
 ## Comparar dispersión en escalas distintas
 
-Las dos muestras viven en escalas distintas — minutos contra piezas — y con
-magnitudes muy distintas. Comparar sus medias en crudo dice poco: 4 minutos
-no es ni mejor ni peor que 3 piezas defectuosas. Lo mismo pasa con los desvíos:
-un minuto y una pieza defectuosa no comparten unidad.
+Las dos variables viven en escalas distintas — minutos contra personas en fila — y
+con magnitudes muy distintas. Comparar sus medias en crudo dice poco: 4 minutos
+no es ni mejor ni peor que 3 personas por delante. Lo mismo pasa con los desvíos:
+un minuto y una persona no comparten unidad.
 
 Cuando la comparación se vuelve incómoda hay que salir de las unidades
 originales. Los $z$-scores (*standard scores*), que ya introdujimos, comparan
 observaciones dentro de su propia muestra. Para comparar la **dispersión
-relativa** de dos procesos usamos el **coeficiente de variación**:
+relativa** de dos variables usamos el **coeficiente de variación**:
 
 $$ CV = \frac{s}{\bar{x}} $$ (eq-coefficient-variation)
 
@@ -1337,21 +1371,21 @@ El cociente no tiene unidades: mide qué tan grande es el desvío típico en
 relación con la media del mismo proceso. Muchas veces se informa como porcentaje,
 $100 \cdot CV$. Sirve para comparar distribuciones con unidades distintas y también
 distribuciones con la misma unidad pero promedios muy diferentes. Antes de mirar la
-tabla, anticipá: ¿la clínica o la fábrica parece más irregular respecto de su propio
-centro?
+tabla, anticipá: ¿los tiempos de espera o la cantidad de personas por delante parecen
+más irregulares respecto de su propio centro?
 
 ```{code-cell} python
 :tags: [hide-input]
 cv_comparison = pd.DataFrame({
-    "muestra": ["Clínica: minutos", "Fábrica: defectos"],
-    "media": [summary.location.mean, defect_summary.location.mean],
+    "muestra": ["Clínica: minutos de espera", "Clínica: personas por delante"],
+    "media": [summary.location.mean, people_ahead_summary.location.mean],
     "desvío estándar": [
         summary.dispersion.sample_standard_deviation,
-        defect_summary.dispersion.sample_standard_deviation,
+        people_ahead_summary.dispersion.sample_standard_deviation,
     ],
     "coeficiente de variación": [
         summary.dispersion.coefficient_of_variation,
-        defect_summary.dispersion.coefficient_of_variation,
+        people_ahead_summary.dispersion.coefficient_of_variation,
     ],
 })
 style_display_table(cv_comparison)
@@ -1359,24 +1393,7 @@ style_display_table(cv_comparison)
 
 La muestra con mayor $CV$ no es necesariamente la que tiene mayor desvío en
 unidades originales; es la que varía más **relativo a su propio nivel típico**.
-Esa es la comparación justa cuando cambiamos de minutos a piezas.
-
-## Exploración interactiva
-
-Probá esa intuición moviendo $\sigma$ con el control de abajo. Antes de tocar
-el control, anticipá dos cosas: qué debería pasar con la caja del boxplot y qué
-debería quedarse casi quieto. Después mové un parámetro por vez y verificá si
-tu predicción se cumple.
-
-**Chequeo rápido.** Si la mediana queda igual pero la caja se ensancha, ¿qué
-le dirías a la responsable de operaciones: cambió la medida resumen o cambió la
-regularidad del servicio?
-
-```{code-cell} python
-:tags: [hide-input]
-explorer_input = DescriptiveExplorerInput(settings=settings)
-build_descriptive_explorer(explorer_input)
-```
+Esa es la comparación justa cuando cambiamos de minutos a personas por delante.
 
 (sec-descriptive-sampling)=
 ## Antes de inferir: cómo se juntaron los datos
@@ -1386,8 +1403,8 @@ clínica fueron tomadas durante varias mañanas típicas, con pacientes habitual
 cambios de proceso, la muestra habla bastante bien del servicio. Si todas salieron de
 un lunes después de un feriado o de la franja más congestionada, el promedio y el
 desvío describen esa situación especial, no necesariamente la clínica. Lo mismo pasa
-si una encuesta sólo recoge respuestas de personas fáciles de contactar, o si la línea
-de producción se mide justo después de un ajuste excepcional de máquina.
+si sólo registramos pacientes de guardia, o si medimos justo después de un cambio
+excepcional en la agenda de consultorios.
 
 Si observamos todas las unidades de la población hacemos un **censo** o estudio
 exhaustivo. En ese caso el análisis descriptivo alcanza para responder sobre esa
@@ -1397,8 +1414,9 @@ los ensayos pueden ser destructivos o costosos, o el proceso puede tardar demasi
 
 Cuando observamos sólo un subconjunto hacemos un **estudio por muestreo**. La
 **muestra** tiene tamaño $n$ y produce estadísticos, no parámetros. Para extender sus
-conclusiones a la población necesitamos análisis inferencial: intervalos de confianza,
-pruebas de hipótesis y herramientas apoyadas en probabilidad.
+conclusiones a la población necesitamos herramientas que midan cuánta incertidumbre
+queda al pasar de lo observado a lo no observado; esas herramientas empiezan en el
+capítulo siguiente.
 
 Tres palabras conviene tener presentes desde ahora:
 
@@ -1435,82 +1453,24 @@ servicio en general.
 
 **Decisión de ingeniería.** Si Lucía quiere rediseñar turnos para todo el mes, una mañana extrema sirve como alarma, pero no como única evidencia. La pregunta siguiente no es solo “cuál fue la media”, sino “qué proceso generó estos datos y qué población representan”.
 
-## Ejercicio 1 — Media de una muestra pequeña
+## Conclusión: qué sabemos de la mañana
 
-Tomá la muestra $\{2, 4, 4, 4, 5, 5, 7, 9\}$ y calculá la media muestral
-aplicando la fórmula [](#eq-mean).
+Volvamos a las preguntas del principio. Para resumir cuánto se espera, Lucía no
+debería mirar sólo la media: la mediana y los percentiles muestran qué vivió la
+mayoría de los pacientes. Para describir qué tan regular fue el servicio, el
+desvío estándar, el rango y el IQR separan una mañana compacta de una mañana con
+experiencias muy distintas. Para decidir si hubo casos que merecen revisión, el
+boxplot, la regla de Tukey y los $z$-scores dan señales complementarias.
 
-**Intentá antes de ejecutar.** Primero estimá mentalmente si la media debería
-quedar cerca de 4, de 5 o de 6. Después hacé la cuenta y ejecutá la celda para
-comparar tu respuesta con la verificación.
+La respuesta operativa no es un único número. Si el centro es razonable pero hay
+outliers, Lucía puede revisar esos casos antes de cambiar toda la agenda. Si el
+histograma muestra dos grupos, conviene preguntar si se mezclaron áreas o circuitos
+distintos. Si la muestra salió de una mañana especial, los gráficos describen esa
+mañana, no necesariamente todo el servicio.
 
-**Interpretación.** Si este número fueran minutos de espera, explicá qué dice
-como medida resumen y qué no dice sobre la regularidad del servicio.
-
-**Decisión de ingeniería.** Escribí una frase para Lucía: ¿mirarías solo la media antes de
-cambiar turnos, o pedirías también dispersión y posibles outliers?
-
-```{code-cell} python
-:tags: [hide-input]
-exercise_sample = pd.DataFrame({"value": [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]}).pipe(
-    DataFrame[Observations]
-)
-expected_mean = summarize_observations(exercise_sample).location.mean
-
-student_answer_mean = 5.0
-verify_input_mean = NumericAnswerInput(
-    student_answer=student_answer_mean,
-    expected_answer=expected_mean,
-)
-verify_numeric_answer(verify_input_mean)
-```
-
-## Ejercicio 2 — Desvío estándar muestral
-
-Para la misma muestra, aplicá la fórmula [](#eq-std-ss). Usá $\bar{x} = 5$ del
-ejercicio 1.
-
-**Intentá antes de ejecutar.** Calculá la suma de cuadrados, dividí por $n-1$
-y recién entonces tomá raíz. Antes de verificar, respondé: ¿un desvío cercano
-a 2 minutos te parece mucha o poca dispersión para una media de 5?
-
-**Pista mínima.** Los valores 2 y 9 son los que más empujan la dispersión.
-
-```{code-cell} python
-:tags: [hide-input]
-expected_std = summarize_observations(exercise_sample).dispersion.sample_standard_deviation
-
-student_answer_std = 2.138
-verify_input_std = NumericAnswerInput(
-    student_answer=student_answer_std,
-    expected_answer=expected_std,
-)
-verify_numeric_answer(verify_input_std)
-```
-
-## Ejercicio 3 — ¿Qué representa esta muestra?
-
-Lucía tiene dos opciones para estimar una medida resumen de la espera del mes:
-
-- medir 80 pacientes de una sola mañana posterior a un feriado;
-- medir 20 pacientes por semana durante cuatro semanas, mezclando días y horarios.
-
-**Predicción.** Antes de responder, decidí cuál muestra esperás que sea más estable para planificar turnos de todo el mes.
-
-**Interpretación.** Explicá qué sesgo podría aparecer en la primera opción y qué parte del proceso cubre mejor la segunda.
-
-**Decisión de ingeniería.** Si el presupuesto solo permite una medición corta, ¿la usarías para cambiar turnos de inmediato o como señal para medir mejor? Escribí una frase que conserve esa incertidumbre.
-
-**Ahora podemos** separar tres mensajes: qué medida resume la espera, cuán
-estable fue el servicio y si algún caso extremo merece revisión.
-
-**Lo que todavía falta** es salir de lo que ya pasó. Una muestra describe un
-puñado de mañanas en la clínica o algunos turnos de la línea, pero no asigna por
-sí sola chances al próximo paciente o al próximo lote.
-
-**La pregunta que empuja el capítulo siguiente** aparece apenas entra un
-paciente nuevo o llega un turno todavía no inspeccionado: ¿qué tan probable es
-que espere más de cinco minutos?, ¿cambian las chances si ya lleva tres minutos
-sentado?, ¿qué tan creíble es una respuesta «sí» en la encuesta? Para responder
-hay que hablar de futuros posibles — un idioma con su propia gramática, la
+La práctica del capítulo retoma estos cálculos con ejercicios específicos. Lo que
+queda abierto es mirar hacia adelante: si mañana llega otro paciente, ¿qué tan
+probable es que espere más de cinco minutos?, ¿cambian las chances si ya lleva un
+rato sentado?, ¿cómo se combinan señales parciales para tomar una decisión? Para
+responder esas preguntas necesitamos el lenguaje del próximo capítulo:
 **probabilidad**.

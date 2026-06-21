@@ -52,9 +52,11 @@ from visualization.sampling import (
     chart_lln_running_mean,
 )
 from visualization.summary import (
+    BoxplotExampleChartInput,
     DescriptiveSummaryChartInput,
     ObservationsOverviewInput,
     TypicalValuesComparisonChartInput,
+    chart_boxplot_example,
     chart_descriptive_summary,
     chart_observations_overview,
     chart_typical_values_comparison,
@@ -63,6 +65,7 @@ from visualization.theme import apply_theme
 
 __all__ = [
     "BootstrapDistributionChartInput",
+    "BoxplotExampleChartInput",
     "CLTComparisonChartInput",
     "CategoricalBarChartInput",
     "CategoricalBarFromDataChartInput",
@@ -86,6 +89,7 @@ __all__ = [
     "TypicalValuesComparisonChartInput",
     "VennTwoSetsInput",
     "apply_theme",
+    "chart_boxplot_example",
     "chart_bootstrap_distribution",
     "chart_categorical_bars",
     "chart_categorical_bars_from_data",

@@ -5,10 +5,12 @@ from pandera.typing import DataFrame
 from core import Observations, Settings
 from descriptive import FrequencyTableInput, build_frequency_table, summarize_observations
 from visualization import (
+    BoxplotExampleChartInput,
     DescriptiveSummaryChartInput,
     ObservationsOverviewInput,
     TypicalValuesComparisonChartInput,
     apply_theme,
+    chart_boxplot_example,
     chart_descriptive_summary,
     chart_observations_overview,
     chart_typical_values_comparison,
@@ -48,6 +50,19 @@ def test_chart_descriptive_summary_without_theme_can_vconcat(
     assert len(spec["vconcat"]) == 2
     assert spec["resolve"]["scale"]["x"] == "shared"
     assert "config" in spec
+
+
+def test_chart_boxplot_example_builds_from_values(fixed_settings: Settings) -> None:
+    chart = chart_boxplot_example(
+        BoxplotExampleChartInput(
+            values=(2.0, 3.0, 4.0, 5.0, 6.0),
+            settings=fixed_settings,
+            apply_theme=False,
+        )
+    )
+
+    spec = chart.to_dict()
+    assert spec["layer"][0]["mark"]["type"] == "boxplot"
 
 
 def test_chart_typical_values_comparison_shows_extreme_observation_shift(

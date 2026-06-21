@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict
 
 from core import FrequencyTable, Observations, Settings
 from core.theme import ChartTheme
-from descriptive.summary import DescriptiveStatistics
+from descriptive.summary import DescriptiveStatistics, summarize_observations
 from visualization.frequency import _build_frequency_chart
 from visualization.theme import apply_theme
 
@@ -20,6 +20,15 @@ class DescriptiveSummaryChartInput(BaseModel):
     observations: DataFrame[Observations]
     statistics: DescriptiveStatistics
     title: str = "Boxplot con marcas de resumen"
+    settings: Settings = Settings()
+    apply_theme: bool = True
+
+
+class BoxplotExampleChartInput(BaseModel):
+    model_config = _ARBITRARY
+
+    values: tuple[float, ...]
+    title: str = ""
     settings: Settings = Settings()
     apply_theme: bool = True
 
@@ -63,6 +72,19 @@ def chart_descriptive_summary(input_data: DescriptiveSummaryChartInput) -> alt.C
     if input_data.apply_theme:
         return apply_theme(chart, input_data.settings)
     return chart
+
+
+def chart_boxplot_example(input_data: BoxplotExampleChartInput) -> alt.Chart:
+    observations = pd.DataFrame({"value": input_data.values}).pipe(DataFrame[Observations])
+    statistics = summarize_observations(observations)
+    chart_input = DescriptiveSummaryChartInput(
+        observations=observations,
+        statistics=statistics,
+        title=input_data.title,
+        settings=input_data.settings,
+        apply_theme=input_data.apply_theme,
+    )
+    return chart_descriptive_summary(chart_input)
 
 
 class TypicalValuesComparisonChartInput(BaseModel):

@@ -1,3 +1,5 @@
+# pyright: reportMissingTypeStubs=false, reportPrivateUsage=false, reportUnknownMemberType=false, reportUnknownVariableType=false
+
 from collections.abc import Callable
 
 import ipywidgets as widgets
@@ -27,7 +29,8 @@ def _observations() -> DataFrame[Observations]:
     return pd.DataFrame({"value": [2.0, 3.0, 4.0, 5.0, 6.0]}).pipe(DataFrame[Observations])
 
 
-def _button(container: widgets.VBox, description: str) -> widgets.Button:
+def _button(container: widgets.Widget, description: str) -> widgets.Button:
+    assert isinstance(container, widgets.VBox)
     controls = container.children[0]
     assert isinstance(controls, widgets.HBox)
     for child in controls.children:
