@@ -16,7 +16,7 @@ y al final tampoco saca una conclusión. Si te preguntan «¿hoy fue un
 día tranquilo o uno raro?», directamente no sabés por dónde empezar.
 
 Para contestar hay que apretar la lista en unos pocos gráficos y unos pocos números que
-respondan cosas concretas: cuál fue una espera **típica**, qué tan
+respondan cosas concretas: qué medida resume la espera, qué tan
 **parecidas** fueron las esperas entre sí (¿todos esperaron parecido?,
 ¿algunos muy poco y otros mucho?) y si hubo alguna **fuera de lo
 común** que valga la pena mirar aparte. Lucía, la responsable de
@@ -72,8 +72,16 @@ from visualization import (
 from widgets import (
     DescriptiveExplorerInput,
     IntervalWidthExplorerInput,
+    SummaryEvolutionExplorerInput,
     build_descriptive_explorer,
+    build_iqr_evolution_explorer,
     build_interval_width_explorer,
+    build_location_evolution_explorer,
+    build_mean_evolution_explorer,
+    build_median_evolution_explorer,
+    build_mode_evolution_explorer,
+    build_range_evolution_explorer,
+    build_standard_deviation_evolution_explorer,
 )
 ```
 
@@ -486,21 +494,21 @@ sin mirar el orden temporal, una tendencia o un ciclo puede quedar escondido.
 (sec-descriptive-summary)=
 ## Tres preguntas que resumen la muestra
 
-Volvamos a las tres preguntas que dejó abiertas la introducción: cuál
-fue una espera típica, qué tan parecidas fueron las esperas entre sí,
-y si hubo alguna fuera de lo común. Cada pregunta se contesta con un
-número distinto, y vamos a definir uno por uno.
+Volvamos a las tres preguntas que dejó abiertas la introducción: qué medida
+resume la espera, qué tan parecidas fueron las esperas entre sí, y si hubo
+alguna fuera de lo común. Cada pregunta se contesta con un número distinto, y
+vamos a definir uno por uno.
 
 (sec-descriptive-mean)=
-### Una espera típica: el promedio
+### Una medida resumen: el promedio
 
-El primer candidato a «valor típico» es el **promedio**: sumar todos
-los minutos y dividir por la cantidad de pacientes. En estadística al
-promedio se lo llama **media muestral** y se lo escribe $\bar{x}$
-(una equis con una rayita arriba — es solo una convención). Si
-anotamos los minutos del paciente $1$ al paciente $n$ como
-$x_1, x_2, \dots, x_n$, la fórmula que hace lo que recién dijimos en
-palabras es:
+A los números que condensan una muestra en una lectura breve también los
+llamamos **medidas resumen**. La primera candidata es el **promedio**: sumar
+todos los minutos y dividir por la cantidad de pacientes. En estadística al
+promedio se lo llama **media muestral** y se lo escribe $\bar{x}$ (una equis
+con una rayita arriba — es solo una convención). Si anotamos los minutos del
+paciente $1$ al paciente $n$ como $x_1, x_2, \dots, x_n$, la fórmula que hace
+lo que recién dijimos en palabras es:
 
 $$ \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i $$ (eq-mean)
 
@@ -532,6 +540,21 @@ dar 4,36 minutos aunque ningún paciente haya esperado exactamente 4,36 minutos.
 usa toda la información, también es sensible a valores extremos. Por eso sirve para
 comparar distribuciones sólo cuando sus formas son razonablemente semejantes.
 
+**Predicción.** Antes de tocar el control, imaginá qué va a pasar si agregás un
+valor extremo, por ejemplo 20 minutos: ¿el promedio se va a mover apenas o va a
+saltar? Después agregalo y compará el salto con lo que pasa cuando agregás valores
+aleatorios parecidos al resto de la muestra.
+
+```{code-cell} python
+:tags: [hide-input]
+build_mean_evolution_explorer(
+    SummaryEvolutionExplorerInput(
+        observations=clinic_sample.waiting_times,
+        settings=settings,
+    )
+)
+```
+
 La media que usamos acá es la **media aritmética**. Existen otras medias útiles,
 pero responden a preguntas distintas. La **media geométrica** se usa cuando el
 fenómeno se compone multiplicando cambios relativos: por ejemplo, si Lucía compara
@@ -553,15 +576,31 @@ mayor frecuencia. En la clínica puede ser el minuto de espera que más se repit
 La moda tiene tres detalles importantes. Algunas muestras no tienen moda clara;
 otras tienen dos modas y se llaman **bimodales**; y es la única medida de tendencia
 central que puede calcularse para cualquier tipo de variable, incluso cualitativa.
+En el control siguiente, para que la idea tenga sentido con tiempos continuos,
+la moda se calcula sobre minutos redondeados.
+
+**Predicción.** Antes de agregar un valor extremo, pensá si alcanza con una sola
+observación para cambiar la moda. Después probá agregar un valor escrito y varios
+valores aleatorios.
+
+```{code-cell} python
+:tags: [hide-input]
+build_mode_evolution_explorer(
+    SummaryEvolutionExplorerInput(
+        observations=clinic_sample.waiting_times,
+        settings=settings,
+    )
+)
+```
 
 (sec-descriptive-median-definition)=
-### Otra espera típica: la mediana
+### Otra medida resumen: la mediana
 
 El promedio tiene un punto débil. Si entre los 80 pacientes hubo uno
 que esperó dos horas porque al médico se le complicó un caso, ese
 único valor extremo arrastra el promedio hacia arriba aunque el
 resto de la mañana haya sido normal. Para esos casos viene bien otro
-valor típico: la **mediana**, que es el número del medio cuando
+tipo de medida resumen: la **mediana**, que es el número del medio cuando
 ordenamos la lista de menor a mayor. La escribimos $\tilde{x}$ (equis
 con una eñe encima):
 
@@ -578,6 +617,20 @@ observaciones ordenadas. Por eso, cuando tenemos una tabla de frecuencias, puede
 leerse mirando la primera fila cuya frecuencia relativa acumulada alcanza o supera
 0,50.
 
+**Predicción.** Antes de usar el control, anticipá si una espera extrema debería
+mover la mediana tanto como movía el promedio. Probá con 20 minutos y mirá la
+evolución.
+
+```{code-cell} python
+:tags: [hide-input]
+build_median_evolution_explorer(
+    SummaryEvolutionExplorerInput(
+        observations=clinic_sample.waiting_times,
+        settings=settings,
+    )
+)
+```
+
 **No confundas.** La media pregunta por el equilibrio numérico de todos los
 valores; la mediana pregunta por la posición que parte la muestra; la moda
 pregunta qué valor o categoría aparece más. Las tres pueden coincidir, pero no
@@ -585,6 +638,20 @@ cuentan la misma historia. De hecho, cuando no coinciden, esa diferencia aporta
 información importante sobre la simetría de los datos: si la media queda bastante
 separada de la mediana, suele haber una cola o valores extremos tirando del
 equilibrio numérico.
+
+El siguiente control junta las tres medidas sobre el mismo conjunto de datos. El
+histograma muestra la distribución actual y la línea inferior muestra cómo cambian
+media, moda y mediana a medida que incorporás valores.
+
+```{code-cell} python
+:tags: [hide-input]
+build_location_evolution_explorer(
+    SummaryEvolutionExplorerInput(
+        observations=clinic_sample.waiting_times,
+        settings=settings,
+    )
+)
+```
 
 (sec-descriptive-standard-deviation)=
 ### Qué tan parecidas son las esperas: el desvío estándar
@@ -594,6 +661,11 @@ fueron las esperas entre sí. Si todos esperaron alrededor de cuatro
 minutos, el promedio cuenta casi toda la historia. Si la mitad esperó
 dos minutos y la otra mitad seis, el mismo promedio esconde dos
 experiencias muy distintas.
+
+Las medidas de dispersión resumen distancia, amplitud o variabilidad. A
+diferencia de las medidas de posición, son siempre no negativas: no existe una
+variación de $-2$ minutos. En todos los casos, el valor $0$ significa que los
+datos están concentrados en un único valor.
 
 La idea es medir, en promedio, cuánto se aleja cada paciente del
 promedio general. Lo armamos en tres pasos.
@@ -667,6 +739,20 @@ En palabras: $s$ es la distancia típica entre una observación
 cualquiera y el promedio. Cuanto más chico es $s$, más parecidas son
 las esperas entre sí.
 
+**Predicción.** Agregá mentalmente un valor extremo: si entra una espera de 20
+minutos, ¿el desvío estándar va a moverse poco o mucho? Usá el control para
+compararlo con valores aleatorios cercanos al resto de la muestra.
+
+```{code-cell} python
+:tags: [hide-input]
+build_standard_deviation_evolution_explorer(
+    SummaryEvolutionExplorerInput(
+        observations=clinic_sample.waiting_times,
+        settings=settings,
+    )
+)
+```
+
 Si los datos corresponden a toda la población, usamos la media poblacional $\mu$,
 el tamaño poblacional $N$ y el denominador $N$. La varianza poblacional se
 escribe $\sigma^2$ y el desvío estándar poblacional se escribe $\sigma$:
@@ -686,8 +772,18 @@ observada: cuánto separa al caso más bajo del caso más alto. A diferencia de
 $s$, que usa todas las observaciones, $R$ depende sólo de los dos extremos; por
 eso crece mucho cuando aparece un valor atípico.
 
+```{code-cell} python
+:tags: [hide-input]
+build_range_evolution_explorer(
+    SummaryEvolutionExplorerInput(
+        observations=clinic_sample.waiting_times,
+        settings=settings,
+    )
+)
+```
+
 Como vimos al hablar de frecuencias acumuladas, $Q_1$ y $Q_3$ son los cuartiles
-que dejan cerca del 25% y del 75% de las observaciones por debajo. El **rango
+cuya frecuencia acumulada alcanza al menos el 25% y el 75%, respectivamente. El **rango
 intercuartil** o **recorrido intercuartílico** resume la variación del 50%
 central:
 
@@ -701,31 +797,41 @@ interpretar en contexto.
 
 ```{code-cell} python
 :tags: [hide-input]
+build_iqr_evolution_explorer(
+    SummaryEvolutionExplorerInput(
+        observations=clinic_sample.waiting_times,
+        settings=settings,
+    )
+)
+```
+
+```{code-cell} python
+:tags: [hide-input]
 summary = summarize_observations(clinic_sample.waiting_times)
 summary
 ```
 
 La tabla de arriba contesta las tres preguntas a la vez. La **media**
-y la **mediana** dan dos formas distintas de responder cuál fue una
-espera típica; el **desvío estándar** y el **rango** dicen qué tan parecidas
+y la **mediana** dan dos formas distintas de resumir la espera; el
+**desvío estándar** y el **rango** dicen qué tan parecidas
 fueron las esperas entre sí, pero con sensibilidades distintas. Por ahora,
 concentrémonos en esas filas: más
 adelante vamos a construir una regla para separar lo habitual de lo
 raro. Pasá la vista por la tabla y fijate qué te dice cada número antes
 de seguir.
 
-**Trampa común.** Un único “valor típico” no decide si la operación
+**Trampa común.** Una única medida resumen no decide si la operación
 funcionó bien. Dos mañanas pueden tener la misma media y experiencias
 muy distintas si una fue estable y la otra alternó esperas mínimas con
 esperas extremas.
 
 **Decisión de ingeniería.** Antes de seguir, elegí qué mirarías si
 tuvieras que justificar una acción: ¿la media para estimar capacidad,
-la mediana para describir la experiencia típica, o la dispersión para
-medir estabilidad?
+la mediana como medida resumen más resistente, o la dispersión para medir
+estabilidad?
 
-**Idea para retener.** El centro cuenta una historia típica; la dispersión y
-los atípicos dicen cuánta confianza merece esa historia.
+**Idea para retener.** La medida resumen cuenta una historia central; la
+dispersión y los atípicos dicen cuánta confianza merece esa historia.
 
 (sec-descriptive-median)=
 ## Por qué la mediana resiste lo que la media no
@@ -767,7 +873,7 @@ representando una espera habitual, no el caso excepcional.
 La mediana respondió una pregunta de posición: ¿qué valor deja la mitad de los
 datos a cada lado? Podemos hacer la misma pregunta con otros cortes. Si Lucía
 pregunta «¿hasta qué minuto esperó el 75% de los pacientes?», ya no busca una
-espera típica sino un **percentil**.
+medida resumen central sino un **percentil**.
 
 Un percentil $p$ es el valor que deja aproximadamente el $p\%$ de las
 observaciones por debajo. Los **cuartiles** son tres percentiles especiales:
@@ -1197,8 +1303,8 @@ inspección: no le importa cuánto tardó cada pieza, sino cuántas salieron
 defectuosas. Un turno puede cerrar con 1 pieza defectuosa, otro con 5, otro
 con ninguna.
 
-Después de 60 turnos, la pregunta vuelve a sonar conocida: ¿cuál fue un
-conteo típico?, ¿qué tan estable fue la línea?, ¿apareció algún turno
+Después de 60 turnos, la pregunta vuelve a sonar conocida: ¿qué medida resume el
+conteo?, ¿qué tan estable fue la línea?, ¿apareció algún turno
 suficientemente raro como para revisar qué pasó? Cambiamos de escala y de
 unidad — de minutos a piezas defectuosas —, pero seguimos haciendo
 estadística descriptiva sobre una lista de observaciones.
@@ -1275,7 +1381,7 @@ debería quedarse casi quieto. Después mové un parámetro por vez y verificá 
 tu predicción se cumple.
 
 **Chequeo rápido.** Si la mediana queda igual pero la caja se ensancha, ¿qué
-le dirías a la responsable de operaciones: cambió la espera típica o cambió la
+le dirías a la responsable de operaciones: cambió la medida resumen o cambió la
 regularidad del servicio?
 
 ```{code-cell} python
@@ -1351,7 +1457,7 @@ quedar cerca de 4, de 5 o de 6. Después hacé la cuenta y ejecutá la celda par
 comparar tu respuesta con la verificación.
 
 **Interpretación.** Si este número fueran minutos de espera, explicá qué dice
-sobre la espera típica y qué no dice sobre la regularidad del servicio.
+como medida resumen y qué no dice sobre la regularidad del servicio.
 
 **Decisión de ingeniería.** Escribí una frase para Lucía: ¿mirarías solo la media antes de
 cambiar turnos, o pedirías también dispersión y posibles outliers?
@@ -1396,7 +1502,7 @@ verify_numeric_answer(verify_input_std)
 
 ## Ejercicio 3 — ¿Qué representa esta muestra?
 
-Lucía tiene dos opciones para estimar la espera típica del mes:
+Lucía tiene dos opciones para estimar una medida resumen de la espera del mes:
 
 - medir 80 pacientes de una sola mañana posterior a un feriado;
 - medir 20 pacientes por semana durante cuatro semanas, mezclando días y horarios.
@@ -1407,7 +1513,7 @@ Lucía tiene dos opciones para estimar la espera típica del mes:
 
 **Decisión de ingeniería.** Si el presupuesto solo permite una medición corta, ¿la usarías para cambiar turnos de inmediato o como señal para medir mejor? Escribí una frase que conserve esa incertidumbre.
 
-**Ahora podemos** separar tres mensajes: cómo fue la espera típica, cuán
+**Ahora podemos** separar tres mensajes: qué medida resume la espera, cuán
 estable fue el servicio y si algún caso extremo merece revisión.
 
 **Lo que todavía falta** es salir de lo que ya pasó. Una muestra describe un

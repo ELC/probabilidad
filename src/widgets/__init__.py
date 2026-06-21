@@ -20,6 +20,16 @@ from widgets.pivot_inversion_explorer import (
     PivotInversionExplorerInput,
     build_pivot_inversion_explorer,
 )
+from widgets.summary_evolution import (
+    SummaryEvolutionExplorerInput,
+    build_iqr_evolution_explorer,
+    build_location_evolution_explorer,
+    build_mean_evolution_explorer,
+    build_median_evolution_explorer,
+    build_mode_evolution_explorer,
+    build_range_evolution_explorer,
+    build_standard_deviation_evolution_explorer,
+)
 
 __all__ = [
     "BayesExplorerInput",
@@ -31,13 +41,21 @@ __all__ = [
     "LLNExplorerInput",
     "MeanCIExplorerInput",
     "PivotInversionExplorerInput",
+    "SummaryEvolutionExplorerInput",
     "build_bayes_explorer",
     "build_clt_explorer",
     "build_continuous_distribution_explorer",
     "build_descriptive_explorer",
     "build_discrete_distribution_explorer",
     "build_interval_width_explorer",
+    "build_iqr_evolution_explorer",
     "build_lln_explorer",
+    "build_location_evolution_explorer",
     "build_mean_ci_explorer",
+    "build_mean_evolution_explorer",
+    "build_median_evolution_explorer",
+    "build_mode_evolution_explorer",
     "build_pivot_inversion_explorer",
+    "build_range_evolution_explorer",
+    "build_standard_deviation_evolution_explorer",
 ]
