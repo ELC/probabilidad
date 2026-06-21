@@ -21,6 +21,7 @@ class DescriptiveSummaryChartInput(BaseModel):
     statistics: DescriptiveStatistics
     title: str = "Boxplot con marcas de resumen"
     settings: Settings = Settings()
+    apply_theme: bool = True
 
 
 def _build_descriptive_summary_chart(
@@ -59,7 +60,9 @@ def chart_descriptive_summary(input_data: DescriptiveSummaryChartInput) -> alt.C
         input_data.title,
         input_data.settings.chart_theme,
     )
-    return apply_theme(chart, input_data.settings)
+    if input_data.apply_theme:
+        return apply_theme(chart, input_data.settings)
+    return chart
 
 
 class TypicalValuesComparisonChartInput(BaseModel):

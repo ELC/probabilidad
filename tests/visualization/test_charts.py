@@ -1,5 +1,6 @@
 import json
 
+import altair as alt
 import matplotlib.pyplot as plt
 import pandas as pd
 import pytest
@@ -93,6 +94,7 @@ from visualization import (
     chart_stem_leaf,
     chart_typical_values_comparison,
     chart_venn_two_sets,
+    apply_theme,
 )
 
 
@@ -436,6 +438,29 @@ def test_chart_descriptive_summary(normal_observations: DataFrame[Observations],
         )
     )
     assert chart.to_dict()
+
+
+def test_chart_descriptive_summary_without_theme_can_vconcat(
+    normal_observations: DataFrame[Observations], fixed_settings: Settings
+) -> None:
+    statistics = summarize_observations(normal_observations)
+    chart_input = DescriptiveSummaryChartInput(
+        observations=normal_observations,
+        statistics=statistics,
+        settings=fixed_settings,
+        apply_theme=False,
+    )
+    composed = alt.vconcat(
+        chart_descriptive_summary(chart_input),
+        chart_descriptive_summary(chart_input.model_copy(update={"title": "Comparación"})),
+        spacing=10,
+    ).resolve_scale(x="shared")
+    chart = apply_theme(composed, fixed_settings, set_size=False)
+    spec = chart.to_dict()
+    assert spec["vconcat"], "expected vconcat with two stacked panels"
+    assert len(spec["vconcat"]) == 2
+    assert spec["resolve"]["scale"]["x"] == "shared"
+    assert "config" in spec
 
 
 def test_chart_typical_values_comparison_shows_extreme_observation_shift(

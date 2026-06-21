@@ -52,6 +52,9 @@ def test_summary_evolution_builders_return_vbox(
     assert isinstance(container, widgets.VBox)
     assert isinstance(container.children[0], widgets.HBox)
     assert isinstance(container.children[1], widgets.Output)
+    assert container.layout.width == "100%"
+    assert container.children[0].layout.width == "100%"
+    assert container.children[1].layout.width == "100%"
 
 
 def test_summary_evolution_add_value_button_rerenders(fixed_settings: Settings) -> None:

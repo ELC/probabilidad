@@ -62,14 +62,15 @@ def _slider_widths(input_data: IntervalWidthExplorerInput) -> tuple[float, ...]:
 
 
 def _fixed_domains(input_data: IntervalWidthExplorerInput) -> tuple[tuple[float, float], tuple[float, float]]:
+    observed_values = input_data.observations["value"].to_numpy(dtype=float)
+    x_domain = (
+        float(np.floor(observed_values.min() * 2.0) / 2.0),
+        float(np.ceil(observed_values.max() * 2.0) / 2.0),
+    )
     tables = [
         build_frequency_table(FrequencyTableInput(observations=input_data.observations, bin_width=width))
         for width in _slider_widths(input_data)
     ]
-    x_domain = (
-        min(float(table["interval_start"].min()) for table in tables),
-        max(float(table["interval_end"].max()) for table in tables),
-    )
     max_relative_frequency = max(float(table["relative_frequency"].max()) for table in tables)
     relative_y_domain = (0.0, min(1.0, max_relative_frequency * 1.05))
     return x_domain, relative_y_domain
@@ -165,4 +166,4 @@ def build_interval_width_explorer(input_data: IntervalWidthExplorerInput) -> wid
         width_slider,
         frequency_output,
         cumulative_output,
-    ])
+    ], layout=widgets.Layout(width="100%"))

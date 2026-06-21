@@ -58,16 +58,15 @@ from visualization import (
     HistogramChartInput,
     ParetoFromDataChartInput,
     StemLeafChartInput,
-    TypicalValuesComparisonChartInput,
     chart_categorical_bars_from_data,
     chart_cumulative_frequency_polygon,
+    apply_theme,
     chart_descriptive_summary,
     chart_discrete_sticks_from_data,
     chart_histogram,
     chart_histogram_with_frequency_polygon,
     chart_pareto_from_data,
     chart_stem_leaf,
-    chart_typical_values_comparison,
 )
 from widgets import (
     DescriptiveExplorerInput,
@@ -639,20 +638,6 @@ información importante sobre la simetría de los datos: si la media queda basta
 separada de la mediana, suele haber una cola o valores extremos tirando del
 equilibrio numérico.
 
-El siguiente control junta las tres medidas sobre el mismo conjunto de datos. El
-histograma muestra la distribución actual y la línea inferior muestra cómo cambian
-media, moda y mediana a medida que incorporás valores.
-
-```{code-cell} python
-:tags: [hide-input]
-build_location_evolution_explorer(
-    SummaryEvolutionExplorerInput(
-        observations=clinic_sample.waiting_times,
-        settings=settings,
-    )
-)
-```
-
 (sec-descriptive-standard-deviation)=
 ### Qué tan parecidas son las esperas: el desvío estándar
 
@@ -841,31 +826,24 @@ pegados. Cuando aparecen valores muy altos (un paciente con espera anormal) la
 **media se mueve** hacia ese punto; la **mediana se queda quieta** porque sólo
 depende del orden.
 
-Agreguemos artificialmente una espera de 120 minutos a la misma mañana. No
-estamos cambiando los datos reales: armamos una segunda muestra para comparar
-qué pasa con cada resumen cuando aparece un valor extremo.
+Probemos esa idea con un control interactivo. No estamos cambiando los datos
+reales: incorporamos valores al explorador para comparar qué pasa con cada
+medida resumen cuando aparece un valor extremo.
 
 ```{code-cell} python
 :tags: [hide-input]
-waiting_times_with_extreme = pd.concat(
-    [clinic_sample.waiting_times, pd.DataFrame({"value": [120.0]})], ignore_index=True
-).pipe(DataFrame[Observations])
-summary_with_extreme = summarize_observations(waiting_times_with_extreme)
-```
-
-```{code-cell} python
-:tags: [hide-input]
-typical_values_chart_input = TypicalValuesComparisonChartInput(
-    original_statistics=summary,
-    comparison_statistics=summary_with_extreme,
-    settings=settings,
+build_location_evolution_explorer(
+    SummaryEvolutionExplorerInput(
+        observations=clinic_sample.waiting_times,
+        settings=settings,
+    )
 )
-chart_typical_values_comparison(typical_values_chart_input)
 ```
 
-La línea de la media sube con fuerza porque el valor extremo entra en la suma.
-La mediana, en cambio, apenas se mueve: al ordenar 81 valores, el centro sigue
-representando una espera habitual, no el caso excepcional.
+La línea de la media puede subir con fuerza porque el valor extremo entra en la
+suma. La mediana, en cambio, suele moverse menos porque depende del orden. La
+moda puede quedarse quieta si el valor nuevo no cambia qué valor redondeado se
+repite más.
 
 (sec-descriptive-position)=
 ## Posición dentro de la muestra: cuartiles y percentiles
@@ -988,11 +966,15 @@ forma, sino también hacia qué lado de la escala se ubican los datos.
 ```{code-cell} python
 :tags: [hide-input]
 
-def chart_boxplot_example(values: list[float], title: str):
+def chart_boxplot_example(values: list[float], title: str, *, apply_theme: bool = True):
     observations = pd.DataFrame({"value": values}).pipe(DataFrame[Observations])
     statistics = summarize_observations(observations)
     chart_input = DescriptiveSummaryChartInput(
-        observations=observations, statistics=statistics, title=title, settings=settings
+        observations=observations,
+        statistics=statistics,
+        title=title,
+        settings=settings,
+        apply_theme=apply_theme,
     )
     return chart_descriptive_summary(chart_input)
 ```
@@ -1087,10 +1069,15 @@ lados. ¿Qué diferencia hay entre los grupos?
 ```{code-cell} python
 :tags: [hide-input]
 
-(
-    chart_boxplot_example([3.6, 3.8, 3.9, 4.0, 4.1, 4.2, 4.4], "Clínica A")
-    & chart_boxplot_example([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], "Clínica B")
-).resolve_scale(x="shared")
+apply_theme(
+    alt.vconcat(
+        chart_boxplot_example([3.6, 3.8, 3.9, 4.0, 4.1, 4.2, 4.4], "Clínica A", apply_theme=False),
+        chart_boxplot_example([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], "Clínica B", apply_theme=False),
+        spacing=10,
+    ).resolve_scale(x="shared"),
+    settings,
+    set_size=False,
+)
 ```
 
 ::::{admonition} Respuesta

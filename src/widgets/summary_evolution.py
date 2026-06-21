@@ -14,6 +14,9 @@ from core import Observations, Settings
 from visualization.theme import apply_theme
 
 _MINIMUM_SAMPLE_SIZE_FOR_STANDARD_DEVIATION = 2
+_DOMAIN_PADDING_RATIO = 0.05
+_RANDOM_DOMAIN_DEVIATIONS = 4.0
+_FUTURE_OBSERVATION_PADDING = 20
 
 
 class SummaryEvolutionExplorerInput(BaseModel):
@@ -79,7 +82,41 @@ def _history(values: np.ndarray, measures: tuple[_MeasureSpec, ...]) -> pd.DataF
     return pd.DataFrame(rows)
 
 
-def _summary_chart(values: np.ndarray, measures: tuple[_MeasureSpec, ...], title: str, settings: Settings) -> alt.Chart:
+def _padded_domain(minimum: float, maximum: float) -> tuple[float, float]:
+    if np.isclose(minimum, maximum):
+        return minimum - 1.0, maximum + 1.0
+    padding = (maximum - minimum) * _DOMAIN_PADDING_RATIO
+    return minimum - padding, maximum + padding
+
+
+def _reference_values(input_data: SummaryEvolutionExplorerInput) -> np.ndarray:
+    observations = input_data.observations["value"].to_numpy(dtype=float)
+    random_low = max(0.0, input_data.random_mean - _RANDOM_DOMAIN_DEVIATIONS * input_data.random_standard_deviation)
+    random_high = input_data.random_mean + _RANDOM_DOMAIN_DEVIATIONS * input_data.random_standard_deviation
+    return np.append(observations, [input_data.manual_value, random_low, random_high])
+
+
+def _fixed_domains(
+    input_data: SummaryEvolutionExplorerInput,
+    measures: tuple[_MeasureSpec, ...],
+) -> tuple[tuple[float, float], tuple[float, float], tuple[int, int]]:
+    reference_values = _reference_values(input_data)
+    histogram_domain = _padded_domain(float(reference_values.min()), float(reference_values.max()))
+    history_data = _history(reference_values, measures)
+    evolution_domain = _padded_domain(float(history_data["value"].min()), float(history_data["value"].max()))
+    n_domain = (1, len(input_data.observations) + input_data.random_batch_size + _FUTURE_OBSERVATION_PADDING)
+    return histogram_domain, evolution_domain, n_domain
+
+
+def _summary_chart(
+    values: np.ndarray,
+    measures: tuple[_MeasureSpec, ...],
+    title: str,
+    settings: Settings,
+    histogram_domain: tuple[float, float],
+    evolution_domain: tuple[float, float],
+    n_domain: tuple[int, int],
+) -> alt.Chart:
     theme = settings.chart_theme
     observations = pd.DataFrame({"value": values})
     history = _history(values, measures)
@@ -87,7 +124,12 @@ def _summary_chart(values: np.ndarray, measures: tuple[_MeasureSpec, ...], title
         alt.Chart(observations)
         .mark_bar(color=theme.palette.primary, opacity=theme.bar_opacity)
         .encode(
-            x=alt.X("value:Q", bin=alt.Bin(maxbins=20), title="Minutos de espera"),
+            x=alt.X(
+                "value:Q",
+                bin=alt.Bin(maxbins=20),
+                scale=alt.Scale(domain=list(histogram_domain)),
+                title="Minutos de espera",
+            ),
             y=alt.Y("count()", title="Frecuencia"),
             tooltip=[alt.Tooltip("count()", title="Frecuencia")],
         )
@@ -98,8 +140,16 @@ def _summary_chart(values: np.ndarray, measures: tuple[_MeasureSpec, ...], title
         alt.Chart(history)
         .mark_line(point=True, strokeWidth=theme.line_stroke_width)
         .encode(
-            x=alt.X("n:Q", title="Cantidad de valores incorporados"),
-            y=alt.Y("value:Q", title=measures[0].value_title),
+            x=alt.X(
+                "n:Q",
+                scale=alt.Scale(domain=list(n_domain)),
+                title="Cantidad de valores incorporados",
+            ),
+            y=alt.Y(
+                "value:Q",
+                scale=alt.Scale(domain=list(evolution_domain)),
+                title=measures[0].value_title,
+            ),
             color=color if len(measures) > 1 else alt.value(theme.palette.secondary),
             detail="measure:N",
             tooltip=[
@@ -120,7 +170,9 @@ def _build_summary_evolution_explorer(
     title: str,
 ) -> widgets.Widget:
     values = list(input_data.observations["value"].astype(float))
+    histogram_domain, evolution_domain, n_domain = _fixed_domains(input_data, measures)
     rng = np.random.default_rng(input_data.settings.random_seed)
+    controls_layout = widgets.Layout(width="100%")
     value_input = widgets.FloatText(value=input_data.manual_value, description="valor")
     add_value_button = widgets.Button(description="Agregar valor")
     add_random_button = widgets.Button(description="Agregar aleatorio")
@@ -128,7 +180,15 @@ def _build_summary_evolution_explorer(
     output = widgets.Output(layout=widgets.Layout(width="100%"))
 
     def render() -> None:
-        chart = _summary_chart(np.array(values, dtype=float), measures, title, input_data.settings)
+        chart = _summary_chart(
+            np.array(values, dtype=float),
+            measures,
+            title,
+            input_data.settings,
+            histogram_domain,
+            evolution_domain,
+            n_domain,
+        )
         with output:
             output.clear_output(wait=True)
             display(chart)
@@ -154,9 +214,12 @@ def _build_summary_evolution_explorer(
     add_random_batch_button.on_click(add_random_batch)
     render()
     return widgets.VBox([
-        widgets.HBox([value_input, add_value_button, add_random_button, add_random_batch_button]),
+        widgets.HBox(
+            [value_input, add_value_button, add_random_button, add_random_batch_button],
+            layout=controls_layout,
+        ),
         output,
-    ])
+    ], layout=widgets.Layout(width="100%"))
 
 
 def build_mean_evolution_explorer(input_data: SummaryEvolutionExplorerInput) -> widgets.Widget:

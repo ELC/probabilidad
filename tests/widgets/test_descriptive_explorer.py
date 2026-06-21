@@ -43,6 +43,7 @@ def test_interval_width_explorer_yields_vbox_with_stacked_outputs(fixed_settings
     assert isinstance(container.children[0], widgets.FloatSlider)
     assert isinstance(container.children[1], widgets.Output)
     assert isinstance(container.children[2], widgets.Output)
+    assert container.layout.width == "100%"
     assert container.children[1].layout.width == "100%"
     assert container.children[2].layout.width == "100%"
 
