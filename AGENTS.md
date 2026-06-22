@@ -66,6 +66,22 @@ imports from several slices.
 - Each code cell is ≤6 lines and only composes calls to `src/`.
 - Each concept follows the CPA progression (Concrete → Pictorial → Abstract → Intuición → Interactive
   exploration with an ipywidgets + Altair combo).
+- Every conceptual `##`/`###` section must include a **Cierre operativo** or an
+  equivalent closing paragraph that anchors the concept in the chapter scenario:
+  the concrete question it answers, when the protagonist should use it, what can
+  go wrong, and what decision or communication follows. Use concrete numbers or
+  thresholds from the scenario (for example, "5 minutes", "3 people ahead",
+  "2 outliers"), not abstract wording. The closure must use only concepts and
+  vocabulary already introduced earlier in the chapter; do not mention a future
+  tool (for example IQR, z-score, Tukey, or inference) before the reader has met
+  it. If a section is too short to support that closure, merge it with a
+  neighboring section or rewrite it as an explicit transition instead of leaving
+  an isolated concept.
+- Render recurring pedagogical pauses as custom-title MyST admonitions, not as
+  bold inline labels. Use `::::{admonition} <Title>` with the corresponding
+  `:class:` option: **Idea para retener** → `important`, **Trampa común** →
+  `caution`, **Cierre operativo** → `tip`, and **Decisión de ingeniería** →
+  `seealso`.
 - Exercises end with a `verify_*` call that asserts the student's answer against a symbolically
   derived expected value.
 

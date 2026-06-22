@@ -133,16 +133,28 @@ adicionales que aprovechan que estamos en un cuaderno ejecutable:
 5. **Contrato del modelo.** Las herramientas importantes explicitan cuándo
    aplican, qué supuestos piden, qué puede romperlas y cómo interpretar el
    resultado sin exagerarlo.
-6. **Intuición.** Un párrafo que explica **por qué** la fórmula tiene sentido
+6. **Cierre operativo.** Cada sección conceptual termina con una ancla de
+   aplicabilidad situada en el escenario del capítulo. El cierre responde qué
+   pregunta concreta permite contestar, cuándo conviene usar la herramienta,
+   qué puede salir mal y qué decisión o comunicación sigue. Debe usar números
+   o umbrales concretos del escenario — por ejemplo, 5 minutos, 3 personas por
+   delante o 2 casos atípicos — para evitar que el concepto quede aislado.
+   También debe respetar el orden conceptual: no puede mencionar herramientas,
+   símbolos o vocabulario que el lector todavía no vio en el capítulo. Si una
+   sección es demasiado breve para sostener ese cierre sin adelantar conceptos,
+   se fusiona con otra o se reescribe como transición. Visualmente aparece como
+   una admonition MyST con título personalizado **Cierre operativo** y clase
+   `tip`.
+7. **Intuición.** Un párrafo que explica **por qué** la fórmula tiene sentido
    en lenguaje natural. En secciones densas aparece de forma explícita como
    **Intuición operativa** antes de pasar a la **Forma matemática**.
-7. **Exploración interactiva.** Un widget (`build_*_explorer`) que permite
+8. **Exploración interactiva.** Un widget (`build_*_explorer`) que permite
    variar parámetros y ver cómo reacciona el gráfico y los números. Es donde
    la intuición se vuelve estable.
-8. **Retención.** Algunas ideas centrales cierran con una **Idea para retener**:
+9. **Retención.** Algunas ideas centrales cierran con una **Idea para retener**:
    una frase breve que contrasta conceptos cercanos o resume una trampa común
    sin reemplazar la definición formal.
-9. **Verificación, interpretación y decisión.** Cada ejercicio funciona como
+10. **Verificación, interpretación y decisión.** Cada ejercicio funciona como
    auto-chequeo: el lector intenta una respuesta, ejecuta una verificación,
    traduce el número a una interpretación y ensaya una decisión o una frase de
    comunicación. La verificación inmediata implementa el principio de
@@ -155,8 +167,49 @@ como «Un experimento concreto», «Una imagen mental» o «La fórmula». La
 progresión está, pero no se anuncia. Lo que sí aparece de manera visible son
 pequeñas pausas de aprendizaje: **Situación de decisión**, **Antes de mirar**,
 **Intentá antes de ejecutar**, **Chequeo rápido**, **Trampa común**,
-**Contrato del modelo**, **Idea para retener**, **Comunicación** y
-**Decisión de ingeniería**.
+**Contrato del modelo**, **Cierre operativo**, **Idea para retener**,
+**Comunicación** y **Decisión de ingeniería**.
+
+Las pausas retóricas recurrentes se muestran como admonitions MyST con título
+personalizado: **Idea para retener** usa clase `important`, **Trampa común** usa
+`caution`, **Cierre operativo** usa `tip` y **Decisión de ingeniería** usa
+`seealso`. Esa convención separa las ayudas pedagógicas del flujo narrativo sin
+convertirlas en secciones nuevas.
+
+Ejemplos mínimos del tono esperado:
+
+::::{admonition} Idea para retener
+:class: important
+
+La media cuenta una historia de equilibrio; la dispersión dice cuánta confianza merece
+esa historia cuando Lucía la comunica.
+
+::::
+
+::::{admonition} Trampa común
+:class: caution
+
+No digas que una mañana "funcionó bien" sólo porque la media fue baja: una cola de
+esperas largas puede quedar escondida detrás de ese promedio.
+
+::::
+
+::::{admonition} Cierre operativo
+:class: tip
+
+Si el 75% de los pacientes esperó 6 minutos o menos, Lucía puede informar que la
+mayoría estuvo dentro de un rango aceptable; si el umbral interno era 5 minutos,
+debería revisar el tramo alto antes de cerrar el diagnóstico.
+
+::::
+
+::::{admonition} Decisión de ingeniería
+:class: seealso
+
+Antes de cambiar turnos para todo el mes, Lucía debería decidir si la muestra describe
+una mañana típica o una franja excepcional que sólo sirve como alarma inicial.
+
+::::
 
 ## Aprendizaje situado y escenarios recurrentes
 
@@ -319,8 +372,9 @@ Una sugerencia de lectura, especialmente para una primera pasada:
    autoriza.
 5. Detenete en el **widget interactivo**: cambiá un parámetro a la vez y
    tratá de **predecir** qué va a pasar antes de mirar el gráfico nuevo.
-6. Cuando encuentres una **Idea para retener**, usala como tarjeta mental:
-   preguntate qué dos conceptos contrasta o qué error frecuente intenta evitar.
+6. Cuando encuentres una admonition **Idea para retener**, usala como tarjeta
+   mental: preguntate qué dos conceptos contrasta o qué error frecuente intenta
+   evitar.
 7. Hacé los **ejercicios** sin ejecutar la verificación primero. Después
    compará tu respuesta con el módulo de `exercises`, explicá qué significa el
    resultado en la historia y ensayá una recomendación o frase de comunicación.

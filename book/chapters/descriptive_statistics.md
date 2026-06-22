@@ -26,13 +26,17 @@ investigar si hubo un caso excepcional que distorsionó la mañana. Esos
 pocos números, y la forma de calcularlos, son lo que vamos a aprender
 en este capítulo.
 
-> **Situación de decisión.** Lucía tiene que cerrar la mañana con una
-> recomendación concreta: mantener el esquema de turnos, reforzar una franja o
-> investigar un caso excepcional. El riesgo no es calcular mal una media; es
-> resumir una mañana irregular con un número que esconda justo lo que importa.
-> Al final del capítulo vas a poder decidir qué resumen conviene mirar primero,
-> qué forma del gráfico cambia la historia y cuándo una muestra no alcanza para
-> hablar de todo el servicio.
+::::{admonition} Situación de decisión
+:class: seealso
+
+Lucía tiene que cerrar la mañana con una recomendación concreta: mantener el esquema de
+turnos, reforzar una franja o investigar un caso excepcional. El riesgo no es calcular
+mal una media; es resumir una mañana irregular con un número que esconda justo lo que
+importa. Al final del capítulo vas a poder decidir qué resumen conviene mirar primero,
+qué forma del gráfico cambia la historia y cuándo una muestra no alcanza para hablar
+de todo el servicio.
+
+::::
 
 ```{code-cell} python
 :tags: [remove-cell, hide-input]
@@ -155,6 +159,18 @@ Lucía decide sobre la mañana que acaba de terminar, la población puede ser es
 mañana. Si decide turnos para todo el mes, la población son las esperas de todos los
 días y horarios relevantes del servicio.
 
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, definir población, unidad, variable y muestra
+responde preguntas como: "¿estamos describiendo los 80 pacientes de esta mañana o
+queremos decidir sobre 20 días de atención?" y "¿la unidad es el paciente o cada espera
+registrada?". Si Lucía quiere cerrar el informe del turno, puede trabajar con esos 80
+casos; si quiere cambiar horarios del mes, debería pedir datos de varios días y
+franjas antes de usar esta mañana como evidencia general.
+
+::::
+
 (sec-descriptive-sample)=
 ## Una muestra de tiempos de espera
 
@@ -179,6 +195,17 @@ sola tabla de cierre.
 summary
 ```
 
+::::{admonition} Cierre operativo
+:class: tip
+
+Esta muestra de 80 esperas responde preguntas del turno, como:
+"¿qué pasó con los primeros 80 pacientes registrados?" y "¿hay suficientes datos para
+ver una forma general sin perder el detalle de casos puntuales?". Si Lucía sólo debe
+informar la mañana, puede usar esta muestra como base; si la recomendación afecta todo
+el mes, debería tratarla como punto de partida y reunir más turnos antes de decidir.
+
+::::
+
 (sec-descriptive-variable-types)=
 ## Antes de agrupar: qué tipo de variable tenemos
 
@@ -196,10 +223,14 @@ Con esa clasificación, los minutos de espera de la clínica son una variable
 cuantitativa continua: se miden sobre una escala de tiempo y podrían tomar valores
 intermedios, como 4,5 minutos o 4,52 minutos si el registro fuera más preciso.
 
-**Punto de control.** Antes de elegir un gráfico, formulá la variable en una
-frase: “en cada unidad voy a observar...”. Si la respuesta es una categoría,
-contás clases; si es un conteo, respetás valores enteros; si es una medición,
-pensás en intervalos.
+::::{admonition} Punto de control
+:class: note
+
+Antes de elegir un gráfico, formulá la variable en una frase: “en cada unidad voy a
+observar...”. Si la respuesta es una categoría, contás clases; si es un conteo,
+respetás valores enteros; si es una medición, pensás en intervalos.
+
+::::
 
 Un mismo contexto puede producir variables de tipos distintos. En la clínica, por
 ejemplo, cada unidad elemental puede ser un paciente atendido durante la mañana.
@@ -217,6 +248,18 @@ Según la pregunta, cambia la variable:
 
 La población no alcanza para decidir la herramienta: también importa qué
 característica observamos en cada unidad.
+
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, clasificar la variable responde preguntas como:
+"¿área de atención se cuenta por categorías?", "¿personas por delante se cuenta como
+0, 1, 2, 3?" y "¿minutos de espera se agrupan en intervalos?". Si Lucía pregunta por
+motivos de demora, debería armar una tabla por categorías; si pregunta por personas
+en fila, debería respetar los valores enteros; si pregunta por minutos de espera,
+debería preparar intervalos de tiempo antes de elegir el gráfico.
+
+::::
 
 (sec-descriptive-attributes)=
 ### Atributos: clases, porcentajes y Pareto
@@ -308,7 +351,10 @@ por ejemplo, cuánta demora queda explicada si Lucía atiende primero las dos o 
 causas principales. En términos operativos, da la información necesaria para hacer
 un **triage**: separar lo urgente y más frecuente de lo menos prioritario.
 
-**Cierre operativo.** En la clínica, las tablas de atributos responden qué áreas o
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, las tablas de atributos responden qué áreas o
 motivos de demora aparecen más, y el Pareto ordena esas causas para decidir por dónde
 empezar. Sirven cuando Lucía necesita priorizar categorías antes de cambiar turnos o
 revisar procesos. Pueden engañar si "Ninguna" o "Otros" mezclan situaciones distintas,
@@ -318,6 +364,8 @@ el 60% de las demoras revisables?" o "¿admisión y autorizaciones concentran m�
 que todas las demás causas juntas?". Si esas dos causas concentran, por ejemplo, 6 de
 cada 10 demoras, Lucía debería revisar primero admisión y autorizaciones antes de
 cambiar todo el esquema de atención.
+
+::::
 
 (sec-descriptive-discrete-frequency)=
 ### Variables discretas: valores exactos y acumulados
@@ -381,7 +429,10 @@ categorías: reordenar las barras puede ayudar a comparar sin cambiar el signifi
 En un gráfico de bastones, en cambio, reordenar las barras angostas puede confundir,
 porque el lector espera que el eje avance en orden ascendente.
 
-**Cierre operativo.** Para la fila de espera, la tabla discreta responde cuántos
+::::{admonition} Cierre operativo
+:class: tip
+
+Para la fila de espera, la tabla discreta responde cuántos
 pacientes llegaron con exactamente $x$ personas por delante y cuántos llegaron con
 $x$ o menos. Sirve cuando Lucía quiere saber si la congestión habitual fue baja,
 moderada o alta al momento de llegada. Puede engañar si se reordenan los conteos como
@@ -391,6 +442,8 @@ umbral operativo con preguntas como: "¿al menos el 80% de los pacientes llegó 
 personas o menos por delante?" o "¿cuántos llegaron con 6 o más?". Si más de 1 de cada
 5 pacientes llega con más de 3 personas por delante, Lucía debería revisar la
 capacidad de admisión o el ritmo de llamado en esa franja.
+
+::::
 
 (sec-descriptive-frequency)=
 ### Variables continuas: intervalos, tallo-hoja e histogramas
@@ -433,10 +486,14 @@ un histograma no llevan espacios entre sí: si aparece un hueco, se lee como un
 intervalo sin observaciones. En los bastones, en cambio, el espacio entre valores
 exactos no representa una probabilidad intermedia.
 
-**Antes de mirar.** Si la mañana fue razonablemente estable, ¿esperás ver muchas
-esperas cerca de un valor central o una cola larga de casos lentos? Hacé una
-predicción rápida: dónde se va a concentrar el histograma y en qué minuto creés
-que la ojiva va a cruzar el 70%.
+::::{admonition} Antes de mirar
+:class: hint
+
+Si la mañana fue razonablemente estable, ¿esperás ver muchas esperas cerca de un valor
+central o una cola larga de casos lentos? Hacé una predicción rápida: dónde se va a
+concentrar el histograma y en qué minuto creés que la ojiva va a cruzar el 70%.
+
+::::
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -511,7 +568,10 @@ Para Lucía, la pregunta operativa puede ser "¿qué porcentaje esperó menos de
 minutos?". Esa lectura sale de la distribución acumulada: no mira sólo una barra,
 sino todo lo que quedó por debajo del corte que importa para decidir.
 
-**Cierre operativo.** Para los minutos de espera, el histograma responde si la mañana
+::::{admonition} Cierre operativo
+:class: tip
+
+Para los minutos de espera, el histograma responde si la mañana
 se concentró alrededor de un valor típico o si tuvo colas de casos lentos; la ojiva
 responde qué proporción de pacientes quedó por debajo de un corte como cinco minutos.
 Sirven cuando Lucía necesita evaluar el cumplimiento de un umbral de servicio. Pueden
@@ -521,6 +581,8 @@ preguntas como: "¿qué porcentaje esperó menos de 5 minutos?" y "¿la cola des
 8 minutos reúne pocos casos o marca un problema?". Si sólo 65% quedó por debajo de 5
 minutos, Lucía debería revisar la franja o causa que produce la cola antes de afirmar
 que la mañana cumplió el umbral.
+
+::::
 
 (sec-descriptive-time-order)=
 ### Cuando el tiempo importa
@@ -538,7 +600,10 @@ hacia el mediodía, caer después de que se libera un consultorio o concentrarse
 después de una llegada simultánea de pacientes. Si mezclamos todo en una sola tabla
 sin mirar el orden temporal, una tendencia o un ciclo puede quedar escondido.
 
-**Cierre operativo.** En la clínica, mirar el orden temporal responde si las esperas
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, mirar el orden temporal responde si las esperas
 parecen venir de una mañana estable o si hubo tramos distintos, como una congestión al
 mediodía o una mejora después de liberar un consultorio. Sirve antes de resumir todo
 en una sola tabla. Puede engañar si se ignora una interrupción del servicio y luego se
@@ -549,6 +614,8 @@ responder preguntas como: "¿entre las 10:00 y las 11:00 las esperas subieron de
 es sólo de una hora, Lucía debería reforzar esa franja antes de modificar toda la
 mañana.
 
+::::
+
 (sec-descriptive-summary)=
 ## Tres preguntas que resumen la muestra
 
@@ -556,6 +623,19 @@ Volvamos a las tres preguntas que dejó abiertas la introducción: qué medida
 resume la espera, qué tan parecidas fueron las esperas entre sí, y si hubo
 alguna fuera de lo común. Cada pregunta se contesta con un número distinto, y
 vamos a definir uno por uno.
+
+::::{admonition} Cierre operativo
+:class: tip
+
+Para Lucía, estas tres preguntas organizan el informe de la
+mañana sin adelantar todavía qué número usaremos: "¿la espera típica estuvo más cerca
+de 4 o de 7 minutos?", "¿la mayoría de los pacientes esperó parecido?" y "¿hay 2 o 3
+esperas que conviene mirar aparte?". Si las respuestas apuntan a una mañana compacta,
+Lucía puede comunicar estabilidad; si aparece un pequeño grupo con esperas muy
+distintas, debería separar esos casos antes de resumir toda la mañana con un solo
+número.
+
+::::
 
 (sec-descriptive-mean)=
 ### Una medida resumen: el promedio
@@ -598,10 +678,15 @@ dar 4,36 minutos aunque ningún paciente haya esperado exactamente 4,36 minutos.
 usa toda la información, también es sensible a valores extremos. Por eso sirve para
 comparar distribuciones sólo cuando sus formas son razonablemente semejantes.
 
-**Predicción.** Antes de tocar el control, imaginá qué va a pasar si agregás un
-valor extremo, por ejemplo 20 minutos: ¿el promedio se va a mover apenas o va a
-saltar? Después agregalo y compará el salto con lo que pasa cuando agregás valores
-aleatorios parecidos al resto de la muestra.
+::::{admonition} Predicción
+:class: hint
+
+Antes de tocar el control, imaginá qué va a pasar si agregás un valor extremo, por
+ejemplo 20 minutos: ¿el promedio se va a mover apenas o va a saltar? Después agregalo
+y compará el salto con lo que pasa cuando agregás valores aleatorios parecidos al resto
+de la muestra.
+
+::::
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -614,17 +699,30 @@ build_mean_evolution_explorer(
 ```
 
 La media que usamos acá es la **media aritmética**. Existen otras medias útiles,
-pero responden a preguntas distintas. La **media geométrica** se usa cuando el
-fenómeno se compone multiplicando cambios relativos: por ejemplo, si Lucía compara
-mejoras porcentuales sucesivas en el tiempo de espera promedio después de varios
-ajustes de agenda, la mejora típica no debería promediarse sumando porcentajes sin
-más. La **media armónica** se usa para promediar tasas cuando el denominador común
-es fijo: por ejemplo, si se comparan ritmos de atención medidos en pacientes por
-hora en franjas de igual duración, puede describir mejor el ritmo típico que una
-media aritmética simple de tasas. En este libro vamos a trabajar con la media
-aritmética; elegir y calcular otras medias queda fuera de alcance.
+pero responden a preguntas distintas; en este libro vamos a trabajar con la media
+aritmética.
 
-**Cierre operativo.** En la clínica, la media responde cuántos minutos habría esperado
+:::::{admonition} Nota técnica: otras medias
+:class: dropdown
+
+La **media geométrica** se usa cuando el fenómeno se compone multiplicando cambios
+relativos. Por ejemplo, si Lucía compara mejoras porcentuales sucesivas en el tiempo
+de espera promedio después de varios ajustes de agenda, la mejora típica no debería
+promediarse sumando porcentajes sin más.
+
+La **media armónica** se usa para promediar tasas cuando el denominador común es fijo.
+Por ejemplo, si se comparan ritmos de atención medidos en pacientes por hora en
+franjas de igual duración, puede describir mejor el ritmo típico que una media
+aritmética simple de tasas.
+
+Elegir y calcular estas otras medias queda fuera de alcance en este capítulo.
+
+:::::
+
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, la media responde cuántos minutos habría esperado
 cada paciente si el total de espera de la mañana se repartiera en partes iguales.
 Sirve para estimar carga general, capacidad y comparación entre mañanas con formas
 parecidas. Puede engañar si pocos pacientes con esperas muy largas arrastran el
@@ -634,6 +732,8 @@ promedio con preguntas como: "¿la espera media fue menor a 5 minutos?" o "¿sub
 muestra una cola excepcional, Lucía debería tratarlo como señal de carga general alta;
 si la suba viene de dos esperas de 20 minutos, debería revisar esos casos antes de
 rediseñar turnos.
+
+::::
 
 (sec-descriptive-mode)=
 ### El valor más frecuente: la moda
@@ -648,9 +748,13 @@ central que puede calcularse para cualquier tipo de variable, incluso cualitativ
 En el control siguiente, para que la idea tenga sentido con tiempos continuos,
 la moda se calcula sobre minutos redondeados.
 
-**Predicción.** Antes de agregar un valor extremo, pensá si alcanza con una sola
-observación para cambiar la moda. Después probá agregar un valor escrito y varios
-valores aleatorios.
+::::{admonition} Predicción
+:class: hint
+
+Antes de agregar un valor extremo, pensá si alcanza con una sola observación para
+cambiar la moda. Después probá agregar un valor escrito y varios valores aleatorios.
+
+::::
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -662,7 +766,10 @@ build_mode_evolution_explorer(
 )
 ```
 
-**Cierre operativo.** En la clínica, la moda responde cuál fue el área, motivo de
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, la moda responde cuál fue el área, motivo de
 demora o conteo que más se repitió. Sirve cuando la decisión apunta al caso más común,
 por ejemplo identificar el motivo de demora más frecuente. Puede engañar si hay
 empates, varias modas o si los minutos de espera se redondean de forma arbitraria.
@@ -671,6 +778,8 @@ admisión lenta con 18 casos?" o "¿hay dos motivos empatados con 12 casos cada 
 Si admisión lenta es la moda y supera claramente al segundo motivo, Lucía debería
 revisar ese circuito; si hay empate, debería comparar impacto en minutos antes de
 elegir una intervención.
+
+::::
 
 (sec-descriptive-position)=
 ### Posición dentro de la muestra: percentiles, deciles y cuartiles
@@ -714,7 +823,10 @@ sobre esa curva acumulada. Si $Q_3$ queda cerca del corte central, la mayor
 parte de la mañana fue compacta; si queda lejos, el tramo alto de esperas se
 estiró.
 
-**Cierre operativo.** En la clínica, percentiles y cuartiles responden hasta qué
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, percentiles y cuartiles responden hasta qué
 minuto esperó cierto porcentaje de pacientes. Sirven cuando Lucía quiere evaluar un
 umbral, como "al menos el 75% debería esperar menos de cinco minutos". Pueden engañar
 si se interpretan como promedios o si se olvida que miran posiciones en la lista
@@ -722,6 +834,8 @@ ordenada, no minutos acumulados. Con esta información, Lucía informa el valor
 de $Q_3$ con preguntas como: "¿el 75% esperó 6 minutos o menos?" o "¿el 90% quedó por
 debajo de 10 minutos?". Si $Q_3$ queda en 6 minutos y el umbral interno era 5, Lucía
 debería revisar el cuarto superior de esperas, no sólo el promedio de toda la mañana.
+
+::::
 
 (sec-descriptive-median-definition)=
 ### Otra medida resumen: la mediana
@@ -756,9 +870,13 @@ $$ \tilde{x} = P_{50} = Q_2 $$ (eq-median-percentile)
 Por eso, cuando tenemos una tabla de frecuencias, puede leerse mirando la primera
 fila cuya frecuencia relativa acumulada alcanza o supera 0,50.
 
-**Predicción.** Antes de usar el control, anticipá si una espera extrema debería
-mover la mediana tanto como movía el promedio. Probá con 20 minutos y mirá la
-evolución.
+::::{admonition} Predicción
+:class: hint
+
+Antes de usar el control, anticipá si una espera extrema debería mover la mediana tanto
+como movía el promedio. Probá con 20 minutos y mirá la evolución.
+
+::::
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -770,13 +888,28 @@ build_median_evolution_explorer(
 )
 ```
 
-**No confundas.** La media pregunta por el equilibrio numérico de todos los
-valores; la mediana pregunta por la posición que parte la muestra; la moda
-pregunta qué valor o categoría aparece más. Las tres pueden coincidir, pero no
-cuentan la misma historia. De hecho, cuando no coinciden, esa diferencia aporta
-información importante sobre la simetría de los datos: si la media queda bastante
-separada de la mediana, suele haber una cola o valores extremos tirando del
-equilibrio numérico.
+::::{admonition} No confundas
+:class: caution
+
+La media pregunta por el equilibrio numérico de todos los valores; la mediana pregunta
+por la posición que parte la muestra; la moda pregunta qué valor o categoría aparece
+más. Las tres pueden coincidir, pero no cuentan la misma historia. De hecho, cuando no
+coinciden, esa diferencia aporta información importante sobre la simetría de los datos:
+si la media queda bastante separada de la mediana, suele haber una cola o valores
+extremos tirando del equilibrio numérico.
+
+::::
+
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, la mediana responde preguntas como: "¿cuánto
+esperó el paciente que quedó justo en el medio de la mañana?" o "¿el 50% esperó 5
+minutos o menos?". Sirve cuando Lucía sospecha que 1 o 2 esperas largas arrastran la
+media. Si la media es 7 minutos pero la mediana es 4,5, Lucía debería revisar la cola
+de esperas largas antes de decir que "la espera típica fue de 7 minutos".
+
+::::
 
 (sec-descriptive-standard-deviation)=
 ### Qué tan parecidas son las esperas: el desvío estándar
@@ -864,9 +997,14 @@ En palabras: $s$ es la distancia típica entre una observación
 cualquiera y el promedio. Cuanto más chico es $s$, más parecidas son
 las esperas entre sí.
 
-**Predicción.** Agregá mentalmente un valor extremo: si entra una espera de 20
-minutos, ¿el desvío estándar va a moverse poco o mucho? Usá el control para
-compararlo con valores aleatorios cercanos al resto de la muestra.
+::::{admonition} Predicción
+:class: hint
+
+Agregá mentalmente un valor extremo: si entra una espera de 20 minutos, ¿el desvío
+estándar va a moverse poco o mucho? Usá el control para compararlo con valores
+aleatorios cercanos al resto de la muestra.
+
+::::
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -944,18 +1082,43 @@ adelante vamos a construir una regla para separar lo habitual de lo
 raro. Pasá la vista por la tabla y fijate qué te dice cada número antes
 de seguir.
 
-**Trampa común.** Una única medida resumen no decide si la operación
-funcionó bien. Dos mañanas pueden tener la misma media y experiencias
-muy distintas si una fue estable y la otra alternó esperas mínimas con
-esperas extremas.
+::::{admonition} Trampa común
+:class: caution
 
-**Decisión de ingeniería.** Antes de seguir, elegí qué mirarías si
-tuvieras que justificar una acción: ¿la media para estimar capacidad,
-la mediana como medida resumen más resistente, o la dispersión para medir
-estabilidad?
+Una única medida resumen no decide si la operación funcionó bien. Dos mañanas pueden
+tener la misma media y experiencias muy distintas si una fue estable y la otra alternó
+esperas mínimas con esperas extremas.
 
-**Idea para retener.** La medida resumen cuenta una historia central; la
-dispersión y los atípicos dicen cuánta confianza merece esa historia.
+::::
+
+::::{admonition} Decisión de ingeniería
+:class: seealso
+
+Antes de seguir, elegí qué mirarías si tuvieras que justificar una acción: ¿la media
+para estimar capacidad, la mediana como medida resumen más resistente, o la dispersión
+para medir estabilidad?
+
+::::
+
+::::{admonition} Idea para retener
+:class: important
+
+La medida resumen cuenta una historia central; la dispersión y los atípicos dicen
+cuánta confianza merece esa historia.
+
+::::
+
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, el desvío estándar, el rango y el IQR responden
+preguntas como: "si la media fue 4,5 minutos, ¿la mayoría estuvo entre 3,5 y 5,5 o
+hubo esperas de 12?" y "¿el 50% central cabe en 2 minutos?". Si $s$ queda cerca de 1
+minuto y el IQR cerca de 1,5, Lucía puede comunicar una mañana regular; si el rango
+llega a 18 minutos, debería separar los casos extremos antes de presentar el promedio
+como experiencia típica.
+
+::::
 
 (sec-descriptive-median)=
 ## Por qué la mediana resiste lo que la media no
@@ -1014,6 +1177,18 @@ gráfico:
   si los nuevos pacientes reproducen la misma mezcla de esperas bajas, medias y
   altas, los cuartiles cambian poco.
 
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, comparar media, mediana, $s$, rango e IQR ante
+un valor extremo responde preguntas como: "si aparece una espera de 20 minutos, ¿la
+media salta de 4,5 a 4,8 pero la mediana queda en 4,2?" o "¿el rango crece aunque el
+50% central siga igual?". Si una sola espera extrema mueve la media pero no la
+mediana, Lucía debería reportar la mediana como resumen resistente y abrir una
+revisión separada para ese caso.
+
+::::
+
 ## Exploración interactiva
 
 Probá esa intuición moviendo $\sigma$ con el control de abajo. Antes de tocar
@@ -1021,15 +1196,31 @@ el control, anticipá dos cosas: qué debería pasar con la dispersión visual d
 las esperas y qué debería quedarse casi quieto. Después mové un parámetro por
 vez y verificá si tu predicción se cumple.
 
-**Chequeo rápido.** Si el centro queda parecido pero el tramo central se
-ensancha, ¿qué le dirías a Lucía: cambió la medida resumen o cambió la
-regularidad del servicio?
+::::{admonition} Chequeo rápido
+:class: hint
+
+Si el centro queda parecido pero el tramo central se ensancha, ¿qué le dirías a Lucía:
+cambió la medida resumen o cambió la regularidad del servicio?
+
+::::
 
 ```{code-cell} python
 :tags: [hide-input]
 explorer_input = DescriptiveExplorerInput(settings=settings)
 build_descriptive_explorer(explorer_input)
 ```
+
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, el explorador responde preguntas de sensibilidad
+como: "si la dispersión sube de 1 a 3 minutos pero el centro queda cerca de 4, ¿cambió
+la regularidad del servicio?" o "si agrego 10 pacientes parecidos al resto, ¿la mañana
+se vuelve más estable?". Si el centro queda aceptable pero la dispersión se duplica,
+Lucía debería comunicar que el problema no es la espera típica sino la regularidad del
+servicio.
+
+::::
 
 (sec-descriptive-boxplot)=
 ## Cómo leer un boxplot
@@ -1070,6 +1261,17 @@ chart_descriptive_summary(summary_chart_input)
 Un boxplot clásico no suele incluir la media. En este gráfico la agregamos como
 línea punteada para compararla visualmente con la mediana y reforzar cómo los
 valores extremos pueden mover el promedio.
+
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, el boxplot responde preguntas como: "¿el 50%
+central de pacientes estuvo entre 3 y 5 minutos?", "¿la mediana quedó cerca de 4?" y
+"¿hay 2 puntos fuera de los bigotes?". Si la caja es angosta pero aparecen dos esperas
+de 15 minutos, Lucía debería comunicar que el flujo habitual fue estable y revisar
+esos dos casos por separado.
+
+::::
 
 ### Cuando el boxplot esconde la forma
 
@@ -1120,6 +1322,18 @@ visual sugiere una mañana razonable pero el histograma muestra dos grupos, Luc�
 debería promediar todo sin preguntar qué separa a esos grupos: área de atención,
 horario de llegada, derivación o disponibilidad de consultorios.
 
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, comparar boxplot e histograma responde preguntas
+como: "¿dos circuitos tienen la misma mediana de 4 minutos pero grupos separados en 3
+y 5 minutos?" o "¿la caja parece normal aunque el histograma muestra dos picos?".
+Si aparecen dos grupos con centros cercanos pero formas distintas, Lucía debería
+separar la mañana por área, horario o derivación antes de resumir todo con una sola
+media.
+
+::::
+
 (sec-descriptive-tukey)=
 ## Detección de outliers — la regla de Tukey
 
@@ -1132,8 +1346,9 @@ entre $Q_1$ y $Q_3$ resume el tramo central de la muestra.
 
 **Paso 1.** Ordenamos los datos y ubicamos $Q_1$ y $Q_3$.
 
-**Paso 2.** Calculamos el rango intercuartil definido en [](#eq-iqr) y marcamos
-como **outlier** cualquier observación que caiga fuera del intervalo:
+**Paso 2.** Calculamos el rango intercuartil definido en [](#eq-iqr) y seguimos
+la regla de Tukey [@tukey1977exploratory]: marcamos como **outlier** cualquier
+observación que caiga fuera del intervalo:
 
 $$ \bigl[Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}\bigr] $$ (eq-iqr-fence)
 
@@ -1156,6 +1371,18 @@ esperas altas, la lectura operativa no es "borrarlas", sino revisarlas: pueden s
 pacientes derivados, autorizaciones demoradas o consultas anteriores que trabaron el
 flujo. Para Lucía, esos casos no invalidan el resumen general, pero sí dicen dónde
 conviene mirar antes de cambiar turnos para todo el servicio.
+
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, la regla de Tukey responde preguntas como:
+"¿cuántos pacientes quedaron fuera de los bigotes?" y "¿hay 2 esperas por encima de
+12 minutos cuando el tramo habitual termina en 7?". Si aparecen 2 o 3 outliers altos,
+Lucía debería revisar sus historias de atención, motivo de demora y área antes de
+decidir si son errores de carga, casos excepcionales o señales de un cuello de
+botella.
+
+::::
 
 (sec-descriptive-shape)=
 ## Forma, sesgo y colas
@@ -1280,6 +1507,17 @@ La tabla ayuda a comunicar la dirección del sesgo, pero no reemplaza a los grá
 El caso cercano a simétrico debería tener $A_P$ cerca de cero; la cola derecha da un
 $A_P$ positivo porque la media se desplaza hacia valores altos; la cola izquierda da
 un $A_P$ negativo porque la media se desplaza hacia valores bajos.
+
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, la forma y $A_P$ responden preguntas como:
+"¿la cola derecha empuja la media por encima de la mediana?" o "¿$A_P$ está cerca de
+0,8 y por eso el promedio quedó arrastrado por esperas largas?". Si $A_P$ es mayor que
+0,5 y el histograma muestra cola derecha, Lucía debería comunicar la mediana junto con
+la media y revisar los casos que estiran la cola.
+
+::::
 
 ### Preguntas para leer formas típicas
 
@@ -1448,6 +1686,18 @@ valores chicos, así que $R \gg \text{IQR}$. El $\text{IQR}$ resume la zona
 central alta, no toda la cola.
 ::::
 
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, estas preguntas entrenan la traducción de forma
+a decisión: "¿un bigote derecho largo significa esperas excepcionales?", "¿una caja
+ancha indica servicio irregular?" o "¿varios puntos aislados después de 9 minutos
+merecen revisión?". Si el boxplot muestra caja estable entre 3,8 y 4,3 minutos pero
+3 puntos arriba de 8, Lucía debería informar que el flujo habitual fue compacto y
+abrir revisión específica sobre esos 3 pacientes.
+
+::::
+
 (sec-descriptive-empirical-rule)=
 ## Regla empírica: media más desvíos
 
@@ -1552,13 +1802,19 @@ style_display_table(pd.DataFrame({
 }))
 ```
 
-La regla empírica responde una pregunta rápida: "si la forma es aproximadamente
-campanular, ¿qué parte de los datos cae a uno, dos o tres desvíos del promedio?".
-Sirve como lectura compacta cuando el histograma es simétrico y unimodal. Puede salir
-mal cuando hay sesgo, grupos mezclados o atípicos, porque la media y el desvío quedan
-tironeados por la cola. En ese caso, conviene comunicarlo así: "no uso
-$\bar{x}\pm s$ como regla de cobertura porque la forma no es campanular; miro además
-mediana, IQR, histograma y posibles atípicos".
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, la regla empírica responde preguntas como:
+"si la media fue 4,5 y $s=1$, ¿cerca del 68% esperó entre 3,5 y 5,5 minutos?" o
+"¿casi todos quedaron por debajo de 7,5 minutos?". Sirve si el histograma es
+campanular y simétrico. Puede engañar cuando hay una cola derecha de autorizaciones o
+derivaciones demoradas, porque la media y $s$ quedan tironeados por esos casos. Si la
+tabla muestra 87% dentro de $\bar{x}\pm s$ en vez de 68%, Lucía debería decir: "no uso
+$\bar{x}\pm s$ como regla de cobertura; miro mediana, IQR, histograma y casos
+demorados".
+
+::::
 
 (sec-descriptive-zscore)=
 ## Posición relativa: el $z$-score
@@ -1604,7 +1860,10 @@ standardized = standardize_observations(clinic_sample.waiting_times)
 standardized
 ```
 
-**Cierre operativo.** En la clínica, el $z$-score responde qué tan lejos quedó la
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, el $z$-score responde qué tan lejos quedó la
 espera de un paciente respecto del promedio de esa misma mañana, medida en desvíos
 estándar. Sirve para detectar esperas que merecen revisión comparadas con el resto
 del turno. Puede engañar si la distribución es muy sesgada, si $s$ queda inflado por
@@ -1613,6 +1872,8 @@ puede responder preguntas como: "¿este paciente quedó a más de 2 desvíos del
 o "¿hay esperas con $z>3$?". Si un paciente tiene $z=3{,}2$, Lucía debería revisar su
 historia de atención antes de tratar esa espera como parte normal del flujo o
 descartarla como error de carga.
+
+::::
 
 (sec-descriptive-people-ahead)=
 ## Personas por delante al llegar
@@ -1647,6 +1908,17 @@ chart_histogram(people_ahead_histogram_input)
 people_ahead_summary = summarize_observations(people_ahead_observations)
 people_ahead_summary
 ```
+
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, resumir personas por delante responde preguntas
+como: "¿la llegada típica encontró 3 personas esperando?" o "¿hubo pacientes que
+llegaron con 7 personas por delante?". Si el conteo medio es 3 pero el 25% superior
+está en 5 o más, Lucía debería revisar si la congestión se concentra en ciertas
+franjas de llegada antes de cambiar el número total de turnos.
+
+::::
 
 (sec-descriptive-cv)=
 ## Comparar dispersión en escalas distintas
@@ -1873,6 +2145,18 @@ ver esta discusión en
 
 :::::
 
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, el $CV$ responde preguntas como: "¿los minutos de
+espera varían un 25% respecto de su promedio, pero las personas por delante varían un
+60%?" o "¿qué proceso es más irregular relativo a su propio centro?". Si el $CV$ de
+personas por delante duplica al de minutos de espera y ambas medias son positivas y
+lejos de cero, Lucía debería investigar la dinámica de llegada a la fila; si la
+variable cruza cero, debería usar desvío, IQR o gráficos en lugar de CV.
+
+::::
+
 (sec-descriptive-sampling)=
 ## Antes de inferir: cómo se juntaron los datos
 
@@ -1910,11 +2194,24 @@ ser útil como exploración, pero puede quedar sesgada si no reproduce la variab
 de la población. Además del método de selección, importa el tamaño de la muestra:
 ambos influyen en la calidad de las conclusiones.
 
-> **Contrato del dato.** Antes de confiar en cualquier modelo, preguntá cómo nació la muestra. ¿Cubre horarios y días relevantes? ¿Evita elegir solo casos fáciles de medir? ¿Hubo cambios de política, demanda o personal durante la medición? Una muestra sesgada puede producir gráficos prolijos y fórmulas correctas apuntando a una conclusión equivocada.
+::::{admonition} Contrato del dato
+:class: note
 
-**Lectura operativa.** Si el objetivo es describir la mañana observada, alcanza
-con resumir esos datos. Si el objetivo es rediseñar turnos para el mes, la
-pregunta cambia: la muestra debe representar el proceso que se quiere mejorar.
+Antes de confiar en cualquier modelo, preguntá cómo nació la muestra. ¿Cubre horarios y
+días relevantes? ¿Evita elegir solo casos fáciles de medir? ¿Hubo cambios de política,
+demanda o personal durante la medición? Una muestra sesgada puede producir gráficos
+prolijos y fórmulas correctas apuntando a una conclusión equivocada.
+
+::::
+
+::::{admonition} Lectura operativa
+:class: tip
+
+Si el objetivo es describir la mañana observada, alcanza con resumir esos datos. Si el
+objetivo es rediseñar turnos para el mes, la pregunta cambia: la muestra debe
+representar el proceso que se quiere mejorar.
+
+::::
 
 Imaginá dos planes de medición. El primero registra ochenta pacientes el lunes
 después de un feriado; el segundo registra veinte pacientes por semana durante
@@ -1929,7 +2226,26 @@ mismo modo que en una mañana estable. En ese caso el gráfico sigue sirviendo
 para describir lo ocurrido, pero no alcanza para inferir cómo funciona el
 servicio en general.
 
-**Decisión de ingeniería.** Si Lucía quiere rediseñar turnos para todo el mes, una mañana extrema sirve como alarma, pero no como única evidencia. La pregunta siguiente no es solo “cuál fue la media”, sino “qué proceso generó estos datos y qué población representan”.
+::::{admonition} Decisión de ingeniería
+:class: seealso
+
+Si Lucía quiere rediseñar turnos para todo el mes, una mañana extrema sirve como
+alarma, pero no como única evidencia. La pregunta siguiente no es solo “cuál fue la
+media”, sino “qué proceso generó estos datos y qué población representan”.
+
+::::
+
+::::{admonition} Cierre operativo
+:class: tip
+
+En la clínica, revisar cómo se juntaron los datos responde
+preguntas como: "¿estos 80 pacientes salieron de un lunes atípico o de 4 semanas con
+20 pacientes cada una?" y "¿las esperas son independientes o una demora inicial
+arrastró a los siguientes 15 pacientes?". Si los datos vienen sólo del lunes posterior
+a un feriado, Lucía debería usarlos como alarma; si quiere rediseñar turnos del mes,
+debería juntar al menos varias franjas y días antes de generalizar.
+
+::::
 
 ## Conclusión: qué sabemos de la mañana
 
@@ -1970,3 +2286,15 @@ probable es que espere más de cinco minutos?, ¿cambian las chances si ya lleva
 rato sentado?, ¿cómo se combinan señales parciales para tomar una decisión? Para
 responder esas preguntas necesitamos el lenguaje del próximo capítulo:
 **probabilidad**.
+
+::::{admonition} Cierre operativo
+:class: tip
+
+Al cerrar el informe de la mañana, Lucía puede convertir la tabla final en tres
+decisiones concretas: si la mediana está en 4 minutos y $Q_3$ en 6, informa que la
+mayoría esperó poco; si el rango llega a 18 minutos y Tukey marca 2 casos, revisa esos
+pacientes aparte; si la muestra viene de una sola franja especial, no cambia el
+calendario mensual todavía. Con esos tres chequeos, Lucía decide si mantiene el
+esquema, refuerza una franja o investiga casos excepcionales.
+
+::::

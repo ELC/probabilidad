@@ -52,26 +52,27 @@ con el modelo de comparación dentro de una sola representación visual
 ## Cierres operativos
 
 La rúbrica de "Cierres de sección" pide cuatro piezas: qué responde, cuándo
-usarlo, qué puede salir mal, cómo comunicarlo. El capítulo ya incorporó ese
-patrón en las herramientas principales: atributos/Pareto, variables discretas,
-histogramas y ojivas, orden temporal, media, moda, percentiles, z-score,
-asimetría de Pearson [@pearson1895skew], regla empírica y coeficiente de
-variación.
+usarlo, qué puede salir mal, cómo comunicarlo. El capítulo ya incorporó ese patrón
+en cada sección conceptual `##`/`###`: cada cierre está situado en la clínica,
+formula preguntas con números o umbrales concretos y termina en una acción posible
+de Lucía. Además, los cierres respetan el orden conceptual: no introducen herramientas
+antes de que el capítulo las haya presentado.
 
-La deuda restante es de mantenimiento: cuando se mueva lógica inline a `src/` o
-se agreguen nuevas secciones, conviene preservar este cierre operativo para que
-el capítulo no vuelva a terminar en el cómputo sin traducirlo a decisión.
+Este punto deja de ser deuda abierta y pasa a ser criterio de mantenimiento: si se
+mueve lógica inline a `src/` o se agregan nuevas secciones, hay que preservar el
+cierre operativo sin adelantar conceptos futuros, para que ningún concepto quede
+aislado de su uso ni aparezca antes de tener contexto.
 
 ## Referencias y citaciones internas
 
-El capítulo invoca al menos dos referencias que el texto no entrega:
+El capítulo invoca una referencia que el texto no entrega:
 
 - La respuesta de un ejercicio dice "en símbolos del glosario" pero el
   capítulo no incluye glosario propio ni link al glosario general.
-- La regla de Tukey para outliers se enuncia sin atribución, aunque proviene
-  de un trabajo bien identificable [@tukey1977exploratory]. Citarla refuerza
-  el principio de "contrato del modelo": el lector ve de dónde sale la
-  convención del $1{,}5\,\text{IQR}$.
+
+La regla de Tukey para outliers ya se atribuye a su fuente
+[@tukey1977exploratory], lo que refuerza el principio de "contrato del modelo":
+el lector ve de dónde sale la convención del $1{,}5\,\text{IQR}$.
 
 ## Cumplimiento de las convenciones del repositorio
 
@@ -90,12 +91,16 @@ parte de esas preguntas en verificaciones automáticas.
 
 ## Visibilidad del código
 
-Todas las celdas usan `:tags: [hide-input]`. Si el libro enseña a hacer
-estadística *en Python*, ocultar incluso las llamadas atómicas como
-`summarize_observations(...)` impide aprender la API. La doble codificación
-[@paivio1991dual] sugiere que mostrar selectivamente esas llamadas —
-manteniendo ocultos los bloques largos de armado de gráficos — refuerza la
-conexión entre concepto, fórmula y herramienta computacional.
+El capítulo está pensado para estudiantes que no necesariamente programan: el
+objetivo es aprender estadística, no aprender estadística *con Python*. Por eso
+es razonable que las celdas usen `:tags: [hide-input]` y que la lectura principal
+no dependa de entender la API, los `DataFrame` ni el armado de gráficos.
+
+Al mismo tiempo, todos los datos, tablas y gráficos se generan con código
+reproducible y disponible en GitHub para quien quiera auditarlo, reutilizarlo o
+profundizar. Esa decisión conserva la transparencia computacional sin desplazar
+el foco pedagógico: el código funciona como infraestructura verificable detrás
+del material, no como contenido obligatorio para el lector no programador.
 
 ## Bucles narrativos abiertos
 
