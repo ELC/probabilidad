@@ -41,6 +41,8 @@ project:
         - file: chapters/inference_exercises.md
     - file: chapters/glossary.md
     - file: chapters/pedagogy.md
+      children:
+        - file: chapters/pedagogy_descriptive_statistics.md
 
 site:
   template: book-theme

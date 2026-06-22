@@ -87,6 +87,117 @@ def chart_boxplot_example(input_data: BoxplotExampleChartInput) -> alt.Chart:
     return chart_descriptive_summary(chart_input)
 
 
+class BoxplotShapeComparisonChartInput(BaseModel):
+    model_config = _ARBITRARY
+
+    first_sample: DataFrame[Observations]
+    second_sample: DataFrame[Observations]
+    first_label: str
+    second_label: str
+    value_title: str = "Valor"
+    first_title: str = ""
+    second_title: str = ""
+    bin_count: int = 24
+    boxplot_extent: float = 1.5
+    settings: Settings = Settings()
+
+
+def _shape_comparison_domain(
+    first_sample: DataFrame[Observations],
+    second_sample: DataFrame[Observations],
+) -> list[float]:
+    combined = pd.concat([first_sample["value"], second_sample["value"]], ignore_index=True)
+    return [float(combined.min()), float(combined.max())]
+
+
+def _shape_comparison_histogram(
+    sample: DataFrame[Observations],
+    title: str,
+    color: str,
+    domain: list[float],
+    theme: ChartTheme,
+    bin_count: int,
+    value_title: str | None,
+) -> alt.Chart:
+    return (
+        alt
+        .Chart(sample)
+        .mark_bar(color=color, opacity=theme.bar_opacity)
+        .encode(
+            x=alt.X(
+                "value:Q",
+                bin=alt.Bin(maxbins=bin_count),
+                scale=alt.Scale(domain=domain),
+                title=value_title,
+            ),
+            y=alt.Y("count()", title="Frecuencia"),
+        )
+        .properties(title=title, width=theme.width, height=120)
+    )
+
+
+def _shape_comparison_boxplot(
+    data: pd.DataFrame,
+    domain: list[float],
+    theme: ChartTheme,
+    value_title: str,
+    extent: float,
+) -> alt.Chart:
+    return (
+        alt
+        .Chart(data)
+        .mark_boxplot(extent=extent, size=36)
+        .encode(
+            x=alt.X("value:Q", scale=alt.Scale(domain=domain), title=value_title),
+            y=alt.Y("muestra:N", title=None),
+        )
+        .properties(width=theme.width, height=110)
+    )
+
+
+def chart_boxplot_shape_comparison(input_data: BoxplotShapeComparisonChartInput) -> alt.Chart:
+    theme = input_data.settings.chart_theme
+    domain = _shape_comparison_domain(input_data.first_sample, input_data.second_sample)
+    palette = theme.palette
+    first_hist = _shape_comparison_histogram(
+        input_data.first_sample,
+        input_data.first_title or input_data.first_label,
+        palette.primary,
+        domain,
+        theme,
+        input_data.bin_count,
+        value_title=None,
+    )
+    second_hist = _shape_comparison_histogram(
+        input_data.second_sample,
+        input_data.second_title or input_data.second_label,
+        palette.secondary,
+        domain,
+        theme,
+        input_data.bin_count,
+        value_title=input_data.value_title,
+    )
+    stacked = pd.DataFrame({
+        "value": pd.concat(
+            [input_data.first_sample["value"], input_data.second_sample["value"]],
+            ignore_index=True,
+        ),
+        "muestra": (
+            [input_data.first_label] * len(input_data.first_sample)
+            + [input_data.second_label] * len(input_data.second_sample)
+        ),
+    })
+    middle_box = _shape_comparison_boxplot(
+        stacked,
+        domain,
+        theme,
+        input_data.value_title,
+        input_data.boxplot_extent,
+    )
+    composed = alt.vconcat(first_hist, middle_box, second_hist, spacing=8).resolve_scale(x="shared")
+    return apply_theme(composed, input_data.settings, set_size=False)
+
+
 class TypicalValuesComparisonChartInput(BaseModel):
     model_config = _ARBITRARY
 

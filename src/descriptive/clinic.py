@@ -132,7 +132,7 @@ def style_display_table(table: pd.DataFrame) -> Styler:
     if len(float_columns):
         styler = styler.format("{:.2f}", subset=float_columns)
     first_column_min_width = _first_column_min_width(table)
-    first_column_styles: list[tuple[str, str]] = [
+    first_column_styles: list[tuple[str, str | float]] = [
         ("min-width", first_column_min_width),
         ("white-space", "nowrap"),
         ("text-align", "center !important"),
@@ -146,7 +146,7 @@ def style_display_table(table: pd.DataFrame) -> Styler:
         {"selector": "td.col0", "props": first_column_styles},
     ]
     for column_index in range(1, table.shape[1]):
-        centered: list[tuple[str, str]] = [("text-align", "center !important")]
+        centered: list[tuple[str, str | float]] = [("text-align", "center !important")]
         table_styles.extend([
             {"selector": f"th.col{column_index}", "props": centered},
             {"selector": f"td.col{column_index}", "props": centered},

@@ -6,11 +6,13 @@ from core import Observations, Settings
 from descriptive import FrequencyTableInput, build_frequency_table, summarize_observations
 from visualization import (
     BoxplotExampleChartInput,
+    BoxplotShapeComparisonChartInput,
     DescriptiveSummaryChartInput,
     ObservationsOverviewInput,
     TypicalValuesComparisonChartInput,
     apply_theme,
     chart_boxplot_example,
+    chart_boxplot_shape_comparison,
     chart_descriptive_summary,
     chart_observations_overview,
     chart_typical_values_comparison,
@@ -90,6 +92,26 @@ def test_chart_typical_values_comparison_shows_extreme_observation_shift(
     ]
     datasets = list(chart.to_dict()["datasets"].values())
     assert expected_rows in datasets
+
+
+def test_chart_boxplot_shape_comparison_stacks_three_panels(
+    normal_observations: DataFrame[Observations], fixed_settings: Settings
+) -> None:
+    second_sample = pd.DataFrame(
+        {"value": normal_observations["value"].to_numpy() + 5.0}
+    ).pipe(DataFrame[Observations])
+    chart = chart_boxplot_shape_comparison(
+        BoxplotShapeComparisonChartInput(
+            first_sample=normal_observations,
+            second_sample=second_sample,
+            first_label="A",
+            second_label="B",
+            settings=fixed_settings,
+        )
+    )
+    spec = chart.to_dict()
+    assert len(spec["vconcat"]) == 3
+    assert spec["resolve"]["scale"]["x"] == "shared"
 
 
 def test_chart_observations_overview_shares_x_axis(

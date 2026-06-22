@@ -52,6 +52,7 @@ from descriptive import (
 )
 from visualization import (
     BoxplotExampleChartInput,
+    BoxplotShapeComparisonChartInput,
     CategoricalBarFromDataChartInput,
     DescriptiveSummaryChartInput,
     DiscreteStickFromDataChartInput,
@@ -60,6 +61,7 @@ from visualization import (
     ParetoFromDataChartInput,
     StemLeafChartInput,
     chart_boxplot_example,
+    chart_boxplot_shape_comparison,
     chart_categorical_bars_from_data,
     chart_cumulative_frequency_polygon,
     apply_theme,
@@ -165,6 +167,16 @@ secuencia en que llegaron a la guardia.
 clinic_sample = generate_clinic_sample(ClinicSampleInput(settings=settings, sample_size=80))
 summary = summarize_observations(clinic_sample.waiting_times)
 style_display_table(clinic_sample.clinic_display_table.head())
+```
+
+A partir de esos 80 tiempos vamos a construir un resumen estadístico — guardado en
+el objeto `summary` — al que iremos volviendo a lo largo del capítulo. Cada sección
+agrega un significado a una de sus filas; al final lo leeremos completo como una
+sola tabla de cierre.
+
+```{code-cell} python
+:tags: [hide-input]
+summary
 ```
 
 (sec-descriptive-variable-types)=
@@ -314,14 +326,6 @@ $N_k$ cuenta cuántas observaciones tienen valores menores o iguales que $x_k$;
 $F_k$ da la proporción acumulada. En la clínica, si registramos cuántas personas
 tenía cada paciente por delante al llegar, una parte de la tabla podría verse así:
 
-La frecuencia relativa acumulada también permite hablar de **puntos de corte**.
-Un **percentil** indica el valor hasta el cual se acumula cierto porcentaje de
-la muestra: el percentil 25 es el menor valor cuya frecuencia acumulada alcanza
-al menos el 25%. Los **deciles** son percentiles definidos en múltiplos de 10%:
-$D_1$ alcanza al menos el 10%, $D_2$ al menos el 20%, y así sucesivamente. Los
-**cuartiles** son percentiles definidos en múltiplos de 25%: $Q_1$ alcanza al
-menos el 25%, $Q_2$ al menos el 50% y $Q_3$ al menos el 75%.
-
 ```{code-cell} python
 :tags: [hide-input]
 style_display_table(clinic_sample.people_ahead_display_table)
@@ -329,7 +333,15 @@ style_display_table(clinic_sample.people_ahead_display_table)
 
 La fila de $3$ tiene dos lecturas distintas: $f_k$ dice qué proporción de
 pacientes tenía exactamente tres personas adelante, y $F_k$ dice qué proporción
-tenía tres personas o menos. El gráfico natural para estos datos es el **gráfico
+tenía tres personas o menos.
+
+La frecuencia relativa acumulada también permite hablar de **puntos de corte**.
+Un **percentil** indica el valor hasta el cual se acumula cierto porcentaje de
+la muestra: el percentil 25 es el menor valor cuya frecuencia acumulada alcanza
+al menos el 25%. Los **deciles** son percentiles definidos en múltiplos de 10%:
+$D_1$ alcanza al menos el 10%, $D_2$ al menos el 20%, y así sucesivamente. Los
+**cuartiles** son percentiles definidos en múltiplos de 25%: $Q_1$ alcanza al
+menos el 25%, $Q_2$ al menos el 50% y $Q_3$ al menos el 75%. El gráfico natural para estos datos es el **gráfico
 de bastones**: una barra angosta para cada valor posible, con altura proporcional
 a su frecuencia.
 
@@ -648,13 +660,18 @@ tipo de medida resumen: la **mediana**, que es el número del medio cuando
 ordenamos la lista de menor a mayor. La escribimos $\tilde{x}$ (equis
 con una eñe encima):
 
+Para escribirla con fórmula, primero **ordenamos** la lista de menor a mayor y
+le ponemos un nombre nuevo a esos valores ordenados: $x_{[1]} \le x_{[2]} \le
+\dots \le x_{[n]}$. Los corchetes recuerdan que ese subíndice indica posición en
+la lista ordenada, no el orden en que llegaron los pacientes. Con esa notación:
+
 $$ \tilde{x} = \begin{cases}
-  x_{((n+1)/2)} & \text{si } n \text{ es impar} \\
-  \dfrac{x_{(n/2)} + x_{(n/2+1)}}{2} & \text{si } n \text{ es par}
+  x_{[(n+1)/2]} & \text{si } n \text{ es impar} \\
+  \dfrac{x_{[n/2]} + x_{[n/2 + 1]}}{2} & \text{si } n \text{ es par}
 \end{cases} $$ (eq-position)
 
-(Si la cantidad de observaciones es par no hay un único «valor del
-medio», así que se promedian los dos centrales.)
+Si la cantidad de observaciones es par no hay un único «valor del medio», así
+que se promedian los dos centrales.
 
 Formalmente, la mediana es el mínimo valor que acumula al menos el 50% de las
 observaciones ordenadas. Con la notación anterior, es el percentil 50 y también
@@ -997,30 +1014,31 @@ formas son muy diferentes.
 ```{code-cell} python
 :tags: [hide-input]
 rng_boxplot = np.random.default_rng(20260303)
-unimodal_waits = rng_boxplot.normal(4.0, 0.75, 320).clip(1.5, 6.5)
-bimodal_waits = np.concatenate([
-    rng_boxplot.normal(3.35, 0.35, 160),
-    rng_boxplot.normal(4.65, 0.35, 160),
-])
+unimodal_waits = pd.DataFrame({
+    "value": rng_boxplot.normal(4.0, 0.75, 320).clip(1.5, 6.5)
+}).pipe(DataFrame[Observations])
+bimodal_waits = pd.DataFrame({
+    "value": np.concatenate([
+        rng_boxplot.normal(3.35, 0.35, 160),
+        rng_boxplot.normal(4.65, 0.35, 160),
+    ])
+}).pipe(DataFrame[Observations])
 ```
 
 ```{code-cell} python
 :tags: [hide-input]
-boxplot_comparison = pd.DataFrame({
-    "value": np.concatenate([unimodal_waits, bimodal_waits]),
-    "muestra": ["Unimodal"] * len(unimodal_waits) + ["Bimodal"] * len(bimodal_waits),
-})
-shared_boxplot_domain = [1.5, 6.5]
-```
-
-```{code-cell} python
-:tags: [hide-input]
-hist_unimodal = alt.Chart(boxplot_comparison.query("muestra == 'Unimodal'")).mark_bar(
-    color=settings.chart_theme.palette.primary, opacity=settings.chart_theme.bar_opacity
-).encode(x=alt.X("value:Q", bin=alt.Bin(maxbins=24), scale=alt.Scale(domain=shared_boxplot_domain), title=None), y=alt.Y("count()", title="Frecuencia")).properties(title="Muestra unimodal", width=settings.chart_theme.width, height=120)
-boxplot_middle = alt.Chart(boxplot_comparison).mark_boxplot(extent=1.5, size=36).encode(x=alt.X("value:Q", scale=alt.Scale(domain=shared_boxplot_domain), title="Minutos de espera"), y=alt.Y("muestra:N", title=None)).properties(width=settings.chart_theme.width, height=110)
-hist_bimodal = alt.Chart(boxplot_comparison.query("muestra == 'Bimodal'")).mark_bar(color=settings.chart_theme.palette.secondary, opacity=settings.chart_theme.bar_opacity).encode(x=alt.X("value:Q", bin=alt.Bin(maxbins=24), scale=alt.Scale(domain=shared_boxplot_domain), title="Minutos de espera"), y=alt.Y("count()", title="Frecuencia")).properties(title="Muestra bimodal", width=settings.chart_theme.width, height=120)
-apply_theme(alt.vconcat(hist_unimodal, boxplot_middle, hist_bimodal, spacing=8).resolve_scale(x="shared"), settings, set_size=False)
+chart_boxplot_shape_comparison(
+    BoxplotShapeComparisonChartInput(
+        first_sample=unimodal_waits,
+        second_sample=bimodal_waits,
+        first_label="Unimodal",
+        second_label="Bimodal",
+        first_title="Muestra unimodal",
+        second_title="Muestra bimodal",
+        value_title="Minutos de espera",
+        settings=settings,
+    )
+)
 ```
 
 La enseñanza no es que el boxplot sea inútil, sino que no alcanza solo. Si el resumen
@@ -1183,7 +1201,7 @@ a la amplitud total. Si los atípicos están a la derecha, también esperamos
 $\bar{x} > \tilde{x}$; la media queda a la derecha de la mediana.
 
 Dispersión esperada: $\text{IQR}$ chico, pero $s$ y $R$ grandes por los puntos
-aislados. En símbolos del glosario: $\text{IQR} \ll R$.
+aislados.
 ::::
 
 **Pregunta 4.** Dos grupos tienen medianas parecidas, ubicadas cerca del mismo
@@ -1400,9 +1418,20 @@ $$ CV = \frac{s}{\bar{x}} $$ (eq-coefficient-variation)
 El cociente no tiene unidades: mide qué tan grande es el desvío típico en
 relación con la media del mismo proceso. Muchas veces se informa como porcentaje,
 $100 \cdot CV$. Sirve para comparar distribuciones con unidades distintas y también
-distribuciones con la misma unidad pero promedios muy diferentes. Antes de mirar la
-tabla, anticipá: ¿los tiempos de espera o la cantidad de personas por delante parecen
-más irregulares respecto de su propio centro?
+distribuciones con la misma unidad pero promedios muy diferentes.
+
+El $CV$ sólo tiene una lectura clara cuando la media es positiva y está razonablemente
+lejos de cero. Si $\bar{x}$ queda cerca de cero, dividir por un número tan chico puede
+inflar el cociente y hacer que una variación moderada parezca enorme. El caso límite
+es $\bar{x}=0$: ahí el $CV$ ni siquiera está definido, porque no se puede dividir por
+cero. Si la media es negativa, la idea de "variar cierto porcentaje respecto del
+promedio" también deja de ser una comparación útil. Por eso tiene sentido para tiempos
+de espera o cantidades positivas, pero no conviene usarlo automáticamente con variables
+que pueden cruzar el cero, como saldos, temperaturas en grados Celsius o cambios con
+signo.
+
+Antes de mirar la tabla, anticipá: ¿los tiempos de espera o la cantidad de personas por
+delante parecen más irregulares respecto de su propio centro?
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -1424,6 +1453,177 @@ style_display_table(cv_comparison)
 La muestra con mayor $CV$ no es necesariamente la que tiene mayor desvío en
 unidades originales; es la que varía más **relativo a su propio nivel típico**.
 Esa es la comparación justa cuando cambiamos de minutos a personas por delante.
+
+Leyendo la tabla, las dos variables tienen desvíos estándar parecidos en valor
+absoluto, pero viven en escalas muy distintas: un minuto y una persona no
+pesan lo mismo respecto del promedio. El $CV$ pone ese desbalance en evidencia
+y dice cuál de las dos series es más **inestable respecto de su propio centro**.
+Si para Lucía la cantidad de personas por delante tiene un $CV$ más alto que los
+minutos de espera, la fila varía más de lo que su promedio sugiere: dos llegadas
+de aspecto parecido pueden encontrar congestiones muy distintas, incluso cuando
+los tiempos medios entre pacientes se parecen. Si fuera al revés, los minutos
+serían el lado más irregular del proceso. En cualquiera de los dos casos, la
+lectura operativa es la misma: el promedio solo alcanza para describir bien la
+mañana si el $CV$ es chico; cuanto más grande, más conviene mirar la dispersión
+antes de tomar decisiones.
+
+Veamos ahora un contraejemplo con datos generados al azar. Lucía compara dos
+indicadores: cuántos pacientes se atienden por bloque de tiempo y cuánto cambia la
+fila en esos mismos bloques. El primer indicador es positivo y queda lejos de cero; el
+segundo tiene valores negativos y positivos, aunque su media queda por encima de 1.
+
+```{code-cell} python
+:tags: [hide-input]
+cv_counterexample_size = 80
+rng_cv_counterexample = np.random.default_rng(20260622)
+attended_blocks = rng_cv_counterexample.normal(
+    loc=10.0,
+    scale=1.2,
+    size=cv_counterexample_size,
+).clip(min=0.0)
+queue_changes = rng_cv_counterexample.normal(
+    loc=1.2,
+    scale=1.4,
+    size=cv_counterexample_size,
+)
+
+cv_counterexample_data = pd.DataFrame({
+    "indicador": np.repeat(
+        ["Pacientes atendidos", "Cambio neto en fila"],
+        [len(attended_blocks), len(queue_changes)],
+    ),
+    "valor": np.concatenate([attended_blocks, queue_changes]),
+})
+```
+
+```{code-cell} python
+:tags: [hide-input]
+apply_theme(
+    alt.Chart(cv_counterexample_data).mark_boxplot(extent=1.5, size=42).encode(
+        x=alt.X("valor:Q", title="Valor observado"),
+        y=alt.Y(
+            "indicador:N",
+            title=None,
+            sort=["Pacientes atendidos", "Cambio neto en fila"],
+        ),
+    ).properties(title="Contraejemplo: valores negativos anticipan problemas", height=150),
+    settings,
+)
+```
+
+El boxplot ya da una pista: aunque el cambio neto en fila tiene media positiva, sus
+valores cruzan el cero. En ese caso, comparar "porcentaje respecto del promedio" no
+tiene una interpretación estable.
+
+```{code-cell} python
+:tags: [hide-input]
+cv_counterexample_summary = cv_counterexample_data.groupby("indicador", sort=False)["valor"].agg(
+    media="mean",
+    **{"desvío estándar": "std"},
+).reset_index().assign(CV=lambda data: data["desvío estándar"] / data["media"])
+style_display_table(cv_counterexample_summary)
+```
+
+Si miráramos sólo el $CV$, concluiríamos que el cambio neto en fila es
+desproporcionadamente más irregular. Esa lectura es engañosa: el desvío estándar no
+es enorme en unidades originales, pero el indicador mezcla valores negativos y
+positivos. La forma del boxplot permitía anticiparlo antes de calcular la tabla:
+cuando una variable cruza el cero, el $CV$ deja de ser una buena brújula aunque la
+media sea positiva.
+
+:::::{admonition} Nota técnica: CV y escala logarítmica
+:class: dropdown
+
+El $CV$ resume dispersión relativa: pregunta cuán grande es el desvío típico en
+relación con el nivel medio. Esa lectura se parece a mirar cambios multiplicativos,
+como cuando se comparan datos en escala logarítmica. La conexión aparece paso a paso.
+
+Primero llamemos $s_i$ al desvío de la observación $i$ respecto de la media. En esta
+nota, $s_i$ no es el desvío estándar muestral $s$, sino un desvío individual:
+
+$$
+s_i = x_i - \bar{x}
+$$
+
+Entonces cada observación puede escribirse como la media más ese desvío:
+
+$$
+x_i = \bar{x} + s_i
+$$
+
+Si reemplazamos $s_i$ por su definición:
+
+$$
+x_i = \bar{x} + (x_i - \bar{x})
+$$
+
+Después sacamos factor común $\bar{x}$. Para poder hacerlo necesitamos
+$\bar{x}\ne0$:
+
+$$
+x_i = \bar{x}\left(1 + \frac{s_i}{\bar{x}}\right)
+= \bar{x}\left(1 + \frac{x_i - \bar{x}}{\bar{x}}\right)
+$$
+
+El término
+
+$$
+r_i = \frac{s_i}{\bar{x}} = \frac{x_i - \bar{x}}{\bar{x}}
+$$
+
+es el desvío relativo de la observación $i$: no dice cuántas unidades se alejó de la
+media, sino qué fracción de la media representa ese alejamiento. Con esa abreviatura:
+
+$$
+x_i = \bar{x}(1+r_i)
+$$
+
+Si dividimos por $\bar{x}$:
+
+$$
+\frac{x_i}{\bar{x}} = 1+r_i
+$$
+
+Ahora aparece una razón multiplicativa: $x_i/\bar{x}$ compara la observación con el
+nivel medio. Si tomamos logaritmos a ambos lados:
+
+$$
+\log\left(\frac{x_i}{\bar{x}}\right) = \log(1+r_i)
+$$
+
+Y por la propiedad $\log(a/b)=\log(a)-\log(b)$:
+
+$$
+\log(x_i) - \log(\bar{x}) = \log(1+r_i)
+$$
+
+Cuando el desvío relativo es chico, usamos la aproximación
+$\log(1+r) \approx r$. Entonces:
+
+$$
+\log(x_i) - \log(\bar{x}) \approx r_i
+= \frac{x_i - \bar{x}}{\bar{x}}
+$$
+
+Es decir: la dispersión de los logaritmos se parece a la dispersión de los datos
+medidos como proporción de la media. Por eso, cuando el $CV = s/\bar{x}$ es chico y
+los datos son positivos, puede leerse aproximadamente como una dispersión en escala
+logarítmica.
+
+El problema aparece cuando $\bar{x}$ se acerca a cero: el término
+$(x_i-\bar{x})/\bar{x}$ se vuelve inestable, porque divide por un número muy chico.
+Además, la escala logarítmica sólo existe para números positivos: no se puede calcular
+$\log(0)$ ni $\log(x)$ para $x<0$ dentro de los números reales.
+
+Por eso, si una variable puede valer cero o tomar valores negativos, la comparación
+relativa deja de tener una base clara. Además, si bastara con sumar una constante para
+que todos los valores fueran positivos, el $CV$ cambiaría aunque la dispersión en
+unidades originales no cambiara. Ese problema de escala es parte de la discusión
+estadística sobre cuándo el coeficiente de variación deja de ser una medida adecuada;
+ver esta discusión en
+[Cross Validated](https://stats.stackexchange.com/questions/56399/why-is-the-coefficient-of-variation-not-valid-when-using-data-with-positive-and).
+
+:::::
 
 (sec-descriptive-sampling)=
 ## Antes de inferir: cómo se juntaron los datos
@@ -1485,18 +1685,36 @@ servicio en general.
 
 ## Conclusión: qué sabemos de la mañana
 
-Volvamos a las preguntas del principio. Para resumir cuánto se espera, Lucía no
-debería mirar sólo la media: la mediana y los percentiles muestran qué vivió la
-mayoría de los pacientes. Para describir qué tan regular fue el servicio, el
-desvío estándar, el rango y el IQR separan una mañana compacta de una mañana con
-experiencias muy distintas. Para decidir si hubo casos que merecen revisión, el
-boxplot, la regla de Tukey y los $z$-scores dan señales complementarias.
+Volvamos a las preguntas del principio. La respuesta operativa no es un único
+número: cada medida resumen contesta una pregunta distinta, con una sensibilidad
+distinta a los valores extremos. La siguiente tabla condensa el capítulo en un
+solo mapa de referencia: cuándo conviene cada medida, qué tipo de variable
+acepta, qué tan estable es ante un dato atípico y en qué unidades queda.
 
-La respuesta operativa no es un único número. Si el centro es razonable pero hay
-outliers, Lucía puede revisar esos casos antes de cambiar toda la agenda. Si el
-histograma muestra dos grupos, conviene preguntar si se mezclaron áreas o circuitos
-distintos. Si la muestra salió de una mañana especial, los gráficos describen esa
-mañana, no necesariamente todo el servicio.
+| Medida | Pregunta que Lucía puede responder | Tipo de variable | Sensibilidad a outliers | Unidades |
+|---|---|---|---|---|
+| Media $\bar{x}$ | ¿Cuántos minutos esperó un paciente *en promedio* esta mañana? | cuantitativa | alta | originales |
+| Mediana $\tilde{x}$ | ¿Cuánto esperó el paciente del medio, el que parte la mañana en dos mitades? | cuantitativa | baja | originales |
+| Moda $\hat{x}$ | ¿Cuál fue el área de atención o el motivo de demora más frecuente? | cualquiera | nula | originales |
+| Cuartiles / percentiles | ¿Hasta qué minuto esperó el 25%, el 50% o el 75% de los pacientes? | cuantitativa | baja | originales |
+| Rango $R$ | ¿Cuánto separa al paciente que menos esperó del que más esperó? | cuantitativa | máxima | originales |
+| IQR | ¿Qué tan ancho fue el tramo central de esperas, ignorando los extremos? | cuantitativa | baja | originales |
+| Varianza $s^2$ | ¿Cuánta dispersión total tuvo la mañana, en escala cuadrática para propiedades algebraicas? | cuantitativa | alta | originales al cuadrado |
+| Desvío estándar $s$ | ¿Cuántos minutos se aleja, en promedio, una espera del promedio del día? | cuantitativa | alta | originales |
+| $CV = s/\bar{x}$ | ¿Qué proceso de la clínica es más irregular respecto de su propio promedio: las esperas en minutos o las personas en fila? | cuantitativa positiva, con media lejos de cero | alta (vía $s$) | adimensional |
+| $z_i = (x_i - \bar{x})/s$ | ¿A cuántos desvíos del promedio quedó la espera de un paciente concreto? | cuantitativa | alta (vía $\bar{x}$, $s$) | adimensional |
+| Tukey ($Q_1 - 1{,}5\,\text{IQR}$, $Q_3 + 1{,}5\,\text{IQR}$) | ¿Qué pacientes esperaron tanto que conviene revisar el caso aparte? | cuantitativa | baja | originales |
+
+Esa tabla es la guía operativa: para resumir el centro de una mañana, conviene
+usar mediana cuando la forma es asimétrica y media cuando es razonablemente
+campanular; para describir qué tan regular fue el servicio, IQR resiste lo que
+desvío estándar y rango no; para señalar casos que merecen revisión, Tukey y
+$z$-scores apuntan a los mismos casos cuando la forma es simétrica, pero
+divergen cuando hay sesgo. Si el centro es razonable pero hay outliers, Lucía
+puede revisar esos casos antes de cambiar toda la agenda. Si el histograma
+muestra dos grupos, conviene preguntar si se mezclaron áreas o circuitos
+distintos. Si la muestra salió de una mañana especial, los gráficos describen
+esa mañana, no necesariamente todo el servicio.
 
 La práctica del capítulo retoma estos cálculos con ejercicios específicos. Lo que
 queda abierto es mirar hacia adelante: si mañana llega otro paciente, ¿qué tan
