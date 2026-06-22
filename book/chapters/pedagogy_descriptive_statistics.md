@@ -49,19 +49,18 @@ que muestre todas las curvas superpuestas frente al mismo input — coherente
 con el modelo de comparación dentro de una sola representación visual
 [@paivio1991dual].
 
-## Cierres operativos en progreso
+## Cierres operativos
 
 La rúbrica de "Cierres de sección" pide cuatro piezas: qué responde, cuándo
-usarlo, qué puede salir mal, cómo comunicarlo. El capítulo ya resolvió varios
-casos puntuales: sesgo y colas incorpora el coeficiente de asimetría de Pearson
-[@pearson1895skew]; la regla empírica incluye un contraejemplo con distribución
-sesgada; y el coeficiente de variación sumó una advertencia fuerte, un
-contraejemplo visual y una nota técnica desplegable.
+usarlo, qué puede salir mal, cómo comunicarlo. El capítulo ya incorporó ese
+patrón en las herramientas principales: atributos/Pareto, variables discretas,
+histogramas y ojivas, orden temporal, media, moda, percentiles, z-score,
+asimetría de Pearson [@pearson1895skew], regla empírica y coeficiente de
+variación.
 
-La deuda restante es volver consistente ese patrón en todo el capítulo. Algunas
-secciones todavía cierran más cerca del cómputo que de la decisión: muestran el
-resultado, pero podrían hacer más explícito cuándo usarlo, qué puede salir mal y
-cómo explicárselo a Lucía.
+La deuda restante es de mantenimiento: cuando se mueva lógica inline a `src/` o
+se agreguen nuevas secciones, conviene preservar este cierre operativo para que
+el capítulo no vuelva a terminar en el cómputo sin traducirlo a decisión.
 
 ## Referencias y citaciones internas
 

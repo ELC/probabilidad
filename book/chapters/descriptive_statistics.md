@@ -308,6 +308,17 @@ por ejemplo, cuánta demora queda explicada si Lucía atiende primero las dos o 
 causas principales. En términos operativos, da la información necesaria para hacer
 un **triage**: separar lo urgente y más frecuente de lo menos prioritario.
 
+**Cierre operativo.** En la clínica, las tablas de atributos responden qué áreas o
+motivos de demora aparecen más, y el Pareto ordena esas causas para decidir por dónde
+empezar. Sirven cuando Lucía necesita priorizar categorías antes de cambiar turnos o
+revisar procesos. Pueden engañar si "Ninguna" o "Otros" mezclan situaciones distintas,
+o si la causa más frecuente no es la que más minutos agrega. Con esta información,
+Lucía puede responder preguntas como: "¿las dos causas principales explican al menos
+el 60% de las demoras revisables?" o "¿admisión y autorizaciones concentran más casos
+que todas las demás causas juntas?". Si esas dos causas concentran, por ejemplo, 6 de
+cada 10 demoras, Lucía debería revisar primero admisión y autorizaciones antes de
+cambiar todo el esquema de atención.
+
 (sec-descriptive-discrete-frequency)=
 ### Variables discretas: valores exactos y acumulados
 
@@ -369,6 +380,17 @@ informa. En un gráfico de barras no existe un "valor numérico faltante" entre
 categorías: reordenar las barras puede ayudar a comparar sin cambiar el significado.
 En un gráfico de bastones, en cambio, reordenar las barras angostas puede confundir,
 porque el lector espera que el eje avance en orden ascendente.
+
+**Cierre operativo.** Para la fila de espera, la tabla discreta responde cuántos
+pacientes llegaron con exactamente $x$ personas por delante y cuántos llegaron con
+$x$ o menos. Sirve cuando Lucía quiere saber si la congestión habitual fue baja,
+moderada o alta al momento de llegada. Puede engañar si se reordenan los conteos como
+categorías sueltas o si se ocultan valores sin observaciones, porque esos huecos
+también describen cómo se forma la fila. Con esta información, Lucía fija un
+umbral operativo con preguntas como: "¿al menos el 80% de los pacientes llegó con 3
+personas o menos por delante?" o "¿cuántos llegaron con 6 o más?". Si más de 1 de cada
+5 pacientes llega con más de 3 personas por delante, Lucía debería revisar la
+capacidad de admisión o el ritmo de llamado en esa franja.
 
 (sec-descriptive-frequency)=
 ### Variables continuas: intervalos, tallo-hoja e histogramas
@@ -489,6 +511,17 @@ Para Lucía, la pregunta operativa puede ser "¿qué porcentaje esperó menos de
 minutos?". Esa lectura sale de la distribución acumulada: no mira sólo una barra,
 sino todo lo que quedó por debajo del corte que importa para decidir.
 
+**Cierre operativo.** Para los minutos de espera, el histograma responde si la mañana
+se concentró alrededor de un valor típico o si tuvo colas de casos lentos; la ojiva
+responde qué proporción de pacientes quedó por debajo de un corte como cinco minutos.
+Sirven cuando Lucía necesita evaluar el cumplimiento de un umbral de servicio. Pueden
+engañar si el ancho de intervalo cambia la historia visual o si una barra aislada se
+comunica como si resumiera toda la mañana. Con esta información, Lucía responde
+preguntas como: "¿qué porcentaje esperó menos de 5 minutos?" y "¿la cola después de
+8 minutos reúne pocos casos o marca un problema?". Si sólo 65% quedó por debajo de 5
+minutos, Lucía debería revisar la franja o causa que produce la cola antes de afirmar
+que la mañana cumplió el umbral.
+
 (sec-descriptive-time-order)=
 ### Cuando el tiempo importa
 
@@ -504,6 +537,17 @@ En la clínica, esa advertencia tiene una forma concreta: las esperas pueden cre
 hacia el mediodía, caer después de que se libera un consultorio o concentrarse justo
 después de una llegada simultánea de pacientes. Si mezclamos todo en una sola tabla
 sin mirar el orden temporal, una tendencia o un ciclo puede quedar escondido.
+
+**Cierre operativo.** En la clínica, mirar el orden temporal responde si las esperas
+parecen venir de una mañana estable o si hubo tramos distintos, como una congestión al
+mediodía o una mejora después de liberar un consultorio. Sirve antes de resumir todo
+en una sola tabla. Puede engañar si se ignora una interrupción del servicio y luego se
+informa una media única como si todos los pacientes hubieran esperado bajo las mismas
+condiciones. Con esta información, Lucía separa la mañana en franjas antes de
+responder preguntas como: "¿entre las 10:00 y las 11:00 las esperas subieron de 4 a
+9 minutos?" o "¿después de abrir otro consultorio bajaron a 5?". Si el tramo crítico
+es sólo de una hora, Lucía debería reforzar esa franja antes de modificar toda la
+mañana.
 
 (sec-descriptive-summary)=
 ## Tres preguntas que resumen la muestra
@@ -580,6 +624,17 @@ hora en franjas de igual duración, puede describir mejor el ritmo típico que u
 media aritmética simple de tasas. En este libro vamos a trabajar con la media
 aritmética; elegir y calcular otras medias queda fuera de alcance.
 
+**Cierre operativo.** En la clínica, la media responde cuántos minutos habría esperado
+cada paciente si el total de espera de la mañana se repartiera en partes iguales.
+Sirve para estimar carga general, capacidad y comparación entre mañanas con formas
+parecidas. Puede engañar si pocos pacientes con esperas muy largas arrastran el
+promedio. Con esta información, Lucía usa la media para hablar de carga
+promedio con preguntas como: "¿la espera media fue menor a 5 minutos?" o "¿subió de
+4,2 a 6,1 minutos respecto de ayer?". Si la media supera 5 minutos y el histograma no
+muestra una cola excepcional, Lucía debería tratarlo como señal de carga general alta;
+si la suba viene de dos esperas de 20 minutos, debería revisar esos casos antes de
+rediseñar turnos.
+
 (sec-descriptive-mode)=
 ### El valor más frecuente: la moda
 
@@ -606,6 +661,16 @@ build_mode_evolution_explorer(
     )
 )
 ```
+
+**Cierre operativo.** En la clínica, la moda responde cuál fue el área, motivo de
+demora o conteo que más se repitió. Sirve cuando la decisión apunta al caso más común,
+por ejemplo identificar el motivo de demora más frecuente. Puede engañar si hay
+empates, varias modas o si los minutos de espera se redondean de forma arbitraria.
+Con esta información, Lucía puede responder preguntas como: "¿el motivo modal fue
+admisión lenta con 18 casos?" o "¿hay dos motivos empatados con 12 casos cada uno?".
+Si admisión lenta es la moda y supera claramente al segundo motivo, Lucía debería
+revisar ese circuito; si hay empate, debería comparar impacto en minutos antes de
+elegir una intervención.
 
 (sec-descriptive-position)=
 ### Posición dentro de la muestra: percentiles, deciles y cuartiles
@@ -648,6 +713,15 @@ Antes de leer la tabla, pensá en la ojiva: $Q_1$, $P_{50}$ y $Q_3$ son puntos
 sobre esa curva acumulada. Si $Q_3$ queda cerca del corte central, la mayor
 parte de la mañana fue compacta; si queda lejos, el tramo alto de esperas se
 estiró.
+
+**Cierre operativo.** En la clínica, percentiles y cuartiles responden hasta qué
+minuto esperó cierto porcentaje de pacientes. Sirven cuando Lucía quiere evaluar un
+umbral, como "al menos el 75% debería esperar menos de cinco minutos". Pueden engañar
+si se interpretan como promedios o si se olvida que miran posiciones en la lista
+ordenada, no minutos acumulados. Con esta información, Lucía informa el valor
+de $Q_3$ con preguntas como: "¿el 75% esperó 6 minutos o menos?" o "¿el 90% quedó por
+debajo de 10 minutos?". Si $Q_3$ queda en 6 minutos y el umbral interno era 5, Lucía
+debería revisar el cuarto superior de esperas, no sólo el promedio de toda la mañana.
 
 (sec-descriptive-median-definition)=
 ### Otra medida resumen: la mediana
@@ -1529,6 +1603,16 @@ valores están cerca del centro y cuáles quedan relativamente lejos.
 standardized = standardize_observations(clinic_sample.waiting_times)
 standardized
 ```
+
+**Cierre operativo.** En la clínica, el $z$-score responde qué tan lejos quedó la
+espera de un paciente respecto del promedio de esa misma mañana, medida en desvíos
+estándar. Sirve para detectar esperas que merecen revisión comparadas con el resto
+del turno. Puede engañar si la distribución es muy sesgada, si $s$ queda inflado por
+atípicos o si se usa como sentencia automática de error. Con esta información, Lucía
+puede responder preguntas como: "¿este paciente quedó a más de 2 desvíos del promedio?"
+o "¿hay esperas con $z>3$?". Si un paciente tiene $z=3{,}2$, Lucía debería revisar su
+historia de atención antes de tratar esa espera como parte normal del flujo o
+descartarla como error de carga.
 
 (sec-descriptive-people-ahead)=
 ## Personas por delante al llegar
