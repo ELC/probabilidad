@@ -49,16 +49,19 @@ que muestre todas las curvas superpuestas frente al mismo input — coherente
 con el modelo de comparación dentro de una sola representación visual
 [@paivio1991dual].
 
-## Cierres operativos faltantes
+## Cierres operativos en progreso
 
 La rúbrica de "Cierres de sección" pide cuatro piezas: qué responde, cuándo
-usarlo, qué puede salir mal, cómo comunicarlo. Varias secciones del capítulo
-terminan en el cómputo y dejan implícitas las otras tres. Casos puntuales:
-sesgo y colas no menciona el coeficiente de asimetría de Pearson
-[@pearson1895skew]; la regla empírica no muestra un contraejemplo en una
-distribución sesgada. El coeficiente de variación ya incorporó una advertencia
-fuerte, un contraejemplo visual y una nota técnica desplegable; por eso dejó de
-ser una deuda conceptual, aunque aumentó la tensión técnica señalada más abajo.
+usarlo, qué puede salir mal, cómo comunicarlo. El capítulo ya resolvió varios
+casos puntuales: sesgo y colas incorpora el coeficiente de asimetría de Pearson
+[@pearson1895skew]; la regla empírica incluye un contraejemplo con distribución
+sesgada; y el coeficiente de variación sumó una advertencia fuerte, un
+contraejemplo visual y una nota técnica desplegable.
+
+La deuda restante es volver consistente ese patrón en todo el capítulo. Algunas
+secciones todavía cierran más cerca del cómputo que de la decisión: muestran el
+resultado, pero podrían hacer más explícito cuándo usarlo, qué puede salir mal y
+cómo explicárselo a Lucía.
 
 ## Referencias y citaciones internas
 

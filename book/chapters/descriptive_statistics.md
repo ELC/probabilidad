@@ -1107,6 +1107,106 @@ la media suele quedar hacia ese lado y aparece el orden
 $\hat{x} < \tilde{x} < \bar{x}$. Si la cola se estira a la izquierda, el orden
 típico se invierte: $\bar{x} < \tilde{x} < \hat{x}$.
 
+Una forma breve de ponerle número a esa lectura es el **coeficiente de asimetría
+de Pearson** [@pearson1895skew]. La versión basada en la mediana evita depender
+de una moda que puede ser inestable:
+
+$$
+A_P = \frac{3(\bar{x} - \tilde{x})}{s}
+$$ (eq-pearson-skewness)
+
+Si $A_P$ queda cerca de $0$, la media y la mediana están próximas en relación con
+el desvío estándar y no aparece una asimetría fuerte por esta medida. Si
+$A_P > 0$, la media queda por encima de la mediana y eso sugiere cola derecha; si
+$A_P < 0$, sugiere cola izquierda. No reemplaza al gráfico: sólo resume en un
+número lo que el boxplot y el histograma deberían mostrar visualmente. Si hay dos
+grupos mezclados, muchos atípicos o una forma rara, comunicar sólo "$A_P=0{,}3$"
+puede esconder la historia importante; conviene decirlo en contexto, por ejemplo:
+"la cola derecha empuja la media por encima de la mediana".
+
+Comparemos tres formas típicas. Antes de mirar la tabla, leé el histograma y el
+boxplot: si la cola derecha se estira, esperamos $A_P>0$; si la cola izquierda se
+estira, esperamos $A_P<0$; si la forma es equilibrada, esperamos un valor cercano a
+cero.
+
+```{code-cell} python
+:tags: [hide-input]
+shape_example_size = 240
+rng_shape_examples = np.random.default_rng(20260624)
+balanced_half = rng_shape_examples.normal(loc=0.0, scale=1.0, size=shape_example_size // 2)
+balanced_values = np.concatenate([5.0 - balanced_half, 5.0 + balanced_half])
+right_skew_values = rng_shape_examples.lognormal(mean=1.35, sigma=0.65, size=shape_example_size)
+left_skew_values = 10.0 - right_skew_values
+shape_order = ["Cercana a simétrica", "Sesgo a la derecha", "Sesgo a la izquierda"]
+
+shape_examples = pd.DataFrame({
+    "forma": np.repeat(shape_order, shape_example_size),
+    "value": np.concatenate([balanced_values, right_skew_values, left_skew_values]),
+})
+shape_value_domain = [
+    float(shape_examples["value"].min()),
+    float(shape_examples["value"].max()),
+]
+shape_axis_values = np.arange(
+    np.floor(shape_value_domain[0]),
+    np.ceil(shape_value_domain[1]) + 1,
+    2,
+).tolist()
+```
+
+```{code-cell} python
+:tags: [hide-input]
+shape_charts = []
+for shape_name in shape_order:
+    shape_data = shape_examples[shape_examples["forma"] == shape_name]
+    shape_charts.extend([
+        alt.Chart(shape_data)
+        .mark_bar(color=settings.chart_theme.palette.primary, opacity=settings.chart_theme.bar_opacity)
+        .encode(
+            x=alt.X(
+                "value:Q",
+                bin=alt.Bin(maxbins=24, extent=shape_value_domain),
+                scale=alt.Scale(domain=shape_value_domain),
+                axis=alt.Axis(values=shape_axis_values),
+                title=None,
+            ),
+            y=alt.Y("count()", title="Frecuencia"),
+        )
+        .properties(title=f"{shape_name}: histograma", width=settings.chart_theme.width, height=90),
+        alt.Chart(shape_data)
+        .mark_boxplot(extent=1.5, size=36)
+        .encode(
+            x=alt.X(
+                "value:Q",
+                scale=alt.Scale(domain=shape_value_domain),
+                axis=alt.Axis(values=shape_axis_values),
+                title="Valor",
+            ),
+            y=alt.Y("forma:N", axis=None, title=None),
+        )
+        .properties(title=f"{shape_name}: boxplot", width=settings.chart_theme.width, height=55),
+    ])
+
+apply_theme(alt.vconcat(*shape_charts, spacing=6).resolve_scale(x="shared"), settings, set_size=False)
+```
+
+```{code-cell} python
+:tags: [hide-input]
+shape_summary = shape_examples.groupby("forma", sort=False)["value"].agg(
+    media="mean",
+    mediana="median",
+    **{"desvío estándar": "std"},
+).reset_index().assign(
+    A_P=lambda data: 3 * (data["media"] - data["mediana"]) / data["desvío estándar"],
+)
+style_display_table(shape_summary)
+```
+
+La tabla ayuda a comunicar la dirección del sesgo, pero no reemplaza a los gráficos.
+El caso cercano a simétrico debería tener $A_P$ cerca de cero; la cola derecha da un
+$A_P$ positivo porque la media se desplaza hacia valores altos; la cola izquierda da
+un $A_P$ negativo porque la media se desplaza hacia valores bajos.
+
 ### Preguntas para leer formas típicas
 
 Antes de abrir cada respuesta, imaginá el boxplot y traducí su forma a una
@@ -1321,6 +1421,70 @@ Si los porcentajes observados se parecen bastante a la regla, eso no prueba una
 ley matemática especial; sólo dice que, para esta descripción rápida, media y
 desvío resumen razonablemente el centro y la dispersión. Si se alejan mucho, la
 forma pide otro gráfico y probablemente otro resumen.
+
+Miremos ahora un contraejemplo de la clínica. Imaginá una mañana con dos situaciones
+mezcladas: la mayoría de los pacientes pasa por el circuito habitual, con esperas
+alrededor de pocos minutos; un grupo más chico queda trabado por autorizaciones,
+derivaciones o consultas anteriores que se extendieron. Esa mezcla deja muchos
+tiempos cerca del centro bajo y una cola derecha de esperas largas. Antes de mirar la
+tabla, fijate en el histograma: si la forma no es campanular, la regla empírica ya
+queda bajo sospecha.
+
+```{code-cell} python
+:tags: [hide-input]
+empirical_counterexample_size = 240
+rng_empirical_counterexample = np.random.default_rng(20260623)
+typical_clinic_waits = rng_empirical_counterexample.normal(
+    loc=4.0,
+    scale=0.8,
+    size=int(empirical_counterexample_size * 0.85),
+).clip(min=0.5)
+delayed_clinic_waits = rng_empirical_counterexample.lognormal(
+    mean=2.1,
+    sigma=0.35,
+    size=int(empirical_counterexample_size * 0.15),
+)
+skewed_clinic_waits = pd.DataFrame({
+    "value": np.concatenate([typical_clinic_waits, delayed_clinic_waits]),
+}).pipe(DataFrame[Observations])
+```
+
+```{code-cell} python
+:tags: [hide-input]
+chart_histogram(
+    HistogramChartInput(
+        observations=skewed_clinic_waits,
+        bin_count=24,
+        title="Contraejemplo clínico: pocos casos estiran la cola derecha",
+        settings=settings,
+    )
+)
+```
+
+```{code-cell} python
+:tags: [hide-input]
+skewed_summary = summarize_observations(skewed_clinic_waits)
+skewed_mean = skewed_summary.location.mean
+skewed_std = skewed_summary.dispersion.sample_standard_deviation
+
+style_display_table(pd.DataFrame({
+    "k": [1, 2, 3],
+    "proporción esperada": ["68%", "95%", "casi todos"],
+    "proporción observada": [
+        ((skewed_clinic_waits["value"] >= skewed_mean - k * skewed_std)
+         & (skewed_clinic_waits["value"] <= skewed_mean + k * skewed_std)).mean()
+        for k in [1, 2, 3]
+    ],
+}))
+```
+
+La regla empírica responde una pregunta rápida: "si la forma es aproximadamente
+campanular, ¿qué parte de los datos cae a uno, dos o tres desvíos del promedio?".
+Sirve como lectura compacta cuando el histograma es simétrico y unimodal. Puede salir
+mal cuando hay sesgo, grupos mezclados o atípicos, porque la media y el desvío quedan
+tironeados por la cola. En ese caso, conviene comunicarlo así: "no uso
+$\bar{x}\pm s$ como regla de cobertura porque la forma no es campanular; miro además
+mediana, IQR, histograma y posibles atípicos".
 
 (sec-descriptive-zscore)=
 ## Posición relativa: el $z$-score
