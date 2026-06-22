@@ -339,3 +339,7 @@ hallazgos concretos — no cambios obligatorios — entre lo que el libro
 promete pedagógicamente y lo que efectivamente entrega en cada unidad:
 
 - [Deuda pedagógica del capítulo 2 — Tratamiento de datos](pedagogy_descriptive_statistics.md)
+- [Deuda pedagógica del capítulo 3 — Probabilidad](pedagogy_probability.md)
+- [Deuda pedagógica del capítulo 4 — Variables aleatorias](pedagogy_random_variables.md)
+- [Deuda pedagógica del capítulo 5 — Sumas y promedios](pedagogy_joint_and_sums.md)
+- [Deuda pedagógica del capítulo 6 — Inferencia estadística](pedagogy_inference.md)

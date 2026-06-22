@@ -43,6 +43,10 @@ project:
     - file: chapters/pedagogy.md
       children:
         - file: chapters/pedagogy_descriptive_statistics.md
+        - file: chapters/pedagogy_probability.md
+        - file: chapters/pedagogy_random_variables.md
+        - file: chapters/pedagogy_joint_and_sums.md
+        - file: chapters/pedagogy_inference.md
 
 site:
   template: book-theme
