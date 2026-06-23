@@ -25,55 +25,6 @@ unidad. Cada punto incluye el principio que está en juego.
   frecuencias acumuladas, pero puede sentirse como un cabo abierto si el
   lector todavía no tiene una tarea concreta para usar esos cortes.
 
-## Predicción inconsistente
-
-El recurso de **Predicción** está bien usado en media, moda, mediana, desvío
-estándar, rango, IQR, percentiles y coeficiente de variación. Todavía queda
-intermitente en algunas secciones que introducen herramientas nuevas, como el
-boxplot interactivo y el z-score. Como el efecto de generación depende de la
-frecuencia y consistencia del intento previo [@slamecka1978generation], esa
-intermitencia debilita el contrato implícito con el lector. Conviene aplicar
-una regla explícita: si una sección introduce una herramienta y termina con un
-gráfico, tabla o lectura operativa, debería abrir con una predicción o un
-chequeo previo.
-
-## Widgets paralelos en lugar de comparativos
-
-El capítulo presenta seis exploradores separados (uno por medida) construidos
-todos con el mismo `SummaryEvolutionExplorerInput`. Pedagógicamente, el
-objetivo declarado es comparar cómo reacciona cada medida al mismo dato
-extremo. Seis widgets aislados no permiten esa comparación directa: el lector
-agrega 20 minutos en uno y vuelve a agregarlos en otro, repitiendo el
-ejercicio en lugar de contrastar. La síntesis ideal es **un único explorador**
-que muestre todas las curvas superpuestas frente al mismo input — coherente
-con el modelo de comparación dentro de una sola representación visual
-[@paivio1991dual].
-
-## Cierres operativos
-
-La rúbrica de "Cierres de sección" pide cuatro piezas: qué responde, cuándo
-usarlo, qué puede salir mal, cómo comunicarlo. El capítulo ya incorporó ese patrón
-en cada sección conceptual `##`/`###`: cada cierre está situado en la clínica,
-formula preguntas con números o umbrales concretos y termina en una acción posible
-de Lucía. Además, los cierres respetan el orden conceptual: no introducen herramientas
-antes de que el capítulo las haya presentado.
-
-Este punto deja de ser deuda abierta y pasa a ser criterio de mantenimiento: si se
-mueve lógica inline a `src/` o se agregan nuevas secciones, hay que preservar el
-cierre operativo sin adelantar conceptos futuros, para que ningún concepto quede
-aislado de su uso ni aparezca antes de tener contexto.
-
-## Referencias y citaciones internas
-
-El capítulo invoca una referencia que el texto no entrega:
-
-- La respuesta de un ejercicio dice "en símbolos del glosario" pero el
-  capítulo no incluye glosario propio ni link al glosario general.
-
-La regla de Tukey para outliers ya se atribuye a su fuente
-[@tukey1977exploratory], lo que refuerza el principio de "contrato del modelo":
-el lector ve de dónde sale la convención del $1{,}5\,\text{IQR}$.
-
 ## Cumplimiento de las convenciones del repositorio
 
 `AGENTS.md` establece que cada celda de código sea ≤6 líneas y componga
@@ -83,25 +34,6 @@ de regla empírica con comprehensions, construcción manual del DataFrame de
 personas por delante, comparación y contraejemplo del CV con `np.random`,
 `alt.Chart`, `groupby` y `assign`).
 
-La verificación programática con `exercises.verify_*` corresponde a las páginas
-de ejercicios, no necesariamente a este capítulo teórico. En esta unidad, las
-preguntas de boxplot y las predicciones funcionan como auto-chequeo narrativo;
-si luego se agrega una página de práctica asociada, ahí sí convendría convertir
-parte de esas preguntas en verificaciones automáticas.
-
-## Visibilidad del código
-
-El capítulo está pensado para estudiantes que no necesariamente programan: el
-objetivo es aprender estadística, no aprender estadística *con Python*. Por eso
-es razonable que las celdas usen `:tags: [hide-input]` y que la lectura principal
-no dependa de entender la API, los `DataFrame` ni el armado de gráficos.
-
-Al mismo tiempo, todos los datos, tablas y gráficos se generan con código
-reproducible y disponible en GitHub para quien quiera auditarlo, reutilizarlo o
-profundizar. Esa decisión conserva la transparencia computacional sin desplazar
-el foco pedagógico: el código funciona como infraestructura verificable detrás
-del material, no como contenido obligatorio para el lector no programador.
-
 ## Bucles narrativos abiertos
 
 - **Serie temporal sin gráfico.** La sección sobre orden temporal argumenta
@@ -110,9 +42,6 @@ del material, no como contenido obligatorio para el lector no programador.
 - **Justificación del tamaño muestral.** El número $n = 80$ aparece sin
   fundamento y la discusión sobre representatividad queda al final del
   capítulo, ya separada del ejemplo.
-- **Bimodalidad sin decisión.** El ejemplo unimodal vs bimodal ilustra el
-  límite del boxplot, pero no propone qué decisión específica cambiaría
-  Lucía si descubriera bimodalidad real en su mañana.
 
 Estas tensiones no invalidan el capítulo — que ya implementa con solidez la
 mayor parte de los principios listados en [Enfoque pedagógico](pedagogy.md)

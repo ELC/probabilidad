@@ -22,6 +22,7 @@ from widgets.pivot_inversion_explorer import (
 )
 from widgets.summary_evolution import (
     SummaryEvolutionExplorerInput,
+    build_dispersion_evolution_explorer,
     build_iqr_evolution_explorer,
     build_location_evolution_explorer,
     build_mean_evolution_explorer,
@@ -47,6 +48,7 @@ __all__ = [
     "build_continuous_distribution_explorer",
     "build_descriptive_explorer",
     "build_discrete_distribution_explorer",
+    "build_dispersion_evolution_explorer",
     "build_interval_width_explorer",
     "build_iqr_evolution_explorer",
     "build_lln_explorer",

@@ -271,3 +271,11 @@ def build_range_evolution_explorer(input_data: SummaryEvolutionExplorerInput) ->
 
 def build_iqr_evolution_explorer(input_data: SummaryEvolutionExplorerInput) -> widgets.Widget:
     return _build_summary_evolution_explorer(input_data, (_IQR,), "Evolución del rango intercuartil")
+
+
+def build_dispersion_evolution_explorer(input_data: SummaryEvolutionExplorerInput) -> widgets.Widget:
+    return _build_summary_evolution_explorer(
+        input_data,
+        (_STANDARD_DEVIATION, _RANGE, _IQR),
+        "Evolución de desvío estándar, rango e IQR",
+    )

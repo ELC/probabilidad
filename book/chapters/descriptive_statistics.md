@@ -81,14 +81,9 @@ from widgets import (
     IntervalWidthExplorerInput,
     SummaryEvolutionExplorerInput,
     build_descriptive_explorer,
-    build_iqr_evolution_explorer,
+    build_dispersion_evolution_explorer,
     build_interval_width_explorer,
     build_location_evolution_explorer,
-    build_mean_evolution_explorer,
-    build_median_evolution_explorer,
-    build_mode_evolution_explorer,
-    build_range_evolution_explorer,
-    build_standard_deviation_evolution_explorer,
 )
 ```
 
@@ -678,25 +673,9 @@ dar 4,36 minutos aunque ningún paciente haya esperado exactamente 4,36 minutos.
 usa toda la información, también es sensible a valores extremos. Por eso sirve para
 comparar distribuciones sólo cuando sus formas son razonablemente semejantes.
 
-::::{admonition} Predicción
-:class: hint
-
-Antes de tocar el control, imaginá qué va a pasar si agregás un valor extremo, por
-ejemplo 20 minutos: ¿el promedio se va a mover apenas o va a saltar? Después agregalo
-y compará el salto con lo que pasa cuando agregás valores aleatorios parecidos al resto
-de la muestra.
-
-::::
-
-```{code-cell} python
-:tags: [hide-input]
-build_mean_evolution_explorer(
-    SummaryEvolutionExplorerInput(
-        observations=clinic_sample.waiting_times,
-        settings=settings,
-    )
-)
-```
+Más adelante vamos a comparar la media con la moda y la mediana en un único
+explorador. Por ahora alcanza con retener su rasgo clave: cualquier valor nuevo entra
+en la suma, por eso la media reacciona con fuerza ante esperas extremas.
 
 La media que usamos acá es la **media aritmética**. Existen otras medias útiles,
 pero responden a preguntas distintas; en este libro vamos a trabajar con la media
@@ -745,26 +724,12 @@ mayor frecuencia. En la clínica puede ser el minuto de espera que más se repit
 La moda tiene tres detalles importantes. Algunas muestras no tienen moda clara;
 otras tienen dos modas y se llaman **bimodales**; y es la única medida de tendencia
 central que puede calcularse para cualquier tipo de variable, incluso cualitativa.
-En el control siguiente, para que la idea tenga sentido con tiempos continuos,
+Para que la idea tenga sentido con tiempos continuos,
 la moda se calcula sobre minutos redondeados.
 
-::::{admonition} Predicción
-:class: hint
-
-Antes de agregar un valor extremo, pensá si alcanza con una sola observación para
-cambiar la moda. Después probá agregar un valor escrito y varios valores aleatorios.
-
-::::
-
-```{code-cell} python
-:tags: [hide-input]
-build_mode_evolution_explorer(
-    SummaryEvolutionExplorerInput(
-        observations=clinic_sample.waiting_times,
-        settings=settings,
-    )
-)
-```
+En el explorador comparativo vamos a ver la moda junto con la media y la mediana.
+La pregunta importante será si una sola espera nueva alcanza para cambiar cuál es
+el minuto redondeado más frecuente.
 
 ::::{admonition} Cierre operativo
 :class: tip
@@ -818,10 +783,28 @@ position_summary = pd.DataFrame({
 style_display_table(position_summary)
 ```
 
+:::::{admonition} Predicción
+:class: hint
+
 Antes de leer la tabla, pensá en la ojiva: $Q_1$, $P_{50}$ y $Q_3$ son puntos
-sobre esa curva acumulada. Si $Q_3$ queda cerca del corte central, la mayor
-parte de la mañana fue compacta; si queda lejos, el tramo alto de esperas se
-estiró.
+sobre esa curva acumulada. ¿Esperás que $Q_3 - Q_2$ sea parecido a $Q_2 - Q_1$,
+o que uno de los dos tramos sea claramente más grande?
+
+:::::
+
+::::{admonition} Respuesta
+:class: dropdown
+
+Si $Q_3 - Q_2$ es parecido a $Q_2 - Q_1$, el tramo central se reparte de forma
+bastante equilibrada alrededor de la mediana. Si $Q_3 - Q_2$ es mucho mayor, el tramo
+alto de esperas se estiró: el 25% que está por encima de la mediana ocupa más minutos
+que el 25% que está por debajo.
+
+Para Lucía, esa diferencia cambia la lectura operativa. Un $Q_3$ cercano a $Q_2$
+sugiere que la mayor parte de la mañana fue compacta; un $Q_3$ lejano marca que hay que
+mirar con más cuidado las esperas altas aunque la mediana parezca razonable.
+
+::::
 
 ::::{admonition} Cierre operativo
 :class: tip
@@ -870,23 +853,9 @@ $$ \tilde{x} = P_{50} = Q_2 $$ (eq-median-percentile)
 Por eso, cuando tenemos una tabla de frecuencias, puede leerse mirando la primera
 fila cuya frecuencia relativa acumulada alcanza o supera 0,50.
 
-::::{admonition} Predicción
-:class: hint
-
-Antes de usar el control, anticipá si una espera extrema debería mover la mediana tanto
-como movía el promedio. Probá con 20 minutos y mirá la evolución.
-
-::::
-
-```{code-cell} python
-:tags: [hide-input]
-build_median_evolution_explorer(
-    SummaryEvolutionExplorerInput(
-        observations=clinic_sample.waiting_times,
-        settings=settings,
-    )
-)
-```
+La comparación interactiva con la media viene en la sección siguiente. La intuición
+que conviene anticipar es esta: una espera extrema se ubica al final de la lista
+ordenada, pero no arrastra numéricamente el centro como sí lo hace con la media.
 
 ::::{admonition} No confundas
 :class: caution
@@ -997,25 +966,6 @@ En palabras: $s$ es la distancia típica entre una observación
 cualquiera y el promedio. Cuanto más chico es $s$, más parecidas son
 las esperas entre sí.
 
-::::{admonition} Predicción
-:class: hint
-
-Agregá mentalmente un valor extremo: si entra una espera de 20 minutos, ¿el desvío
-estándar va a moverse poco o mucho? Usá el control para compararlo con valores
-aleatorios cercanos al resto de la muestra.
-
-::::
-
-```{code-cell} python
-:tags: [hide-input]
-build_standard_deviation_evolution_explorer(
-    SummaryEvolutionExplorerInput(
-        observations=clinic_sample.waiting_times,
-        settings=settings,
-    )
-)
-```
-
 Si los datos corresponden a toda la población, usamos la media poblacional $\mu$,
 el tamaño poblacional $N$ y el denominador $N$. La varianza poblacional se
 escribe $\sigma^2$ y el desvío estándar poblacional se escribe $\sigma$:
@@ -1035,16 +985,6 @@ observada: cuánto separa al caso más bajo del caso más alto. A diferencia de
 $s$, que usa todas las observaciones, $R$ depende sólo de los dos extremos; por
 eso crece mucho cuando aparece un valor atípico.
 
-```{code-cell} python
-:tags: [hide-input]
-build_range_evolution_explorer(
-    SummaryEvolutionExplorerInput(
-        observations=clinic_sample.waiting_times,
-        settings=settings,
-    )
-)
-```
-
 Como vimos al hablar de frecuencias acumuladas, $Q_1$ y $Q_3$ son los cuartiles
 cuya frecuencia acumulada alcanza al menos el 25% y el 75%, respectivamente. El **rango
 intercuartil** o **recorrido intercuartílico** resume la variación del 50%
@@ -1058,15 +998,37 @@ varianza queda en unidades al cuadrado y por eso se usa mucho para propiedades
 matemáticas; el desvío estándar vuelve a la unidad original y suele ser más fácil de
 interpretar en contexto.
 
+:::::{admonition} Predicción
+:class: hint
+
+Antes de tocar el explorador, anticipá qué curva debería cambiar más si agregás una
+espera extrema alta, por ejemplo 20 minutos: ¿desvío estándar, rango o IQR? Después
+compará ese caso con muchos valores nuevos cerca del centro.
+
+:::::
+
 ```{code-cell} python
 :tags: [hide-input]
-build_iqr_evolution_explorer(
+build_dispersion_evolution_explorer(
     SummaryEvolutionExplorerInput(
         observations=clinic_sample.waiting_times,
         settings=settings,
     )
 )
 ```
+
+:::::{admonition} Respuesta
+:class: dropdown
+
+El **rango** no puede achicarse al agregar observaciones: conserva o estira el mínimo y
+el máximo. Por eso una espera extremadamente alta lo mueve de inmediato.
+
+El **desvío estándar** también crece con extremos, porque suma distancias al promedio;
+puede disminuir si agregás muchos valores cerca del centro. El **IQR** suele resistir
+un extremo aislado porque mira el 50% central, aunque puede disminuir si muchos valores
+nuevos se concentran cerca del centro.
+
+:::::
 
 ```{code-cell} python
 :tags: [hide-input]
@@ -1142,50 +1104,37 @@ build_location_evolution_explorer(
 )
 ```
 
-Usá los controles anteriores como un laboratorio pequeño. Antes de presionar cada
-botón, anticipá qué curva debería moverse y después compará tu predicción con el
-gráfico:
+::::{admonition} Pregunta integradora
+:class: hint
 
-- Si agregás una espera extrema alta, por ejemplo 20 minutos, la **media** puede
-  desplazarse hacia arriba porque ese valor entra directamente en la suma. Ese
-  efecto puede compensarse con un valor igual de extremo en sentido contrario:
-  si la muestra tuviera esperas alrededor de 4 minutos, una espera de 20 empuja
-  la media hacia arriba y una espera de 0 empuja en dirección opuesta.
-- Si agregás una espera exactamente igual a la media muestral actual, la
-  **media** no cambia: sumar un valor igual al equilibrio anterior mantiene el
-  mismo equilibrio. En la clínica, si el promedio actual fuera 4,3 minutos y
-  entra otro paciente con 4,3 minutos de espera, la media queda igual.
-- La **mediana** puede moverse, pero lo hace saltando de un valor ordenado a
-  otro. Por eso sus saltos suelen ser pequeños; sólo serían grandes si hubiera
-  huecos grandes entre valores consecutivos. Se mueve hacia el lado donde se
-  agregan más observaciones, extremas o no. Si entran varias esperas altas, la
-  posición central se desplaza hacia arriba; si luego entran esperas bajas, ese
-  efecto puede compensarse.
-- El **desvío estándar** disminuye cuando agregás datos cerca de la media
-  muestral: si la mañana venía con esperas alrededor de 4 minutos y agregás más
-  pacientes cerca de 4, la nube se vuelve más compacta respecto de su centro.
-- El **desvío estándar** crece mucho con datos extremos. Una espera de 20
-  minutos agrega una distancia grande al promedio; para compensar ese efecto no
-  alcanza con un único valor simétrico, porque ambos extremos suman distancia:
-  hace falta incorporar muchos más datos cerca del comportamiento habitual.
-- El **rango** es monótonamente creciente: no puede achicarse al agregar datos,
-  porque depende sólo del mínimo y del máximo. Aumenta tanto con una espera
-  extremadamente alta como con una espera extremadamente baja.
-- El **IQR** puede disminuir cuando agregás muchos valores muy cercanos a la
-  media muestral, porque el 50% central se concentra más. En cambio, tiende a
-  permanecer estable cuando agregás valores parecidos a toda la muestra original:
-  si los nuevos pacientes reproducen la misma mezcla de esperas bajas, medias y
-  altas, los cuartiles cambian poco.
+Si agregás una espera extrema alta, por ejemplo 20 minutos, ¿qué esperás que pase con
+la media, la moda y la mediana? Antes de abrir la respuesta, compará tu predicción
+con las curvas del explorador.
+
+::::
+
+::::{admonition} Respuesta
+:class: dropdown
+
+La **media** se desplaza hacia el extremo porque el valor entra en la suma; si agregás
+un valor igual a la media actual, en cambio, queda igual. La **mediana** suele moverse
+poco porque depende del orden, no de la magnitud del extremo.
+
+La **moda** sólo cambia si el nuevo valor iguala o supera la frecuencia del valor que
+era más repetido. En tiempos continuos, además, esa lectura depende del redondeo o
+agrupamiento usado para contar frecuencias.
+
+::::
 
 ::::{admonition} Cierre operativo
 :class: tip
 
-En la clínica, comparar media, mediana, $s$, rango e IQR ante
+En la clínica, comparar media, moda y mediana ante
 un valor extremo responde preguntas como: "si aparece una espera de 20 minutos, ¿la
-media salta de 4,5 a 4,8 pero la mediana queda en 4,2?" o "¿el rango crece aunque el
-50% central siga igual?". Si una sola espera extrema mueve la media pero no la
-mediana, Lucía debería reportar la mediana como resumen resistente y abrir una
-revisión separada para ese caso.
+media salta pero la mediana queda cerca del centro?" o "¿la moda cambia aunque sea
+un caso aislado?". Si una sola espera extrema mueve la media pero no la mediana,
+Lucía debería reportar la mediana como resumen resistente y abrir una revisión
+separada para ese caso.
 
 ::::
 
@@ -1209,6 +1158,16 @@ cambió la medida resumen o cambió la regularidad del servicio?
 explorer_input = DescriptiveExplorerInput(settings=settings)
 build_descriptive_explorer(explorer_input)
 ```
+
+::::{admonition} Respuesta
+:class: dropdown
+
+Cambió la regularidad del servicio, no necesariamente la medida resumen central. Si el
+centro queda parecido pero el tramo central se ensancha, Lucía debería decir que la
+espera típica puede seguir cerca del mismo valor, pero la experiencia de los pacientes
+se volvió menos consistente.
+
+::::
 
 ::::{admonition} Cierre operativo
 :class: tip
@@ -1802,6 +1761,18 @@ style_display_table(pd.DataFrame({
 }))
 ```
 
+::::{admonition} Respuesta
+:class: dropdown
+
+Si el histograma no es campanular, la confianza en $\bar{x}\pm s$ como regla de
+cobertura debería bajar. La media y el desvío estándar pueden quedar tironeados por la
+cola, y los porcentajes 68%, 95% y "casi todos" dejan de ser una guía confiable.
+
+En ese caso, Lucía no debería comunicar $\bar{x}\pm s$ como si describiera una mañana
+regular. Conviene mirar también mediana, IQR, histograma y posibles atípicos.
+
+::::
+
 ::::{admonition} Cierre operativo
 :class: tip
 
@@ -1859,6 +1830,27 @@ valores están cerca del centro y cuáles quedan relativamente lejos.
 standardized = standardize_observations(clinic_sample.waiting_times)
 standardized
 ```
+
+::::{admonition} Chequeo rápido
+:class: hint
+
+Si un paciente tiene $z_i = 2$, ¿qué significa? Y si aparece $|z_i| > 3$, ¿alcanza
+para decir que el dato está mal cargado?
+
+::::
+
+::::{admonition} Respuesta
+:class: dropdown
+
+Un valor $z_i = 2$ significa que esa espera quedó dos desvíos estándar por encima del
+promedio de la misma muestra. No depende de si medimos en minutos, horas o personas:
+ya está expresado en unidades de desvío estándar.
+
+Si aparece $|z_i| > 3$, el caso merece revisión, pero no prueba un error. Puede ser un
+dato mal cargado, un caso excepcional o una señal real de que el proceso tuvo una
+demora relevante.
+
+::::
 
 ::::{admonition} Cierre operativo
 :class: tip
@@ -2035,6 +2027,14 @@ El boxplot ya da una pista: aunque el cambio neto en fila tiene media positiva, 
 valores cruzan el cero. En ese caso, comparar "porcentaje respecto del promedio" no
 tiene una interpretación estable.
 
+::::{admonition} Chequeo rápido
+:class: hint
+
+Antes de mirar la tabla, anticipá por qué cruzar el cero vuelve inestable el $CV$
+aunque la media del indicador sea positiva.
+
+::::
+
 ```{code-cell} python
 :tags: [hide-input]
 cv_counterexample_summary = cv_counterexample_data.groupby("indicador", sort=False)["valor"].agg(
@@ -2044,12 +2044,18 @@ cv_counterexample_summary = cv_counterexample_data.groupby("indicador", sort=Fal
 style_display_table(cv_counterexample_summary)
 ```
 
+::::{admonition} Respuesta
+:class: dropdown
+
 Si miráramos sólo el $CV$, concluiríamos que el cambio neto en fila es
-desproporcionadamente más irregular. Esa lectura es engañosa: el desvío estándar no
-es enorme en unidades originales, pero el indicador mezcla valores negativos y
-positivos. La forma del boxplot permitía anticiparlo antes de calcular la tabla:
-cuando una variable cruza el cero, el $CV$ deja de ser una buena brújula aunque la
-media sea positiva.
+desproporcionadamente más irregular. Esa lectura es engañosa: el desvío estándar no es
+enorme en unidades originales, pero el indicador mezcla valores negativos y positivos.
+
+Cuando una variable cruza el cero, la comparación "variación respecto del promedio"
+pierde una base estable aunque la media sea positiva. En ese caso, el $CV$ deja de ser
+una buena brújula y conviene usar desvío estándar, IQR o gráficos.
+
+::::
 
 :::::{admonition} Nota técnica: CV y escala logarítmica
 :class: dropdown

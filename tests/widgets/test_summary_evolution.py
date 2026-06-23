@@ -10,6 +10,7 @@ from pandera.typing import DataFrame
 from core import Observations, Settings
 from widgets import (
     SummaryEvolutionExplorerInput,
+    build_dispersion_evolution_explorer,
     build_iqr_evolution_explorer,
     build_location_evolution_explorer,
     build_mean_evolution_explorer,
@@ -19,7 +20,10 @@ from widgets import (
     build_standard_deviation_evolution_explorer,
 )
 from widgets.summary_evolution import (
+    _IQR,
     _MEAN,
+    _RANGE,
+    _STANDARD_DEVIATION,
     _fixed_evolution_domain,
     _summary_chart,
 )
@@ -46,6 +50,7 @@ def _button(container: widgets.Widget, description: str) -> widgets.Button:
         build_mode_evolution_explorer,
         build_median_evolution_explorer,
         build_location_evolution_explorer,
+        build_dispersion_evolution_explorer,
         build_standard_deviation_evolution_explorer,
         build_range_evolution_explorer,
         build_iqr_evolution_explorer,
@@ -125,3 +130,21 @@ def test_summary_chart_uses_theme_width_and_dynamic_x_domain(fixed_settings: Set
     assert chart_spec["vconcat"][1]["width"] == expected_width
     assert "scale" not in chart_spec["vconcat"][0]["encoding"]["x"]
     assert "scale" not in chart_spec["vconcat"][1]["encoding"]["x"]
+
+
+def test_summary_chart_can_compare_dispersion_measures(fixed_settings: Settings) -> None:
+    observations = _observations()
+    values = observations["value"].to_numpy(dtype=float)
+    input_data = SummaryEvolutionExplorerInput(observations=observations, settings=fixed_settings)
+    chart = _summary_chart(
+        values,
+        (_STANDARD_DEVIATION, _RANGE, _IQR),
+        "Evolución de desvío estándar, rango e IQR",
+        fixed_settings,
+        _fixed_evolution_domain(input_data, (_STANDARD_DEVIATION, _RANGE, _IQR)),
+    )
+
+    chart_json = chart.to_json()
+    assert "Desvío estándar" in chart_json
+    assert "Rango" in chart_json
+    assert "Rango intercuartil" in chart_json
